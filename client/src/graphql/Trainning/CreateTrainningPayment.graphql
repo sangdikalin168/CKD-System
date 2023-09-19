@@ -1,0 +1,20 @@
+mutation CreateTrainningPayment(
+  $type: String!
+  $price: Float!
+  $promotion: String!
+  $customerId: Float!
+  $userId: Float!
+) {
+  CreateTrainningPayment(
+    type: $type
+    price: $price
+    promotion: $promotion
+    customer_id: $customerId
+    user_id: $userId
+  ) {
+    payment_id
+    code
+    success
+    message
+  }
+}

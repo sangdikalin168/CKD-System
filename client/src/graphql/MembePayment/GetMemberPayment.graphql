@@ -1,0 +1,14 @@
+query GetMemberPayment($customerId: Float!) {
+  GetMemberPayment(customer_id: $customerId) {
+    payment_id
+    payment_date
+    user_id
+    customer_id
+    promotion
+    price
+    old_end
+    new_end
+    shift
+    month_qty
+  }
+}

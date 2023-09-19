@@ -1,0 +1,11 @@
+query GetMemberPriceTable {
+  GetMemberPriceTable {
+    id
+    name
+    age
+    member_type
+    month_qty
+    price
+    shift
+  }
+}

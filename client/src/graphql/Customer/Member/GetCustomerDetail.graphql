@@ -1,0 +1,17 @@
+query GetCustomerDetail($customerId: Float!) {
+  GetCustomerDetail(customer_id: $customerId) {
+    customer_id
+    created_date
+    created_by
+    customer_code
+    customer_name
+    phone
+    gender
+    image_path
+    fingerprint
+    end_membership_date
+    key_status
+    towel_status
+    shift
+  }
+}

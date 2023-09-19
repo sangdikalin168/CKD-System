@@ -1,0 +1,9 @@
+query GetTranningPrice {
+  GetTranningPrice {
+    id
+    name
+    type
+    month_qty
+    price
+  }
+}

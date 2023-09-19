@@ -1,0 +1,22 @@
+mutation CreateCouponPayment(
+  $couponCode: String!
+  $quantity: Float!
+  $price: Float!
+  $cardName: String!
+  $customerId: Float!
+  $userId: Float!
+) {
+  CreateCouponPayment(
+    coupon_code: $couponCode
+    quantity: $quantity
+    price: $price
+    card_name: $cardName
+    customer_id: $customerId
+    user_id: $userId
+  ) {
+    payment_id
+    code
+    success
+    message
+  }
+}

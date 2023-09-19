@@ -1,0 +1,17 @@
+mutation CreateCustomer(
+  $createdBy: Float!
+  $gender: String!
+  $phone: String!
+  $customerName: String!
+) {
+  CreateCustomer(
+    created_by: $createdBy
+    gender: $gender
+    phone: $phone
+    customer_name: $customerName
+  ) {
+    code
+    success
+    message
+  }
+}

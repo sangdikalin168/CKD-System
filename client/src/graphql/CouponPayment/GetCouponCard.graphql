@@ -1,0 +1,11 @@
+query GetCouponCard($couponCode: String!) {
+  GetCouponCard(coupon_code: $couponCode) {
+    id
+    created_date
+    coupon_code
+    status
+    quantity
+    price
+    card_name
+  }
+}

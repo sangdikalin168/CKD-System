@@ -1,0 +1,11 @@
+query GetTrainningPayment($customerId: Float!) {
+  GetTrainningPayment(customer_id: $customerId) {
+    payment_id
+    payment_date
+    user_id
+    customer_id
+    type
+    promotion
+    price
+  }
+}
