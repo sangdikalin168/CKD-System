@@ -4,6 +4,23 @@ import { useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { ComponentToPrint } from '../../components/ComponentToPrint';
 import { v4 as uuidv4 } from 'uuid';
+import { useCreateTicketPaymentMutation } from '../../generated/graphql';
+
+
+import { TypeOptions, toast } from "react-toastify";
+const notify = (
+    message: string,
+    auto_Close: boolean | number,
+    toastType: TypeOptions
+) => {
+    if (!toast.isActive("alert")) {
+        toast(message, {
+            autoClose: auto_Close ? 500 : false,
+            toastId: "alert",
+            type: toastType,
+        });
+    }
+};
 
 export default function Ticket() {
 
@@ -32,11 +49,31 @@ export default function Ticket() {
         },
     });
 
-    const handleGetQRCode = async () => {
+    const handleGetQRCode = async (price: number) => {
         const unique_id = await uuidv4();
         const small_id = await unique_id.slice(0, 16)
         const result = await setUuid(small_id);
         buttonRef.current.click();
+        await handleSubmit(price, small_id);
+    }
+
+    const [createTicketPayment] = useCreateTicketPaymentMutation();
+
+    const handleSubmit = async (price: number, ticket_code: string) => {
+        const result = await createTicketPayment({
+            variables: {
+                userId: parseInt(localStorage.getItem("user_id")),
+                price: price,
+                ticketCode: ticket_code
+            }
+        })
+
+        if (result.data?.CreateTicketPayment.success) {
+            notify("Success", true, "success");
+            return;
+        }
+
+        notify(result.errors, 5000, "error");
     }
 
 
@@ -54,7 +91,7 @@ export default function Ticket() {
                             return (
                                 <div key={list.price} className="relative bg-cyan-400 w-32 h-32 rounded-lg shadow m-2">
                                     <span className="w-full h-full flex justify-center items-center text-5xl font-black">
-                                        <button className="w-full h-full" onClick={handleGetQRCode}>{list.price}$</button>
+                                        <button className="w-full h-full" onClick={() => handleGetQRCode(list.price)}>{list.price}$</button>
                                     </span>
                                 </div>
                             )

@@ -9,7 +9,7 @@ export class CouponPayment extends BaseEntity {
     payment_id!: number;
 
     @Field()
-    @Column({ type: "date", default: () => "CURRENT_DATE" })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     payment_date!: string;
 
     @Field()

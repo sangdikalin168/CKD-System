@@ -3,7 +3,7 @@ import { Field, ObjectType } from "type-graphql";
 
 @Entity()
 @ObjectType()
-export class TrainningPayment extends BaseEntity {
+export class TicketPayment extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Field()
     payment_id!: number;
@@ -17,18 +17,15 @@ export class TrainningPayment extends BaseEntity {
     user_id: number;
 
     @Field()
-    @Column()
-    customer_id: number;
-
-    @Field()
-    @Column({ length: 50 })
-    type: string;
-
-    @Field()
-    @Column({ length: 50 })
-    promotion: string;
-
-    @Field()
     @Column({ type: "double" })
     price: number
+
+    @Field()
+    @Column({ length: 255 })
+    ticket_code: string;
+
+    @Field()
+    @Column({ type: "int", default: 0 })
+    is_check: number;
+
 }

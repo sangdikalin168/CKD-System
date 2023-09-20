@@ -173,6 +173,7 @@ export type Mutation = {
   CreateCouponPayment: CouponPaymentMutationResponse;
   CreateCustomer: CustomerMutationResponse;
   CreateCustomerPayment: MemberPaymentMutationResponse;
+  CreateTicketPayment: TicketPaymentMutationResponse;
   CreateTrainningPayment: TrainningPaymentMutationResponse;
   create_user: UserMutationResponse;
   login: UserMutationResponse;
@@ -206,6 +207,13 @@ export type MutationCreateCustomerPaymentArgs = {
   price: Scalars['Float'];
   promotion: Scalars['String'];
   shift: Scalars['String'];
+  user_id: Scalars['Float'];
+};
+
+
+export type MutationCreateTicketPaymentArgs = {
+  price: Scalars['Float'];
+  ticket_code: Scalars['String'];
   user_id: Scalars['Float'];
 };
 
@@ -283,6 +291,31 @@ export type RegisterInput = {
   phone: Scalars['String'];
   role: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type TicketPayment = {
+  __typename?: 'TicketPayment';
+  is_check: Scalars['Float'];
+  payment_date: Scalars['String'];
+  payment_id: Scalars['Float'];
+  price: Scalars['Float'];
+  ticket_code: Scalars['String'];
+  user_id: Scalars['Float'];
+};
+
+export type TicketPaymentMutationResponse = TicketPaymentResponse & {
+  __typename?: 'TicketPaymentMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  payment_id: Scalars['Float'];
+  success: Scalars['Boolean'];
+};
+
+export type TicketPaymentResponse = {
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  payment_id: Scalars['Float'];
+  success: Scalars['Boolean'];
 };
 
 export type TrainningPayment = {
@@ -427,6 +460,15 @@ export type GetMemberPaymentQueryVariables = Exact<{
 
 
 export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: string, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, shift: string, month_qty: number }> };
+
+export type CreateTicketPaymentMutationVariables = Exact<{
+  ticketCode: Scalars['String'];
+  price: Scalars['Float'];
+  userId: Scalars['Float'];
+}>;
+
+
+export type CreateTicketPaymentMutation = { __typename?: 'Mutation', CreateTicketPayment: { __typename?: 'TicketPaymentMutationResponse', payment_id: number, code: number, success: boolean, message?: string | null } };
 
 export type CreateTrainningPaymentMutationVariables = Exact<{
   type: Scalars['String'];
@@ -853,6 +895,44 @@ export function useGetMemberPaymentLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetMemberPaymentQueryHookResult = ReturnType<typeof useGetMemberPaymentQuery>;
 export type GetMemberPaymentLazyQueryHookResult = ReturnType<typeof useGetMemberPaymentLazyQuery>;
 export type GetMemberPaymentQueryResult = Apollo.QueryResult<GetMemberPaymentQuery, GetMemberPaymentQueryVariables>;
+export const CreateTicketPaymentDocument = gql`
+    mutation CreateTicketPayment($ticketCode: String!, $price: Float!, $userId: Float!) {
+  CreateTicketPayment(ticket_code: $ticketCode, price: $price, user_id: $userId) {
+    payment_id
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateTicketPaymentMutationFn = Apollo.MutationFunction<CreateTicketPaymentMutation, CreateTicketPaymentMutationVariables>;
+
+/**
+ * __useCreateTicketPaymentMutation__
+ *
+ * To run a mutation, you first call `useCreateTicketPaymentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTicketPaymentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTicketPaymentMutation, { data, loading, error }] = useCreateTicketPaymentMutation({
+ *   variables: {
+ *      ticketCode: // value for 'ticketCode'
+ *      price: // value for 'price'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useCreateTicketPaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreateTicketPaymentMutation, CreateTicketPaymentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTicketPaymentMutation, CreateTicketPaymentMutationVariables>(CreateTicketPaymentDocument, options);
+      }
+export type CreateTicketPaymentMutationHookResult = ReturnType<typeof useCreateTicketPaymentMutation>;
+export type CreateTicketPaymentMutationResult = Apollo.MutationResult<CreateTicketPaymentMutation>;
+export type CreateTicketPaymentMutationOptions = Apollo.BaseMutationOptions<CreateTicketPaymentMutation, CreateTicketPaymentMutationVariables>;
 export const CreateTrainningPaymentDocument = gql`
     mutation CreateTrainningPayment($type: String!, $price: Float!, $promotion: String!, $customerId: Float!, $userId: Float!) {
   CreateTrainningPayment(

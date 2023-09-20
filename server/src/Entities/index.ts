@@ -3,6 +3,7 @@ import { CouponPayment } from "./CouponPayment";
 import { Customer } from "./Customer";
 import { MemberPayment } from "./MemberPayment";
 import { MemberPriceTable } from "./MemberPriceTable";
+import { TicketPayment } from "./TicketPayment";
 import { TrainningPayment } from "./TrainningPayment";
 import { TrainningPrice } from "./TrainningPrice";
 import { Users } from "./Users";
@@ -15,5 +16,6 @@ export const entities = [
   CouponCard,
   CouponPayment,
   TrainningPayment,
-  TrainningPrice
+  TrainningPrice,
+  TicketPayment
 ];
