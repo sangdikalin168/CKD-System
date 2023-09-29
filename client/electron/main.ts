@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 
@@ -28,6 +30,8 @@ function createWindow() {
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      webSecurity: false
     },
     width: 1366,
     height: 768,
@@ -47,17 +51,26 @@ function createWindow() {
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
+    //console.log(electron.remote.app.getAppPath());
+    //win.loadFile(`file://${electron.remote.app.getAppPath()}/dist/index.html`);
+    //win.loadFile(path.join(process.env.DIST, 'index.html'))
   } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(process.env.DIST, 'index.html'))
+    //win.loadFile(`file://${electron.remote.app.getAppPath()}/dist/index.html`);
+    //win.loadFile('dist/index.html')
+    //win.loadFile(`file://${__dirname}/dist/index.html`)
+    //win.loadFile(path.join(process.env.DIST, 'index.html'))
+    win.loadURL("http://110.235.249.118:5173")
   }
 }
 
 app.on('window-all-closed', () => {
   win = null
+  app.quit();
 })
 
 app.whenReady().then(createWindow)
+
+
 
 const printOptions = {
   silent: true,
