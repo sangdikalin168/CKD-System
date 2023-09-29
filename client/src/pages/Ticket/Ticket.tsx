@@ -152,4 +152,14 @@ export default function Ticket() {
   );
 }
 
-const ticket_list = [{ price: 1 }, { price: 2 }, { price: 3 }, { price: 4 }];
+const ticket_list = [
+  { price: 0 },
+  { price: 1 },
+  { price: 1.5 },
+  { price: 2 },
+  { price: 2.5 },
+  { price: 3 },
+  { price: 3.5 },
+  { price: 4 },
+  { price: 5 }
+];
