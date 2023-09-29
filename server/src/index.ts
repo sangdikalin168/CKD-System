@@ -81,7 +81,7 @@ const main = async () => {
       origin: [
         "http://localhost:3000",
         "https://studio.apollographql.com",
-        "http://192.168.0.135:3000",
+        "http://192.168.0.142:5173",
         "http://localhost:5173",
         "http://110.235.249.118:5173",
       ],

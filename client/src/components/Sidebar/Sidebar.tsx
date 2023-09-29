@@ -71,7 +71,7 @@ const items = [
   //   ],
   // },
   {
-    title: "ចំណូល ចំណាយ",
+    title: "Report",
     icon: <HiOutlineUserCircle className="text-2xl" />,
     childrens: [
       {
@@ -80,7 +80,7 @@ const items = [
         icon: <HiOutlineUserCircle className="text-2xl" />,
       },
       {
-        title: "ចំណាយ",
+        title: "អតិថិជន",
         path: "/expense",
         icon: <FaUserCog className="text-2xl" />,
       },

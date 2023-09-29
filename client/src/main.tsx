@@ -1,6 +1,6 @@
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
 import {
   ApolloClient,
   ApolloProvider,
@@ -35,14 +35,17 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       // console.log(
       //   `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       // )
-      notify(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`, true, 'error');
-    }
-    );
+      notify(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+        true,
+        "error"
+      );
+    });
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000" + "/graphql",
+  uri: "http://192.168.0.142:4000" + "/graphql",
   credentials: "include",
 });
 
@@ -65,13 +68,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <ApolloProvider client={client}>
     <AuthContextProvider>
       <App />
     </AuthContextProvider>
   </ApolloProvider>
-)
+);
 
-postMessage({ payload: 'removeLoading' }, '*')
+postMessage({ payload: "removeLoading" }, "*");

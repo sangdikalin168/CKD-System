@@ -30,7 +30,7 @@ const Navbar = ({ setToggleSidebar }: Props) => {
         { name: "Settings", href: "#" },
         { name: "Sign out", href: "#", onclick: () => { JWTManager.deleteToken(); setIsAuthenticated(false) } },
     ];
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useState(true);
 
     const display_name = localStorage.getItem("display_name")
 

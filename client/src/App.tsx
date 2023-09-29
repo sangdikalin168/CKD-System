@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import { useAuthContext } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { Report } from "./pages/Report/Report";
 
 // Create a root route
 const rootRoute = new RootRoute({
@@ -47,10 +48,11 @@ function NotFound() {
 
 const indexRoute = new Route({ getParentRoute: () => rootRoute, path: '/ticket', component: Ticket })
 const membersRoute = new Route({ getParentRoute: () => rootRoute, path: '/members', component: Member })
+const reportRoute = new Route({ getParentRoute: () => rootRoute, path: '/income', component: Report })
 const notFoundRoute = new Route({ getParentRoute: () => rootRoute, path: '*', component: NotFound })
 
 // Create the route tree using your routes
-const routeTree = rootRoute.addChildren([indexRoute, membersRoute, notFoundRoute])
+const routeTree = rootRoute.addChildren([indexRoute, membersRoute, reportRoute, notFoundRoute])
 
 // Create the router using your route tree
 const router = new Router({ routeTree })

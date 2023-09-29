@@ -37,7 +37,7 @@ export class Customer extends BaseEntity {
     image_path: string;
 
     @Field()
-    @Column({ length: 255 })
+    @Column({ length: 2000 })
     fingerprint: string;
 
     @Field()

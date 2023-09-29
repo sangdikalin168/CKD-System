@@ -130,7 +130,7 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                         <th
                           key={header.id}
                           scope="col"
-                          className="group px-6 py-3 text-left text-xs font-medium text-black tracking-wider"
+                          className="group px-1 py-1 text-left text-xs font-medium text-black tracking-wider"
                         >
                           <div className="flex items-center justify-between">
                             {/* Add a sort direction indicator */}
