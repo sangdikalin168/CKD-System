@@ -23,6 +23,8 @@ const notify = (
 
 export default function Ticket() {
   const [uuid, setUuid] = useState("");
+  const [price, setPrice] = useState(0);
+  const [seller, setSeller] = useState("");
   const componentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLInputElement>(null);
 
@@ -46,7 +48,10 @@ export default function Ticket() {
     },
   });
 
+
   const handleGetQRCode = async (price: number) => {
+    setPrice(price);
+    setSeller(localStorage.getItem("display_name"));
     const unique_id = await uuidv4();
     const small_id = await unique_id.slice(0, 16);
     const result = await setUuid(small_id);
@@ -142,8 +147,8 @@ export default function Ticket() {
         <div className="hidden">
           <ComponentToPrint
             ref={componentRef}
-            price="1.5$"
-            name="Chenda"
+            price={price}
+            name={seller}
             uuid={uuid + "Ticket"}
           />
         </div>
