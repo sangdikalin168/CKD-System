@@ -1,21 +1,33 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-ignore   
+// @ts-ignore
 // @ts-nocheck
-import { PencilIcon, PlusCircleIcon, CurrencyDollarIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import DataTable from "../../Component/DataTable"
+import {
+    PencilIcon,
+    PlusCircleIcon,
+    CurrencyDollarIcon,
+    MagnifyingGlassIcon,
+} from "@heroicons/react/20/solid";
+import DataTable from "../../Component/DataTable";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Tab, Transition } from "@headlessui/react";
-import { useCreateCouponPaymentMutation, useCreateCustomerPaymentMutation, useGetCouponCardLazyQuery, useGetCustomerDetailQuery, useGetMemberPaymentQuery, useGetMemberPriceTableQuery, useGetTrainningPaymentQuery } from "../../../../generated/graphql";
+import {
+    useCreateCouponPaymentMutation,
+    useCreateCustomerPaymentMutation,
+    useGetCouponCardLazyQuery,
+    useGetCustomerDetailQuery,
+    useGetMemberPaymentQuery,
+    useGetMemberPriceTableQuery,
+    useGetTrainningPaymentQuery,
+} from "../../../../generated/graphql";
 
 import { TypeOptions, toast } from "react-toastify";
 import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInvoice";
 import { useReactToPrint } from "react-to-print";
 import { CouponInvoice } from "../../../../components/ComponentToPrint/CouponInvoice";
 import { TrainingPaymentForm } from "../TrainningForm/TrainningForm";
-
 
 const notify = (
     message: string,
@@ -34,8 +46,7 @@ const notify = (
 const date_time_format = (date_time: Date) => {
     const date = new Date(date_time);
     return date.toLocaleDateString("fr-CA");
-}
-
+};
 
 type PriceTable = {
     id: number;
@@ -65,11 +76,10 @@ type TrainningPayment = {
 };
 
 function classNames(...classes: any) {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(" ");
 }
 
 const MemberProfile = ({ ID }: any) => {
-
     const columnHelper = createColumnHelper<MemberPayment>();
     const columns = [
         columnHelper.accessor((row) => row.payment_id, {
@@ -127,7 +137,6 @@ const MemberProfile = ({ ID }: any) => {
                                     />
                                 </button>
                             </span>
-
                         </>
                     }
                 </div>
@@ -182,7 +191,6 @@ const MemberProfile = ({ ID }: any) => {
                                     />
                                 </button>
                             </span>
-
                         </>
                     }
                 </div>
@@ -246,7 +254,7 @@ const MemberProfile = ({ ID }: any) => {
                                         setMonthQty(row.month_qty);
                                         setPromotion(row.name);
                                         setPrice(row.price);
-                                        setShift(row.shift)
+                                        setShift(row.shift);
                                     }}
                                 >
                                     <CurrencyDollarIcon
@@ -255,7 +263,6 @@ const MemberProfile = ({ ID }: any) => {
                                     />
                                 </button>
                             </span>
-
                         </>
                     }
                 </div>
@@ -265,28 +272,32 @@ const MemberProfile = ({ ID }: any) => {
         }),
     ];
 
-    const [open_member, setOpenMember] = useState(false)
-    const cancelButtonRef = useRef(null)
+    const [open_member, setOpenMember] = useState(false);
+    const cancelButtonRef = useRef(null);
     const { data: price_table } = useGetMemberPriceTableQuery();
-
 
     const { data, loading, refetch } = useGetCustomerDetailQuery({
         variables: {
-            customerId: ID
-        }
-    })
+            customerId: ID,
+        },
+    });
 
-    const { data: member_payment, loading: loading_payment } = useGetMemberPaymentQuery({
-        variables: {
-            customerId: ID
-        }
-    })
+    const { data: member_payment, loading: loading_payment } =
+        useGetMemberPaymentQuery({
+            variables: {
+                customerId: ID,
+            },
+        });
 
-    const { data: trainning_payment, loading: loading_trainning_payment, refetch: refetch_trainning_payment } = useGetTrainningPaymentQuery({
+    const {
+        data: trainning_payment,
+        loading: loading_trainning_payment,
+        refetch: refetch_trainning_payment,
+    } = useGetTrainningPaymentQuery({
         variables: {
-            customerId: ID
-        }
-    })
+            customerId: ID,
+        },
+    });
 
     const details = data?.GetCustomerDetail[0];
 
@@ -298,26 +309,63 @@ const MemberProfile = ({ ID }: any) => {
     const [open_coupon, setIsOpenCoupon] = useState(false);
     const [open_trainning, setOpenTrainning] = useState(false);
 
+    const FilterPriceTableByMonth = (month_qty: number) => {
+        const result = price_table?.GetMemberPriceTable.filter(
+            (p) => p.month_qty == month_qty
+        );
+        setMemberPriceTable(result);
+    };
+    const FilterPriceTableByAge = (age: string) => {
+        const result = member_price_table.filter((p) => p.age == age);
+        setMemberPriceTable(result);
+    };
+
+    const [member_price_table, setMemberPriceTable] = useState([]);
+
     return (
         <>
             <div className="bg-white p-4 rounded-lg mb-4 h-screen">
                 <div className="border-b border-gray-900/10">
-                    <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">
+                        Personal Information
+                    </h2>
                     <div className="mt-2 grid grid-cols-1 gap-x-4 sm:grid-cols-6">
                         <div className="shadow-lg rounded-lg p-2">
-                            <img className="h-24 w-24 flex-none rounded-full bg-gray-50" src={'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'} alt="" />
+                            <img
+                                className="h-24 w-24 flex-none rounded-full bg-gray-50"
+                                src={
+                                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                }
+                                alt=""
+                            />
                             <div className="min-w-0 flex-auto">
-                                <p className="text-sm font-semibold leading-6 text-gray-900">លេខ ID: {ID}</p>
-                                <p className="text-sm font-semibold leading-6 text-gray-900">ឈ្មោះ: {details?.customer_name}</p>
-                                <p className="text-sm font-semibold leading-6 text-gray-900">លេខទូរស័ព្ទ: {details?.phone}</p>
-                                <p className="text-sm font-semibold leading-6 text-gray-900">ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}</p>
-                                <p className="text-sm font-semibold leading-6 text-gray-900">វេន: {details?.shift}</p>
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                    លេខ ID: {ID}
+                                </p>
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                    ឈ្មោះ: {details?.customer_name}
+                                </p>
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                    លេខទូរស័ព្ទ: {details?.phone}
+                                </p>
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                    ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}
+                                </p>
+                                <p className="text-sm font-semibold leading-6 text-gray-900">
+                                    វេន: {details?.shift}
+                                </p>
                                 <button
                                     type="button"
                                     className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2 mt-2"
-                                    onClick={() => setOpenMember(true)}
+                                    onClick={() => {
+                                        setOpenMember(true);
+                                        FilterPriceTableByMonth(1);
+                                    }}
                                 >
-                                    <PlusCircleIcon className="-ml-0.5 mr-1.5 h-4 w-4" aria-hidden="true" />
+                                    <PlusCircleIcon
+                                        className="-ml-0.5 mr-1.5 h-4 w-4"
+                                        aria-hidden="true"
+                                    />
                                     សមាជិក
                                 </button>
                                 <button
@@ -325,7 +373,10 @@ const MemberProfile = ({ ID }: any) => {
                                     className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2"
                                     onClick={() => setIsOpenCoupon(true)}
                                 >
-                                    <PlusCircleIcon className="-ml-0.5 mr-1.5 h-4 w-4" aria-hidden="true" />
+                                    <PlusCircleIcon
+                                        className="-ml-0.5 mr-1.5 h-4 w-4"
+                                        aria-hidden="true"
+                                    />
                                     គ៉ូប៉ុន
                                 </button>
                                 <button
@@ -333,7 +384,10 @@ const MemberProfile = ({ ID }: any) => {
                                     className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2"
                                     onClick={() => setOpenTrainning(true)}
                                 >
-                                    <PlusCircleIcon className="-ml-0.5 mr-1.5 h-4 w-4" aria-hidden="true" />
+                                    <PlusCircleIcon
+                                        className="-ml-0.5 mr-1.5 h-4 w-4"
+                                        aria-hidden="true"
+                                    />
                                     ហ្វឹកហាត់
                                 </button>
                             </div>
@@ -348,8 +402,10 @@ const MemberProfile = ({ ID }: any) => {
                                             key={1}
                                             className={({ selected }) =>
                                                 classNames(
-                                                    selected ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-900',
-                                                    'flex-1 whitespace-nowrap border-b-2 px-1 text-base font-medium rounded-lg'
+                                                    selected
+                                                        ? "border-indigo-600 text-indigo-600"
+                                                        : "border-transparent text-gray-900",
+                                                    "flex-1 whitespace-nowrap border-b-2 px-1 text-base font-medium rounded-lg"
                                                 )
                                             }
                                         >
@@ -359,8 +415,10 @@ const MemberProfile = ({ ID }: any) => {
                                             key={2}
                                             className={({ selected }) =>
                                                 classNames(
-                                                    selected ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-900',
-                                                    'flex-1 whitespace-nowrap border-b-2 px-1 text-base font-medium rounded-lg'
+                                                    selected
+                                                        ? "border-indigo-600 text-indigo-600"
+                                                        : "border-transparent text-gray-900",
+                                                    "flex-1 whitespace-nowrap border-b-2 px-1 text-base font-medium rounded-lg"
                                                 )
                                             }
                                         >
@@ -370,8 +428,10 @@ const MemberProfile = ({ ID }: any) => {
                                             key={3}
                                             className={({ selected }) =>
                                                 classNames(
-                                                    selected ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-900',
-                                                    'flex-1 whitespace-nowrap border-b-2 px-1  text-base font-medium rounded-lg'
+                                                    selected
+                                                        ? "border-indigo-600 text-indigo-600"
+                                                        : "border-transparent text-gray-900",
+                                                    "flex-1 whitespace-nowrap border-b-2 px-1  text-base font-medium rounded-lg"
                                                 )
                                             }
                                         >
@@ -381,8 +441,10 @@ const MemberProfile = ({ ID }: any) => {
                                             key={4}
                                             className={({ selected }) =>
                                                 classNames(
-                                                    selected ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-900',
-                                                    'flex-1 whitespace-nowrap border-b-2 px-1 py-2 text-base font-medium rounded-lg'
+                                                    selected
+                                                        ? "border-indigo-600 text-indigo-600"
+                                                        : "border-transparent text-gray-900",
+                                                    "flex-1 whitespace-nowrap border-b-2 px-1 py-2 text-base font-medium rounded-lg"
                                                 )
                                             }
                                         >
@@ -392,10 +454,14 @@ const MemberProfile = ({ ID }: any) => {
                                 </div>
                                 <Tab.Panels as={Fragment}>
                                     <Tab.Panel key={1} className="px-2 pb-2 pt-2">
-                                        {
-                                            !loading_payment ? <DataTable columns={columns} data={member_payment?.GetMemberPayment} /> :
-                                                <p>Loading...</p>
-                                        }
+                                        {!loading_payment ? (
+                                            <DataTable
+                                                columns={columns}
+                                                data={member_payment?.GetMemberPayment}
+                                            />
+                                        ) : (
+                                            <p>Loading...</p>
+                                        )}
                                     </Tab.Panel>
                                     <Tab.Panel key={2} className="px-2 pb-2 pt-2">
                                         <div className="grid grid-cols-2 gap-x-4">
@@ -405,10 +471,14 @@ const MemberProfile = ({ ID }: any) => {
                                         </div>
                                     </Tab.Panel>
                                     <Tab.Panel key={3} className="px-2 pb-2 pt-2">
-                                        {
-                                            !loading_trainning_payment ? <DataTable columns={trainningPaymencolumns} data={trainning_payment?.GetTrainningPayment} /> :
-                                                <p>Loading...</p>
-                                        }
+                                        {!loading_trainning_payment ? (
+                                            <DataTable
+                                                columns={trainningPaymencolumns}
+                                                data={trainning_payment?.GetTrainningPayment}
+                                            />
+                                        ) : (
+                                            <p>Loading...</p>
+                                        )}
                                     </Tab.Panel>
                                     <Tab.Panel key={4} className="px-2 pb-2 pt-2">
                                         <div className="grid grid-cols-2 gap-x-4">
@@ -425,7 +495,12 @@ const MemberProfile = ({ ID }: any) => {
             </div>
 
             <Transition.Root show={open_member} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenMember}>
+                <Dialog
+                    as="div"
+                    className="relative z-10"
+                    initialFocus={cancelButtonRef}
+                    onClose={setOpenMember}
+                >
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -453,11 +528,67 @@ const MemberProfile = ({ ID }: any) => {
                                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                         <div className="">
                                             <div className="mt-3 text-center">
-                                                <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                                                <Dialog.Title
+                                                    as="h3"
+                                                    className="text-base font-semibold leading-6 text-gray-900"
+                                                >
                                                     តារាងតម្លៃសមាជិក
                                                 </Dialog.Title>
                                                 <div className="mt-2">
-                                                    {!isShowConfirmModal ? <DataTable columns={columns_price_table} data={price_table?.GetMemberPriceTable} /> :
+                                                    <div className="space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByAge("ចាស់")}
+                                                        >
+                                                            ចាស់
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByAge("ក្មេង")}
+                                                        >
+                                                            ក្មេង
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByMonth(1)}
+                                                        >
+                                                            1ខែ
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByMonth(3)}
+                                                        >
+                                                            3ខែ
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByMonth(6)}
+                                                        >
+                                                            6ខែ
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            onClick={() => FilterPriceTableByMonth(12)}
+                                                        >
+                                                            12ខែ
+                                                        </button>
+                                                    </div>
+
+                                                    {!isShowConfirmModal ? (
+                                                        <DataTable
+                                                            columns={columns_price_table}
+                                                            data={member_price_table}
+                                                        />
+                                                    ) : (
                                                         <>
                                                             <ConfirmModal
                                                                 setIsShowConfirmModal={setIsShowConfirmModal}
@@ -467,16 +598,16 @@ const MemberProfile = ({ ID }: any) => {
                                                                 shift={shift}
                                                                 price={price}
                                                                 customer_id={ID}
-                                                                user_id={parseInt(localStorage.getItem("user_id"))}
+                                                                user_id={parseInt(
+                                                                    localStorage.getItem("user_id")
+                                                                )}
                                                                 customer_name={details?.customer_name}
                                                                 phone={details?.phone}
                                                                 refetch={refetch}
                                                                 setOpenMember={setOpenMember}
-
-
                                                             />
                                                         </>
-                                                    }
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -485,7 +616,10 @@ const MemberProfile = ({ ID }: any) => {
                                         <button
                                             type="button"
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => { setOpenMember(false); setIsShowConfirmModal(false) }}
+                                            onClick={() => {
+                                                setOpenMember(false);
+                                                setIsShowConfirmModal(false);
+                                            }}
                                         >
                                             បោះបង់
                                         </button>
@@ -516,29 +650,27 @@ const MemberProfile = ({ ID }: any) => {
                 refetch_trainning_payment={refetch_trainning_payment}
             />
         </>
+    );
+};
 
-    )
-}
-
-const ConfirmModal = ((props: any) => {
+const ConfirmModal = (props: any) => {
     const getRenewalDate = (effectiveDate: Date, month_qty: number) => {
         // Get the current date.
         const today = new Date();
         let duration = 0;
         if (effectiveDate < today) {
-            duration = (today.getMonth() - today.getMonth()) + month_qty;
+            duration = today.getMonth() - today.getMonth() + month_qty;
             // Add the duration to the effective date to get the next renewal date.
             const renewalDate = new Date(today);
             renewalDate.setMonth(renewalDate.getMonth() + duration);
-            renewalDate.setFullYear(renewalDate.getFullYear() + (duration / 12));
+            renewalDate.setFullYear(renewalDate.getFullYear() + duration / 12);
             return renewalDate;
-        }
-        else {
-            duration = (today.getMonth() - effectiveDate.getMonth()) + month_qty;
+        } else {
+            duration = today.getMonth() - effectiveDate.getMonth() + month_qty;
             // Add the duration to the effective date to get the next renewal date.
             const renewalDate = new Date(effectiveDate);
             renewalDate.setMonth(renewalDate.getMonth() + month_qty);
-            renewalDate.setFullYear(renewalDate.getFullYear() + (month_qty / 12));
+            renewalDate.setFullYear(renewalDate.getFullYear() + month_qty / 12);
             return renewalDate;
         }
     };
@@ -560,8 +692,8 @@ const ConfirmModal = ((props: any) => {
                 promotion: props.promotion,
                 customerId: props.customer_id,
                 userId: props.user_id,
-            }
-        })
+            },
+        });
 
         if (result.data?.CreateCustomerPayment.success) {
             setPaymentID(result.data.CreateCustomerPayment.payment_id);
@@ -570,19 +702,19 @@ const ConfirmModal = ((props: any) => {
             props.setOpenMember(false);
             return;
         }
-        notify("Failed", true, "error")
-    }
+        notify("Failed", true, "error");
+    };
 
     const componentRef = useRef<HTMLDivElement>(null);
 
     const handlePrint1 = async (target: HTMLIFrameElement) => {
         return new Promise(() => {
-            console.log('forwarding print request to the main process...');
+            console.log("forwarding print request to the main process...");
             const data = target.contentWindow.document.documentElement.outerHTML;
-            const blob = new Blob([data], { type: 'text/html; charset=utf-8' });
+            const blob = new Blob([data], { type: "text/html; charset=utf-8" });
             const url = URL.createObjectURL(blob);
             window.electronAPI.printComponent(url, (response: any) => {
-                console.log('Main: ', response);
+                console.log("Main: ", response);
             });
             // console.log('Main: ', data);
         });
@@ -606,9 +738,20 @@ const ConfirmModal = ((props: any) => {
 
     return (
         <>
-            <button className="hidden" ref={buttonRef} type="button" onClick={handlePrint}>Print</button>
-            <p className="text-lg font-semibold leading-6 text-gray-900">សុពលភាពចាស់: {props.old_end}</p>
-            <p className="text-lg font-semibold leading-6 text-gray-900 mb-2 ">ថ្ងៃបង់ប្រាក់បន្ទាប់: {date_time_format(renewalDate)}</p>
+            <button
+                className="hidden"
+                ref={buttonRef}
+                type="button"
+                onClick={handlePrint}
+            >
+                Print
+            </button>
+            <p className="text-lg font-semibold leading-6 text-gray-900">
+                សុពលភាពចាស់: {props.old_end}
+            </p>
+            <p className="text-lg font-semibold leading-6 text-gray-900 mb-2 ">
+                ថ្ងៃបង់ប្រាក់បន្ទាប់: {date_time_format(renewalDate)}
+            </p>
             <button
                 type="button"
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
@@ -624,8 +767,9 @@ const ConfirmModal = ((props: any) => {
                 យល់ព្រម
             </button>
 
-            <div className='hidden1'>
-                <MemberInvoice ref={componentRef}
+            <div className="hidden1">
+                <MemberInvoice
+                    ref={componentRef}
                     invoice_id={payment_id}
                     payment_date={date_time_format(new Date())}
                     cashier={localStorage.getItem("display_name")}
@@ -640,25 +784,26 @@ const ConfirmModal = ((props: any) => {
             </div>
         </>
     );
-})
+};
 
-const CouponPayment = ((props: any) => {
+const CouponPayment = (props: any) => {
     const cancelButtonRef = useRef(null);
     //const buttonRef = useRef<HTMLInputElement>(null);
-    const buttonRef = useRef<HTMLButtonElement>(null)
+    const buttonRef = useRef<HTMLButtonElement>(null);
     const componentRef = useRef<HTMLDivElement>(null);
     const inputEl = useRef(null);
 
-    const [findCouponCard, { data, loading, refetch }] = useGetCouponCardLazyQuery({ fetchPolicy: 'network-only' });
+    const [findCouponCard, { data, loading, refetch }] =
+        useGetCouponCardLazyQuery({ fetchPolicy: "network-only" });
 
     const FindCoupon = async (code: string) => {
         await findCouponCard({
             variables: {
-                couponCode: code
-            }
-        })
+                couponCode: code,
+            },
+        });
         inputEl.current.select();
-    }
+    };
 
     const [coupon_code, setCouponCode] = useState("");
     const [payment_id, setPaymentID] = useState("");
@@ -673,27 +818,27 @@ const CouponPayment = ((props: any) => {
                 cardName: data?.GetCouponCard[0].card_name,
                 price: data?.GetCouponCard[0].price,
                 quantity: data?.GetCouponCard[0].quantity,
-                couponCode: coupon_code
-            }
+                couponCode: coupon_code,
+            },
         });
 
         if (result.data?.CreateCouponPayment.success) {
             props.setIsOpenCoupon(false);
-            setPaymentID(result.data.CreateCouponPayment.payment_id)
+            setPaymentID(result.data.CreateCouponPayment.payment_id);
             return;
         }
 
-        notify("Coupon Payment Error", true, "error")
-    }
+        notify("Coupon Payment Error", true, "error");
+    };
 
     const handlePrint1 = async (target: HTMLIFrameElement) => {
         return new Promise(() => {
-            console.log('forwarding print request to the main process...');
+            console.log("forwarding print request to the main process...");
             const data = target.contentWindow.document.documentElement.outerHTML;
-            const blob = new Blob([data], { type: 'text/html; charset=utf-8' });
+            const blob = new Blob([data], { type: "text/html; charset=utf-8" });
             const url = URL.createObjectURL(blob);
             window.electronAPI.printComponent(url, (response: any) => {
-                console.log('Main: ', response);
+                console.log("Main: ", response);
             });
             // console.log('Main: ', data);
         });
@@ -706,7 +851,6 @@ const CouponPayment = ((props: any) => {
         },
     });
 
-
     useEffect(() => {
         // This function will be called after the component re-renders
         if (payment_id > 0) {
@@ -717,9 +861,21 @@ const CouponPayment = ((props: any) => {
 
     return (
         <>
-            <button className="hidden" ref={buttonRef} type="button" onClick={handlePrint}>Print</button>
+            <button
+                className="hidden"
+                ref={buttonRef}
+                type="button"
+                onClick={handlePrint}
+            >
+                Print
+            </button>
             <Transition.Root show={props.open_coupon} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={props.setIsOpenCoupon}>
+                <Dialog
+                    as="div"
+                    className="relative z-10"
+                    initialFocus={cancelButtonRef}
+                    onClose={props.setIsOpenCoupon}
+                >
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -748,7 +904,6 @@ const CouponPayment = ((props: any) => {
                                         <div className="">
                                             <div className="mt-3 text-center">
                                                 <div className="mt-2">
-
                                                     <div className="sm:col-span-2">
                                                         <label className="block text-sm font-medium leading-6 text-gray-900">
                                                             សូមបញ្ចុលលេខកូដគូប៉ុន
@@ -768,33 +923,39 @@ const CouponPayment = ((props: any) => {
                                                         type="button"
                                                         className="mt-2 flex rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                                         onClick={() => FindCoupon(coupon_code)}
-                                                    >   <MagnifyingGlassIcon className="h-5 w-5" />
+                                                    >
+                                                        {" "}
+                                                        <MagnifyingGlassIcon className="h-5 w-5" />
                                                         ស្វែងរក
                                                     </button>
 
                                                     <div>
-                                                        {!loading && data ?
+                                                        {!loading && data ? (
                                                             <>
-                                                                {
-                                                                    data.GetCouponCard.length > 0 ?
-                                                                        <>
-                                                                            <p className="text-sm font-semibold leading-6 text-gray-900">Card Name: {data?.GetCouponCard[0].card_name}</p>
-                                                                            <p className="text-sm font-semibold leading-6 text-gray-900">តម្លៃ: {data?.GetCouponCard[0].price}$</p>
-                                                                            <button
-                                                                                type="button"
-                                                                                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                                                                onClick={() => CreateCouponPayment()}
-                                                                            >
-                                                                                លក់
-                                                                            </button>
-                                                                        </>
-                                                                        :
-                                                                        <div>Coupon Not Found!!!</div>
-                                                                }
+                                                                {data.GetCouponCard.length > 0 ? (
+                                                                    <>
+                                                                        <p className="text-sm font-semibold leading-6 text-gray-900">
+                                                                            Card Name:{" "}
+                                                                            {data?.GetCouponCard[0].card_name}
+                                                                        </p>
+                                                                        <p className="text-sm font-semibold leading-6 text-gray-900">
+                                                                            តម្លៃ: {data?.GetCouponCard[0].price}$
+                                                                        </p>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                                            onClick={() => CreateCouponPayment()}
+                                                                        >
+                                                                            លក់
+                                                                        </button>
+                                                                    </>
+                                                                ) : (
+                                                                    <div>Coupon Not Found!!!</div>
+                                                                )}
                                                             </>
-                                                            :
+                                                        ) : (
                                                             <div>Loading...</div>
-                                                        }
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -804,7 +965,9 @@ const CouponPayment = ((props: any) => {
                                         <button
                                             type="button"
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => { props.setIsOpenCoupon(false) }}
+                                            onClick={() => {
+                                                props.setIsOpenCoupon(false);
+                                            }}
                                         >
                                             បោះបង់
                                         </button>
@@ -816,36 +979,34 @@ const CouponPayment = ((props: any) => {
                 </Dialog>
             </Transition.Root>
 
-            <div className='hidden'>
+            <div className="hidden">
                 <div>
-                    {!loading && data ?
+                    {!loading && data ? (
                         <>
-                            {
-                                data.GetCouponCard.length > 0 ?
-                                    <>
-                                        <CouponInvoice ref={componentRef}
-                                            invoice_id={payment_id}
-                                            payment_date={date_time_format(new Date())}
-                                            cashier={localStorage.getItem("display_name")}
-                                            c_name={props.customer_name}
-                                            phone={props.phone}
-                                            promotion={data?.GetCouponCard[0].card_name || "null"}
-                                            price={data?.GetCouponCard[0].price || "null"}
-                                        />
-                                    </>
-                                    :
-                                    <div>Coupon Not Found!!!</div>
-                            }
+                            {data.GetCouponCard.length > 0 ? (
+                                <>
+                                    <CouponInvoice
+                                        ref={componentRef}
+                                        invoice_id={payment_id}
+                                        payment_date={date_time_format(new Date())}
+                                        cashier={localStorage.getItem("display_name")}
+                                        c_name={props.customer_name}
+                                        phone={props.phone}
+                                        promotion={data?.GetCouponCard[0].card_name || "null"}
+                                        price={data?.GetCouponCard[0].price || "null"}
+                                    />
+                                </>
+                            ) : (
+                                <div>Coupon Not Found!!!</div>
+                            )}
                         </>
-                        :
+                    ) : (
                         <div>Loading...</div>
-                    }
+                    )}
                 </div>
-
             </div>
         </>
-    )
+    );
+};
 
-});
-
-export default MemberProfile
+export default MemberProfile;
