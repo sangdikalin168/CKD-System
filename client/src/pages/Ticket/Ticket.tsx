@@ -111,7 +111,7 @@ export default function Ticket() {
               >
                 <span className="w-full h-full flex justify-center items-center text-5xl font-black">
                   <button
-                    disabled={false}
+                    disabled={isLoading}
                     className="w-full h-full"
                     onClick={() => handleGetQRCode(list.price)}
                   >
