@@ -166,5 +166,6 @@ const ticket_list = [
   { price: 3 },
   { price: 3.5 },
   { price: 4 },
+  { price: 4.5 },
   { price: 5 }
 ];
