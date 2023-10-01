@@ -12,30 +12,12 @@ import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import AuthContextProvider from "./context/AuthContext";
 import JWTManager from "./utils/jwt";
-
-import { TypeOptions, toast } from "react-toastify";
-
-const notify = (
-  message: string,
-  auto_Close: boolean | number,
-  toastType: TypeOptions
-) => {
-  if (!toast.isActive("alert")) {
-    toast(message, {
-      autoClose: auto_Close ? 500 : false,
-      toastId: "alert",
-      type: toastType,
-    });
-  }
-};
+import { toastify } from "./utils/toastify.tsx";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) => {
-      // console.log(
-      //   `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      // )
-      notify(
+      toastify(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
         true,
         "error"
@@ -76,4 +58,4 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   </ApolloProvider>
 );
 
-postMessage({ payload: "removeLoading" }, "*");
+//postMessage({ payload: "removeLoading" }, "*");
