@@ -28,6 +28,8 @@ import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInv
 import { useReactToPrint } from "react-to-print";
 import { CouponInvoice } from "../../../../components/ComponentToPrint/CouponInvoice";
 import { TrainingPaymentForm } from "../TrainningForm/TrainningForm";
+import { MemberPayment } from "./MemberPayment";
+import { TrainningPayment } from "./TrainningPayment";
 
 const notify = (
     message: string,
@@ -58,148 +60,11 @@ type PriceTable = {
     shift: string;
 };
 
-type MemberPayment = {
-    payment_id: number;
-    promotion: string;
-    price: number;
-    old_end: string;
-    new_end: string;
-    payment_date: string;
-    shift: string;
-};
-
-type TrainningPayment = {
-    payment_id: number;
-    promotion: string;
-    price: number;
-    payment_date: string;
-};
-
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(" ");
 }
 
 const MemberProfile = ({ ID }: any) => {
-    const columnHelper = createColumnHelper<MemberPayment>();
-    const columns = [
-        columnHelper.accessor((row) => row.payment_id, {
-            id: "ID",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.payment_date, {
-            id: "ថ្ងៃបង់ប្រាក់",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.promotion, {
-            id: "Promotion",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.price, {
-            id: "តម្លៃ",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.old_end, {
-            id: "Old",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.new_end, {
-            id: "New",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.payment_id, {
-            id: "Action",
-            cell: (info) => (
-                <div className="flex">
-                    {
-                        <>
-                            <span className="hidden sm:block">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    //onClick={() => { setShowProfile(showProfile); setCustomerID(info.row.original.customer_id) }}
-                                    onClick={() => setOpenMember(true)}
-                                >
-                                    <PencilIcon
-                                        className="h-4 w-4 text-gray-500"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </span>
-                        </>
-                    }
-                </div>
-            ),
-            header: () => <span>Action</span>,
-            footer: (info) => info.column.id,
-        }),
-    ];
-
-    const trainningPaymentcolumnHelper = createColumnHelper<TrainningPayment>();
-    const trainningPaymencolumns = [
-        trainningPaymentcolumnHelper.accessor((row) => row.payment_id, {
-            id: "ID",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        trainningPaymentcolumnHelper.accessor((row) => row.payment_date, {
-            id: "ថ្ងៃបង់ប្រាក់",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        trainningPaymentcolumnHelper.accessor((row) => row.promotion, {
-            id: "Promotion",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        trainningPaymentcolumnHelper.accessor((row) => row.price, {
-            id: "តម្លៃ",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.payment_id, {
-            id: "Action",
-            cell: (info) => (
-                <div className="flex">
-                    {
-                        <>
-                            <span className="hidden sm:block">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    //onClick={() => { setShowProfile(showProfile); setCustomerID(info.row.original.customer_id) }}
-                                    onClick={() => setOpenMember(true)}
-                                >
-                                    <PencilIcon
-                                        className="h-4 w-4 text-gray-500"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </span>
-                        </>
-                    }
-                </div>
-            ),
-            header: () => <span>Action</span>,
-            footer: (info) => info.column.id,
-        }),
-    ];
-
     const columnHelperPriceTable = createColumnHelper<PriceTable>();
     const columns_price_table = [
         columnHelperPriceTable.accessor((row) => row.name, {
@@ -276,7 +141,7 @@ const MemberProfile = ({ ID }: any) => {
     const cancelButtonRef = useRef(null);
     const { data: price_table } = useGetMemberPriceTableQuery();
 
-    const { data, loading, refetch } = useGetCustomerDetailQuery({
+    const { data, refetch } = useGetCustomerDetailQuery({
         variables: {
             customerId: ID,
         },
@@ -455,9 +320,8 @@ const MemberProfile = ({ ID }: any) => {
                                 <Tab.Panels as={Fragment}>
                                     <Tab.Panel key={1} className="px-2 pb-2 pt-2">
                                         {!loading_payment ? (
-                                            <DataTable
-                                                columns={columns}
-                                                data={member_payment?.GetMemberPayment}
+                                            <MemberPayment
+                                                member_payment={member_payment?.GetMemberPayment}
                                             />
                                         ) : (
                                             <p>Loading...</p>
@@ -472,10 +336,7 @@ const MemberProfile = ({ ID }: any) => {
                                     </Tab.Panel>
                                     <Tab.Panel key={3} className="px-2 pb-2 pt-2">
                                         {!loading_trainning_payment ? (
-                                            <DataTable
-                                                columns={trainningPaymencolumns}
-                                                data={trainning_payment?.GetTrainningPayment}
-                                            />
+                                            <TrainningPayment trainning_payment={trainning_payment} />
                                         ) : (
                                             <p>Loading...</p>
                                         )}
@@ -535,59 +396,60 @@ const MemberProfile = ({ ID }: any) => {
                                                     តារាងតម្លៃសមាជិក
                                                 </Dialog.Title>
                                                 <div className="mt-2">
-                                                    <div className="space-x-2">
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByAge("ចាស់")}
-                                                        >
-                                                            ចាស់
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByAge("ក្មេង")}
-                                                        >
-                                                            ក្មេង
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="space-x-2">
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByMonth(1)}
-                                                        >
-                                                            1ខែ
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByMonth(3)}
-                                                        >
-                                                            3ខែ
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByMonth(6)}
-                                                        >
-                                                            6ខែ
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            onClick={() => FilterPriceTableByMonth(12)}
-                                                        >
-                                                            12ខែ
-                                                        </button>
-                                                    </div>
-
                                                     {!isShowConfirmModal ? (
-                                                        <DataTable
-                                                            columns={columns_price_table}
-                                                            data={member_price_table}
-                                                        />
+                                                        <>
+                                                            <div className="space-x-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByAge("ចាស់")}
+                                                                >
+                                                                    ចាស់
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByAge("ក្មេង")}
+                                                                >
+                                                                    ក្មេង
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="space-x-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByMonth(1)}
+                                                                >
+                                                                    1ខែ
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByMonth(3)}
+                                                                >
+                                                                    3ខែ
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByMonth(6)}
+                                                                >
+                                                                    6ខែ
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    onClick={() => FilterPriceTableByMonth(12)}
+                                                                >
+                                                                    12ខែ
+                                                                </button>
+                                                            </div>
+                                                            <DataTable
+                                                                columns={columns_price_table}
+                                                                data={member_price_table}
+                                                            />
+                                                        </>
                                                     ) : (
                                                         <>
                                                             <ConfirmModal
@@ -654,6 +516,11 @@ const MemberProfile = ({ ID }: any) => {
 };
 
 const ConfirmModal = (props: any) => {
+    const datetime_format = (date_time: Date) => {
+        const date = new Date(date_time);
+        return date.toLocaleDateString("fr-CA") + " " + date.toLocaleTimeString();
+    };
+
     const getRenewalDate = (effectiveDate: Date, month_qty: number) => {
         // Get the current date.
         const today = new Date();
@@ -771,7 +638,7 @@ const ConfirmModal = (props: any) => {
                 <MemberInvoice
                     ref={componentRef}
                     invoice_id={payment_id}
-                    payment_date={date_time_format(new Date())}
+                    payment_date={datetime_format(new Date())}
                     cashier={localStorage.getItem("display_name")}
                     c_name={props.customer_name}
                     phone={props.phone}
