@@ -17,6 +17,8 @@ export const MemberInvoice = React.forwardRef((props, ref) => {
             </div>
             <div className="flex text-xs">
                 <p className="text-lg font-semibold text-black mr-4">ថ្ងៃបង់ប្រាក់: {props.payment_date}</p>
+            </div>
+            <div className="flex text-xs">
                 <p className="text-lg font-semibold text-black" id="print_cashier">បេឡាក: {props.cashier}</p>
             </div>
 
