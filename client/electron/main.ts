@@ -20,8 +20,30 @@ import path from 'node:path'
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
+const gotTheLock = app.requestSingleInstanceLock();
+
 
 let win: typeof BrowserWindow | null
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (win) {
+      if (win.isMinimized()) win.restore()
+      win.focus()
+    }
+  })
+  // Create myWindow, load the rest of the app, etc...
+  // app.on('ready', () => {
+  //   createWindow()
+  // })
+  app.whenReady().then(createWindow)
+}
+
+
+
+
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -68,7 +90,7 @@ app.on('window-all-closed', () => {
   app.quit();
 })
 
-app.whenReady().then(createWindow)
+// app.whenReady().then(createWindow)
 
 
 
