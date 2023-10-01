@@ -10,7 +10,7 @@ export class MemberPayment extends BaseEntity {
 
     @Field()
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    payment_date!: string;
+    payment_date!: Date;
 
     @Field()
     @Column()

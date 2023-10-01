@@ -79,11 +79,10 @@ const main = async () => {
     app,
     cors: {
       origin: [
-        "http://localhost:3000",
         "https://studio.apollographql.com",
-        "http://192.168.0.142:5173",
         "http://localhost:5173",
         "http://110.235.249.118:5173",
+        "http://110.235.249.118:4000",
       ],
       credentials: true,
     },
