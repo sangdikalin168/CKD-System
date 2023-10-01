@@ -58,4 +58,4 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   </ApolloProvider>
 );
 
-//postMessage({ payload: "removeLoading" }, "*");
+postMessage({ payload: "removeLoading" }, "*");

@@ -121,7 +121,6 @@ function App() {
 
   useEffect(() => {
     authenticate();
-    postMessage({ payload: "removeLoading" }, "*");
   }, [checkAuth]);
 
   if (!connection) {
