@@ -21,7 +21,7 @@ export class MemberPriceTable extends BaseEntity {
     member_type!: string;
 
     @Field()
-    @Column({ default: 1 })
+    @Column({ type: "float", default: 1 })
     month_qty: number;
 
     @Field()
