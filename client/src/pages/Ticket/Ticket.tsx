@@ -48,7 +48,6 @@ export default function Ticket() {
     },
   });
 
-
   const handleGetQRCode = async (price: number) => {
     setPrice(price);
     setSeller(localStorage.getItem("display_name"));
@@ -167,5 +166,5 @@ const ticket_list = [
   { price: 3.5 },
   { price: 4 },
   { price: 4.5 },
-  { price: 5 }
+  { price: 5 },
 ];

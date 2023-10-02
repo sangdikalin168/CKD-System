@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-ignore
+// @ts-nocheck
 import { createColumnHelper } from "@tanstack/react-table";
 import DataTable from "../../Component/DataTable";
 

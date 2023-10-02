@@ -41,9 +41,6 @@ if (!gotTheLock) {
   app.whenReady().then(createWindow)
 }
 
-
-
-
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -85,14 +82,19 @@ function createWindow() {
   }
 }
 
+app.on('before-quit', () => {
+  win.removeAllListeners('close');
+  win.close();
+});
+
 app.on('window-all-closed', () => {
-  win = null
-  app.quit();
+  if (process.platform !== "darwin") {
+    win = null
+    app.quit;
+  }
 })
 
 // app.whenReady().then(createWindow)
-
-
 
 const printOptions = {
   silent: true,
