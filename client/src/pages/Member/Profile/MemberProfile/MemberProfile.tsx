@@ -140,7 +140,7 @@ const MemberProfile = ({ ID }: any) => {
   const cancelButtonRef = useRef(null);
   const { data: price_table } = useGetMemberPriceTableQuery();
 
-  const { data, refetch } = useGetCustomerDetailQuery({
+  const { data, refetch: refetchMemberDetail } = useGetCustomerDetailQuery({
     variables: {
       customerId: ID,
     },
@@ -476,6 +476,7 @@ const MemberProfile = ({ ID }: any) => {
                                 )}
                                 customer_name={details?.customer_name}
                                 phone={details?.phone}
+                                refetchMemberDetail={refetchMemberDetail}
                                 refetch={refechMemberPayment}
                                 setOpenMember={setOpenMember}
                               />
@@ -599,6 +600,7 @@ const ConfirmModal = (props: any) => {
       setPaymentID(result.data.CreateCustomerPayment.payment_id);
       notify("Success", true, "success");
       props.refetch();
+      props.refetchMemberDetail();
       props.setOpenMember(false);
       return;
     }
