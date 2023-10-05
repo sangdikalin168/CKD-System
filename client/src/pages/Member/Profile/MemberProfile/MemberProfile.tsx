@@ -151,6 +151,7 @@ const MemberProfile = ({ ID }: any) => {
       variables: {
         customerId: ID,
       },
+      fetchPolicy: "no-cache",
     });
 
   const {
@@ -161,6 +162,7 @@ const MemberProfile = ({ ID }: any) => {
     variables: {
       customerId: ID,
     },
+    fetchPolicy: "no-cache",
   });
 
   const details = data?.GetCustomerDetail[0];
