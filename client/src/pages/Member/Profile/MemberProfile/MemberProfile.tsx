@@ -558,14 +558,14 @@ const ConfirmModal = (props: any) => {
       // Add the duration to the effective date to get the next renewal date.
       const renewalDate = new Date(today);
       renewalDate.setMonth(renewalDate.getMonth() + duration);
-      renewalDate.setFullYear(renewalDate.getFullYear() + duration / 12);
+      //renewalDate.setFullYear(renewalDate.getFullYear() + duration / 12);
       return renewalDate;
     } else {
       duration = today.getMonth() - effectiveDate.getMonth() + month_qty;
       // Add the duration to the effective date to get the next renewal date.
       const renewalDate = new Date(effectiveDate);
       renewalDate.setMonth(renewalDate.getMonth() + month_qty);
-      renewalDate.setFullYear(renewalDate.getFullYear() + month_qty / 12);
+      //renewalDate.setFullYear(renewalDate.getFullYear() + month_qty / 12);
       return renewalDate;
     }
   };
@@ -622,8 +622,6 @@ const ConfirmModal = (props: any) => {
     },
   });
   const buttonRef = useRef<HTMLInputElement>(null);
-
-  console.log(props.month_qty);
 
   useEffect(() => {
     // This function will be called after the component re-renders
