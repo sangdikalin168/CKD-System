@@ -54,6 +54,11 @@ function NotFound() {
 
 const indexRoute = new Route({
   getParentRoute: () => rootRoute,
+  path: "/",
+  component: Ticket,
+});
+const ticketRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: "/ticket",
   component: Ticket,
 });
@@ -76,6 +81,7 @@ const notFoundRoute = new Route({
 // Create the route tree using your routes
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  ticketRoute,
   membersRoute,
   reportRoute,
   notFoundRoute,
@@ -149,8 +155,6 @@ function App() {
       </>
     );
   }
-
-  
 
   //If Not Auth Return Login Page
   if (!isAuthenticated) return <Login />;
