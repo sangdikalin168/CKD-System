@@ -146,13 +146,16 @@ const MemberProfile = ({ ID }: any) => {
     },
   });
 
-  const { data: member_payment, loading: loading_payment } =
-    useGetMemberPaymentQuery({
-      variables: {
-        customerId: ID,
-      },
-      fetchPolicy: "no-cache",
-    });
+  const {
+    data: member_payment,
+    loading: loading_payment,
+    refetch: refechMemberPayment,
+  } = useGetMemberPaymentQuery({
+    variables: {
+      customerId: ID,
+    },
+    fetchPolicy: "no-cache",
+  });
 
   const {
     data: trainning_payment,
@@ -473,7 +476,7 @@ const MemberProfile = ({ ID }: any) => {
                                 )}
                                 customer_name={details?.customer_name}
                                 phone={details?.phone}
-                                refetch={refetch}
+                                refetch={refechMemberPayment}
                                 setOpenMember={setOpenMember}
                               />
                             </>
