@@ -1,0 +1,9 @@
+query GetFruitPriceTable {
+  GetFruitPriceTable {
+    id
+    name
+    age
+    month_qty
+    price
+  }
+}

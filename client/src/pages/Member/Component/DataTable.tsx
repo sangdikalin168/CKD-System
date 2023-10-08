@@ -74,7 +74,7 @@ export function AvatarCell({
   );
 }
 
-export default function DataTable({ columns, data, button }: IChildProps) {
+export default function DataTable({ columns, data }: IChildProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -160,11 +160,11 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                 <tbody className="bg-white divide-y divide-gray-300 w-32 text-sm">
                   {table.getRowModel().rows.map((row) => {
                     return (
-                      <tr key={row.id} className="divide-x divide-gray-200 dark:divide-gray-300">
+                      <tr key={row.id} className="text-left divide-x divide-gray-200 dark:divide-gray-300">
                         {row.getVisibleCells().map((cell) => {
                           return (
                             // <td key={cell.id} className="px-6 py-1 whitespace-nowrap"></td>
-                            <td key={cell.id} className="px-6 py-1 whitespace">
+                            <td key={cell.id} className="px-1 py-1 whitespace">
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -185,46 +185,4 @@ export default function DataTable({ columns, data, button }: IChildProps) {
   );
 }
 
-// A debounced input react component
-function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 500,
-  ...props
-}: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [value]);
-
-  return (
-    <label className="flex gap-x-2 items-baseline">
-      <div>
-        <div className="relative rounded-md shadow-sm">
-          <input
-            {...props}
-            value={value}
-            type="text"
-            className="block w-full rounded-md border-0 py-1.5 pr-20 text-gray-900 ring-1 bor ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder="Search..."
-            onChange={(e) => setValue(e.target.value)}
-          />
-        </div>
-      </div>
-    </label>
-  );
-}
 

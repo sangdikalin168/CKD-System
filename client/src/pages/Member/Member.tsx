@@ -113,7 +113,7 @@ export const Member = () => {
     data,
     loading: member_loading,
     refetch,
-  } = useGetCustomersQuery({ fetchPolicy: "no-cache\.LOOOP,L.xd               ccdr cកលោុំិមមមមមមមមមមមមមមមមមមមិិិិិិិិិិិិិិមលមុយ្កមុ្កមកមមមមមមមមម្កកកកកកកកកកកកកកកកកក្កកមកិុកិុកកកក្ុមមមមមមមមមមមមមមមមមមមមមមមមមមមមមមមមមមម្ក្កកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកកក" });
+  } = useGetCustomersQuery({ fetchPolicy: "no-cache" });
   const [createCustomer] = useCreateCustomerMutation();
   const [showCreate, setShowCreate] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -141,8 +141,8 @@ export const Member = () => {
     if (data) {
       setData_table(data.GetCustomers);
     }
-  }, []);
- return (
+  }, [data]);
+  return (
     <>
       {!member_loading ? (
         <div>
@@ -161,6 +161,6 @@ export const Member = () => {
       ) : (
         <LoadingPage message={"Loading"} />
       )}
-    </>។
+    </>
   );
 };

@@ -1,0 +1,24 @@
+mutation CreateFruitPayment(
+  $monthQty: Float!
+  $newEnd: String!
+  $oldEnd: String!
+  $price: Float!
+  $promotion: String!
+  $customerId: Float!
+  $userId: Float!
+) {
+  CreateFruitPayment(
+    month_qty: $monthQty
+    new_end: $newEnd
+    old_end: $oldEnd
+    price: $price
+    promotion: $promotion
+    customer_id: $customerId
+    user_id: $userId
+  ) {
+    payment_id
+    code
+    success
+    message
+  }
+}

@@ -13,6 +13,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
 };
 
 export type CouponCard = {
@@ -73,6 +74,7 @@ export type Customer = {
   customer_code: Scalars['String'];
   customer_id: Scalars['Float'];
   customer_name: Scalars['String'];
+  end_fruit_date: Scalars['String'];
   end_membership_date: Scalars['String'];
   fingerprint: Scalars['String'];
   gender: Scalars['String'];
@@ -85,6 +87,56 @@ export type Customer = {
 
 export type CustomerMutationResponse = ICustomerResponse & {
   __typename?: 'CustomerMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
+export type FruitPayment = {
+  __typename?: 'FruitPayment';
+  customer_id: Scalars['Float'];
+  month_qty: Scalars['Float'];
+  new_end: Scalars['String'];
+  old_end: Scalars['String'];
+  payment_date: Scalars['DateTime'];
+  payment_id: Scalars['Float'];
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
+  user_id: Scalars['Float'];
+};
+
+export type FruitPaymentMutationResponse = FruitPaymentResponse & {
+  __typename?: 'FruitPaymentMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  payment_id: Scalars['Float'];
+  success: Scalars['Boolean'];
+};
+
+export type FruitPaymentResponse = {
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  payment_id: Scalars['Float'];
+  success: Scalars['Boolean'];
+};
+
+export type FruitPrice = {
+  __typename?: 'FruitPrice';
+  age: Scalars['String'];
+  id: Scalars['Float'];
+  month_qty: Scalars['Float'];
+  name: Scalars['String'];
+  price: Scalars['Float'];
+};
+
+export type FruitPriceTableMutationResponse = FruitPriceTableResponse & {
+  __typename?: 'FruitPriceTableMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
+export type FruitPriceTableResponse = {
   code: Scalars['Float'];
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
@@ -127,7 +179,7 @@ export type MemberPayment = {
   month_qty: Scalars['Float'];
   new_end: Scalars['String'];
   old_end: Scalars['String'];
-  payment_date: Scalars['String'];
+  payment_date: Scalars['DateTime'];
   payment_id: Scalars['Float'];
   price: Scalars['Float'];
   promotion: Scalars['String'];
@@ -173,6 +225,7 @@ export type Mutation = {
   CreateCouponPayment: CouponPaymentMutationResponse;
   CreateCustomer: CustomerMutationResponse;
   CreateCustomerPayment: MemberPaymentMutationResponse;
+  CreateFruitPayment: FruitPaymentMutationResponse;
   CreateTicketPayment: TicketPaymentMutationResponse;
   CreateTrainningPayment: TrainningPaymentMutationResponse;
   create_user: UserMutationResponse;
@@ -207,6 +260,17 @@ export type MutationCreateCustomerPaymentArgs = {
   price: Scalars['Float'];
   promotion: Scalars['String'];
   shift: Scalars['String'];
+  user_id: Scalars['Float'];
+};
+
+
+export type MutationCreateFruitPaymentArgs = {
+  customer_id: Scalars['Float'];
+  month_qty: Scalars['Float'];
+  new_end: Scalars['String'];
+  old_end: Scalars['String'];
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
   user_id: Scalars['Float'];
 };
 
@@ -247,6 +311,8 @@ export type Query = {
   GetCouponPayment: Array<CouponPayment>;
   GetCustomerDetail: Array<Customer>;
   GetCustomers: Array<Customer>;
+  GetFruitPayment: Array<FruitPayment>;
+  GetFruitPriceTable: Array<FruitPrice>;
   GetMemberPayment: Array<MemberPayment>;
   GetMemberPriceTable: Array<MemberPriceTable>;
   GetTrainningPayment: Array<TrainningPayment>;
@@ -267,6 +333,11 @@ export type QueryGetCouponPaymentArgs = {
 
 
 export type QueryGetCustomerDetailArgs = {
+  customer_id: Scalars['Float'];
+};
+
+
+export type QueryGetFruitPaymentArgs = {
   customer_id: Scalars['Float'];
 };
 
@@ -421,7 +492,7 @@ export type GetCustomerDetailQueryVariables = Exact<{
 }>;
 
 
-export type GetCustomerDetailQuery = { __typename?: 'Query', GetCustomerDetail: Array<{ __typename?: 'Customer', customer_id: number, created_date: string, created_by: number, customer_code: string, customer_name: string, phone: string, gender: string, image_path: string, fingerprint: string, end_membership_date: string, key_status: string, towel_status: string, shift: string }> };
+export type GetCustomerDetailQuery = { __typename?: 'Query', GetCustomerDetail: Array<{ __typename?: 'Customer', customer_id: number, created_date: string, created_by: number, customer_code: string, customer_name: string, phone: string, gender: string, image_path: string, fingerprint: string, end_membership_date: string, end_fruit_date: string, key_status: string, towel_status: string, shift: string }> };
 
 export type GetCustomersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -432,6 +503,31 @@ export type GetMemberPriceTableQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type GetMemberPriceTableQuery = { __typename?: 'Query', GetMemberPriceTable: Array<{ __typename?: 'MemberPriceTable', id: number, name: string, age: string, member_type: string, month_qty: number, price: number, shift: string }> };
+
+export type CreateFruitPaymentMutationVariables = Exact<{
+  monthQty: Scalars['Float'];
+  newEnd: Scalars['String'];
+  oldEnd: Scalars['String'];
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
+  customerId: Scalars['Float'];
+  userId: Scalars['Float'];
+}>;
+
+
+export type CreateFruitPaymentMutation = { __typename?: 'Mutation', CreateFruitPayment: { __typename?: 'FruitPaymentMutationResponse', payment_id: number, code: number, success: boolean, message?: string | null } };
+
+export type GetFruitPaymentQueryVariables = Exact<{
+  customerId: Scalars['Float'];
+}>;
+
+
+export type GetFruitPaymentQuery = { __typename?: 'Query', GetFruitPayment: Array<{ __typename?: 'FruitPayment', payment_id: number, payment_date: any, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, month_qty: number }> };
+
+export type GetFruitPriceTableQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFruitPriceTableQuery = { __typename?: 'Query', GetFruitPriceTable: Array<{ __typename?: 'FruitPrice', id: number, name: string, age: string, month_qty: number, price: number }> };
 
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
@@ -459,7 +555,7 @@ export type GetMemberPaymentQueryVariables = Exact<{
 }>;
 
 
-export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: string, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, shift: string, month_qty: number }> };
+export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: any, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, shift: string, month_qty: number }> };
 
 export type CreateTicketPaymentMutationVariables = Exact<{
   ticketCode: Scalars['String'];
@@ -639,6 +735,7 @@ export const GetCustomerDetailDocument = gql`
     image_path
     fingerprint
     end_membership_date
+    end_fruit_date
     key_status
     towel_status
     shift
@@ -758,6 +855,137 @@ export function useGetMemberPriceTableLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetMemberPriceTableQueryHookResult = ReturnType<typeof useGetMemberPriceTableQuery>;
 export type GetMemberPriceTableLazyQueryHookResult = ReturnType<typeof useGetMemberPriceTableLazyQuery>;
 export type GetMemberPriceTableQueryResult = Apollo.QueryResult<GetMemberPriceTableQuery, GetMemberPriceTableQueryVariables>;
+export const CreateFruitPaymentDocument = gql`
+    mutation CreateFruitPayment($monthQty: Float!, $newEnd: String!, $oldEnd: String!, $price: Float!, $promotion: String!, $customerId: Float!, $userId: Float!) {
+  CreateFruitPayment(
+    month_qty: $monthQty
+    new_end: $newEnd
+    old_end: $oldEnd
+    price: $price
+    promotion: $promotion
+    customer_id: $customerId
+    user_id: $userId
+  ) {
+    payment_id
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateFruitPaymentMutationFn = Apollo.MutationFunction<CreateFruitPaymentMutation, CreateFruitPaymentMutationVariables>;
+
+/**
+ * __useCreateFruitPaymentMutation__
+ *
+ * To run a mutation, you first call `useCreateFruitPaymentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFruitPaymentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFruitPaymentMutation, { data, loading, error }] = useCreateFruitPaymentMutation({
+ *   variables: {
+ *      monthQty: // value for 'monthQty'
+ *      newEnd: // value for 'newEnd'
+ *      oldEnd: // value for 'oldEnd'
+ *      price: // value for 'price'
+ *      promotion: // value for 'promotion'
+ *      customerId: // value for 'customerId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useCreateFruitPaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreateFruitPaymentMutation, CreateFruitPaymentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateFruitPaymentMutation, CreateFruitPaymentMutationVariables>(CreateFruitPaymentDocument, options);
+      }
+export type CreateFruitPaymentMutationHookResult = ReturnType<typeof useCreateFruitPaymentMutation>;
+export type CreateFruitPaymentMutationResult = Apollo.MutationResult<CreateFruitPaymentMutation>;
+export type CreateFruitPaymentMutationOptions = Apollo.BaseMutationOptions<CreateFruitPaymentMutation, CreateFruitPaymentMutationVariables>;
+export const GetFruitPaymentDocument = gql`
+    query GetFruitPayment($customerId: Float!) {
+  GetFruitPayment(customer_id: $customerId) {
+    payment_id
+    payment_date
+    user_id
+    customer_id
+    promotion
+    price
+    old_end
+    new_end
+    month_qty
+  }
+}
+    `;
+
+/**
+ * __useGetFruitPaymentQuery__
+ *
+ * To run a query within a React component, call `useGetFruitPaymentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFruitPaymentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFruitPaymentQuery({
+ *   variables: {
+ *      customerId: // value for 'customerId'
+ *   },
+ * });
+ */
+export function useGetFruitPaymentQuery(baseOptions: Apollo.QueryHookOptions<GetFruitPaymentQuery, GetFruitPaymentQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFruitPaymentQuery, GetFruitPaymentQueryVariables>(GetFruitPaymentDocument, options);
+      }
+export function useGetFruitPaymentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFruitPaymentQuery, GetFruitPaymentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFruitPaymentQuery, GetFruitPaymentQueryVariables>(GetFruitPaymentDocument, options);
+        }
+export type GetFruitPaymentQueryHookResult = ReturnType<typeof useGetFruitPaymentQuery>;
+export type GetFruitPaymentLazyQueryHookResult = ReturnType<typeof useGetFruitPaymentLazyQuery>;
+export type GetFruitPaymentQueryResult = Apollo.QueryResult<GetFruitPaymentQuery, GetFruitPaymentQueryVariables>;
+export const GetFruitPriceTableDocument = gql`
+    query GetFruitPriceTable {
+  GetFruitPriceTable {
+    id
+    name
+    age
+    month_qty
+    price
+  }
+}
+    `;
+
+/**
+ * __useGetFruitPriceTableQuery__
+ *
+ * To run a query within a React component, call `useGetFruitPriceTableQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFruitPriceTableQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFruitPriceTableQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFruitPriceTableQuery(baseOptions?: Apollo.QueryHookOptions<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>(GetFruitPriceTableDocument, options);
+      }
+export function useGetFruitPriceTableLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>(GetFruitPriceTableDocument, options);
+        }
+export type GetFruitPriceTableQueryHookResult = ReturnType<typeof useGetFruitPriceTableQuery>;
+export type GetFruitPriceTableLazyQueryHookResult = ReturnType<typeof useGetFruitPriceTableLazyQuery>;
+export type GetFruitPriceTableQueryResult = Apollo.QueryResult<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>;
 export const LoginDocument = gql`
     mutation Login($loginInput: LoginInput!) {
   login(loginInput: $loginInput) {

@@ -10,6 +10,7 @@ query GetCustomerDetail($customerId: Float!) {
     image_path
     fingerprint
     end_membership_date
+    end_fruit_date
     key_status
     towel_status
     shift

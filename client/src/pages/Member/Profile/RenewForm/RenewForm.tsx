@@ -141,6 +141,12 @@ export const RenewForm = (props) => {
   const [price, setPrice] = useState(0);
   const [promotion, setPromotion] = useState("");
 
+  useEffect(() => {
+    if (price_table?.GetMemberPriceTable.length !== 0) {
+      FilterPriceTableByMonth(1);
+    }
+  }, [price_table])
+
   return (
     <>
       <Transition.Root show={props.open_member} as={Fragment}>
@@ -258,7 +264,7 @@ export const RenewForm = (props) => {
                                 promotion={promotion}
                                 shift={shift}
                                 price={price}
-                                customer_id={props.ID}
+                                customer_id={props.details?.customer_id}
                                 user_id={parseInt(
                                   localStorage.getItem("user_id")
                                 )}

@@ -45,6 +45,10 @@ export class Customer extends BaseEntity {
     end_membership_date!: string;
 
     @Field()
+    @Column({ type: "date", default: () => "CURRENT_DATE" })
+    end_fruit_date!: string;
+
+    @Field()
     @Column({ length: 10, default: "un_take" })
     key_status: string;
 

@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-ignore
-// @ts-nocheck
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { Fragment, useState } from "react";
 import { Tab } from "@headlessui/react";
 import {
   useGetCustomerDetailQuery,
+  useGetFruitPaymentQuery,
   useGetMemberPaymentQuery,
   useGetTrainningPaymentQuery,
 } from "../../../../generated/graphql";
@@ -16,6 +12,8 @@ import { MemberPayment } from "./MemberPayment";
 import { TrainningPayment } from "./TrainningPayment";
 import { CouponPayment } from "../CouponForm/CouponForm";
 import { RenewForm } from "../RenewForm/RenewForm";
+import FruitPaymentTable from "./FruitPaymentTable";
+import { FruitPayment } from "../FruitPayment/FruitPayment";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -50,11 +48,19 @@ const MemberProfile = ({ ID }: any) => {
     fetchPolicy: "no-cache",
   });
 
+  const { data: fruit_payment, loading: loading_fruit_payment, refetch: fruitPaymentRefetch } = useGetFruitPaymentQuery({
+    variables: {
+      customerId: ID,
+    },
+    fetchPolicy: "no-cache",
+  })
+
   const details = data?.GetCustomerDetail[0];
 
   const [open_coupon, setIsOpenCoupon] = useState(false);
   const [open_trainning, setOpenTrainning] = useState(false);
   const [open_member, setOpenMember] = useState(false);
+  const [open_fruit, setOpenFruit] = useState(false);
 
   return (
     <>
@@ -73,27 +79,44 @@ const MemberProfile = ({ ID }: any) => {
                 alt=""
               />
               <div className="min-w-0 flex-auto">
-                <p className="text-sm font-semibold leading-6 text-gray-900">
-                  លេខ ID: {ID}
-                </p>
-                <p className="text-sm font-semibold leading-6 text-gray-900">
-                  ឈ្មោះ: {details?.customer_name}
-                </p>
-                <p className="text-sm font-semibold leading-6 text-gray-900">
-                  លេខទូរស័ព្ទ: {details?.phone}
-                </p>
-                <p className="text-sm font-semibold leading-6 text-gray-900">
-                  ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}
-                </p>
-                <p className="text-sm font-semibold leading-6 text-gray-900">
-                  វេន: {details?.shift}
-                </p>
+                <div>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    លេខ ID: {ID}
+                  </p>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    ឈ្មោះ: {details?.customer_name}
+                  </p>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    លេខទូរស័ព្ទ: {details?.phone}
+                  </p>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}
+                  </p>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    តែជ្រក់: {details?.end_fruit_date}
+                  </p>
+                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                    វេន: {details?.shift}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mt-2"
+                  onClick={() => {
+                    setOpenFruit(true);
+                  }}
+                >
+                  <PlusCircleIcon
+                    className="-ml-0.5 mr-1.5 h-4 w-4"
+                    aria-hidden="true"
+                  />
+                  ផ្សេងៗ
+                </button>
                 <button
                   type="button"
                   className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2 mt-2"
                   onClick={() => {
                     setOpenMember(true);
-                    //FilterPriceTableByMonth(1);
                   }}
                 >
                   <PlusCircleIcon
@@ -182,7 +205,7 @@ const MemberProfile = ({ ID }: any) => {
                         )
                       }
                     >
-                      Tab 4
+                      តែជ្រក់
                     </Tab>
                   </Tab.List>
                 </div>
@@ -211,11 +234,11 @@ const MemberProfile = ({ ID }: any) => {
                     )}
                   </Tab.Panel>
                   <Tab.Panel key={4} className="px-2 pb-2 pt-2">
-                    <div className="grid grid-cols-2 gap-x-4">
-                      <p aria-hidden="true" className="mt-1">
-                        Shop now 4
-                      </p>
-                    </div>
+                    {!loading_fruit_payment ? (
+                      <FruitPaymentTable fruit_payment={fruit_payment} />
+                    ) : (
+                      <p>Loading...168</p>
+                    )}
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
@@ -224,13 +247,21 @@ const MemberProfile = ({ ID }: any) => {
         </div>
       </div>
 
+      <FruitPayment
+        open={open_fruit}
+        setOpen={setOpenFruit}
+        details={details}
+        refechFruitPayment={fruitPaymentRefetch}
+        refetchMemberDetail={refetchMemberDetail}>
+      </FruitPayment>
+
       <RenewForm
         open_member={open_member}
         setOpenMember={setOpenMember}
         details={details}
         refechMemberPayment={refechMemberPayment}
         refetchMemberDetail={refetchMemberDetail}
-      />
+      ></RenewForm>
 
       <CouponPayment
         open_coupon={open_coupon}
@@ -239,7 +270,8 @@ const MemberProfile = ({ ID }: any) => {
         user_id={parseInt(localStorage.getItem("user_id"))}
         customer_name={details?.customer_name}
         phone={details?.phone}
-      />
+      >
+      </CouponPayment>
 
       <TrainingPaymentForm
         open_trainning={open_trainning}
@@ -249,7 +281,7 @@ const MemberProfile = ({ ID }: any) => {
         customer_name={details?.customer_name}
         phone={details?.phone}
         refetch_trainning_payment={refetch_trainning_payment}
-      />
+      ></TrainingPaymentForm>
     </>
   );
 };
