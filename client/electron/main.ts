@@ -66,33 +66,30 @@ function createWindow() {
 
   win.maximize();
 
+  // Emitted when the window is closed.
+  win.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    win = null
+  })
+
   // win.webContents.print({silent: true, printBackground: false, deviceName: 'Microsoft Print to PDF'});
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
-    //console.log(electron.remote.app.getAppPath());
-    //win.loadFile(`file://${electron.remote.app.getAppPath()}/dist/index.html`);
-    //win.loadFile(path.join(process.env.DIST, 'index.html'))
   } else {
-    //win.loadFile(`file://${electron.remote.app.getAppPath()}/dist/index.html`);
-    //win.loadFile('dist/index.html')
-    //win.loadFile(`file://${__dirname}/dist/index.html`)
-    //win.loadFile(path.join(process.env.DIST, 'index.html'))
     win.loadURL("http://110.235.249.118:5173")
   }
+
 }
 
-app.on('before-quit', () => {
-  win.removeAllListeners('close');
-  win.close();
-});
 
 app.on('window-all-closed', () => {
-  if (process.platform !== "darwin") {
-    win = null
-    app.quit;
-  }
+  app.quit()
 })
+
+
 
 // app.whenReady().then(createWindow)
 
@@ -183,4 +180,6 @@ ipcMain.handle('previewComponent', (_event: any, url: any) => {
   });
   return 'shown preview window';
 });
+
+
 

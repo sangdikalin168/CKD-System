@@ -228,6 +228,7 @@ export type Mutation = {
   CreateFruitPayment: FruitPaymentMutationResponse;
   CreateTicketPayment: TicketPaymentMutationResponse;
   CreateTrainningPayment: TrainningPaymentMutationResponse;
+  UpdateCustomer: CustomerMutationResponse;
   create_user: UserMutationResponse;
   login: UserMutationResponse;
   logout: UserMutationResponse;
@@ -288,6 +289,12 @@ export type MutationCreateTrainningPaymentArgs = {
   promotion: Scalars['String'];
   type: Scalars['String'];
   user_id: Scalars['Float'];
+};
+
+
+export type MutationUpdateCustomerArgs = {
+  customer_id: Scalars['Float'];
+  phone: Scalars['String'];
 };
 
 
@@ -498,6 +505,14 @@ export type GetCustomersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCustomersQuery = { __typename?: 'Query', GetCustomers: Array<{ __typename?: 'Customer', customer_id: number, created_date: string, created_by: number, customer_code: string, customer_name: string, phone: string, gender: string, image_path: string, fingerprint: string, end_membership_date: string, key_status: string, towel_status: string }> };
+
+export type UpdateCustomerMutationVariables = Exact<{
+  phone: Scalars['String'];
+  customerId: Scalars['Float'];
+}>;
+
+
+export type UpdateCustomerMutation = { __typename?: 'Mutation', UpdateCustomer: { __typename?: 'CustomerMutationResponse', code: number, success: boolean, message?: string | null } };
 
 export type GetMemberPriceTableQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -815,6 +830,42 @@ export function useGetCustomersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetCustomersQueryHookResult = ReturnType<typeof useGetCustomersQuery>;
 export type GetCustomersLazyQueryHookResult = ReturnType<typeof useGetCustomersLazyQuery>;
 export type GetCustomersQueryResult = Apollo.QueryResult<GetCustomersQuery, GetCustomersQueryVariables>;
+export const UpdateCustomerDocument = gql`
+    mutation UpdateCustomer($phone: String!, $customerId: Float!) {
+  UpdateCustomer(phone: $phone, customer_id: $customerId) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type UpdateCustomerMutationFn = Apollo.MutationFunction<UpdateCustomerMutation, UpdateCustomerMutationVariables>;
+
+/**
+ * __useUpdateCustomerMutation__
+ *
+ * To run a mutation, you first call `useUpdateCustomerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCustomerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCustomerMutation, { data, loading, error }] = useUpdateCustomerMutation({
+ *   variables: {
+ *      phone: // value for 'phone'
+ *      customerId: // value for 'customerId'
+ *   },
+ * });
+ */
+export function useUpdateCustomerMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCustomerMutation, UpdateCustomerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCustomerMutation, UpdateCustomerMutationVariables>(UpdateCustomerDocument, options);
+      }
+export type UpdateCustomerMutationHookResult = ReturnType<typeof useUpdateCustomerMutation>;
+export type UpdateCustomerMutationResult = Apollo.MutationResult<UpdateCustomerMutation>;
+export type UpdateCustomerMutationOptions = Apollo.BaseMutationOptions<UpdateCustomerMutation, UpdateCustomerMutationVariables>;
 export const GetMemberPriceTableDocument = gql`
     query GetMemberPriceTable {
   GetMemberPriceTable {

@@ -165,7 +165,5 @@ function App() {
       <ToastContainer />
     </>
   );
-
-  // return <h2>www.google.com</h2>
 }
 export default App;

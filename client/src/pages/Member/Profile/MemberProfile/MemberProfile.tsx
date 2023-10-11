@@ -1,4 +1,4 @@
-import { PlusCircleIcon } from "@heroicons/react/20/solid";
+import { PencilSquareIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
 import { Fragment, useState } from "react";
 import { Tab } from "@headlessui/react";
 import {
@@ -14,13 +14,14 @@ import { CouponPayment } from "../CouponForm/CouponForm";
 import { RenewForm } from "../RenewForm/RenewForm";
 import FruitPaymentTable from "./FruitPaymentTable";
 import { FruitPayment } from "../FruitPayment/FruitPayment";
+import { UpdateProfile } from "./UpdateProfile";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 const MemberProfile = ({ ID }: any) => {
-  const { data, refetch: refetchMemberDetail } = useGetCustomerDetailQuery({
+  const { data, loading: loading_member_detail, refetch: refetchMemberDetail } = useGetCustomerDetailQuery({
     variables: {
       customerId: ID,
     },
@@ -61,6 +62,13 @@ const MemberProfile = ({ ID }: any) => {
   const [open_trainning, setOpenTrainning] = useState(false);
   const [open_member, setOpenMember] = useState(false);
   const [open_fruit, setOpenFruit] = useState(false);
+  const [open_update, setOpenUpdate] = useState(false);
+
+
+
+  if (loading_fruit_payment && loading_member_detail && loading_trainning_payment && loading_payment)
+    return (<div>Loading...</div>);
+
 
   return (
     <>
@@ -86,9 +94,16 @@ const MemberProfile = ({ ID }: any) => {
                   <p className="text-sm font-semibold leading-6 text-gray-900">
                     ឈ្មោះ: {details?.customer_name}
                   </p>
-                  <p className="text-sm font-semibold leading-6 text-gray-900">
-                    លេខទូរស័ព្ទ: {details?.phone}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">
+                      ទូរស័ព្ទ: {details?.phone}
+                    </p>
+                    <PencilSquareIcon
+                      className="h-4 w-4 text-red-500 hover:text-violet-600" aria-hidden="true"
+                      onClick={() => setOpenUpdate(true)}
+                    />
+                  </div>
+
                   <p className="text-sm font-semibold leading-6 text-gray-900">
                     ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}
                   </p>
@@ -247,12 +262,21 @@ const MemberProfile = ({ ID }: any) => {
         </div>
       </div>
 
+      <UpdateProfile
+        open={open_update}
+        setOpen={setOpenUpdate}
+        customer_id={details?.customer_id}
+        refetch={refetchMemberDetail}
+      >
+      </UpdateProfile>
+
       <FruitPayment
         open={open_fruit}
         setOpen={setOpenFruit}
         details={details}
         refechFruitPayment={fruitPaymentRefetch}
-        refetchMemberDetail={refetchMemberDetail}>
+        refetchMemberDetail={refetchMemberDetail}
+      >
       </FruitPayment>
 
       <RenewForm

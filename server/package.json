@@ -36,8 +36,8 @@
     "typeorm": "^0.3.17"
   },
   "scripts": {
-    "start": "node ./dist/index.ts",
-    "dev": "nodemon ./src/index.ts",
+    "start": "NODE_ENV=production nodemon ./src/index.ts",
+    "dev": "NODE_ENV=development nodemon ./src/index.ts",
     "build": "tsc -p ."
   },
   "exports": {

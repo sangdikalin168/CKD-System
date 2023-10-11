@@ -14,12 +14,13 @@ import refreshTokenRouter from "./Routes/refreshTokenRouter";
 import { entities } from "./Entities";
 import { Context } from "./Context/Context";
 
+
 const MysqlDataSource = new DataSource({
   type: "mysql",
   port: 3306,
   connectTimeout: 24 * 3600,
   acquireTimeout: 60 * 60 * 1000,
-  host: process.env.DB_HOST,
+  host: process.env.NODE_ENV === "development" ? process.env.DEV_SERVER : process.env.PROD_SERVER,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -96,7 +97,7 @@ const main = async () => {
 
   // Typically, http://localhost:4000/graphql
   console.log(
-    `SERVER STARTED ON PORT ${PORT}. GRAPHQL ENDPOINT ON http://localhost:${PORT}${apolloServer.graphqlPath}`
+    `SERVER STARTED In ${process.env.NODE_ENV} Mode, And PORT ${PORT}`
   );
 };
 

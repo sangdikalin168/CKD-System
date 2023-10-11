@@ -1,0 +1,7 @@
+mutation UpdateCustomer($phone: String!, $customerId: Float!) {
+  UpdateCustomer(phone: $phone, customer_id: $customerId) {
+    code
+    success
+    message
+  }
+}

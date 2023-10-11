@@ -39,7 +39,7 @@ export class CustomerResolver {
 
     @Query((_return) => [Customer])
     async GetCustomerDetail(@Arg("customer_id") customer_Id: number): Promise<Customer[]> {
-        return await Customer.find({where: {customer_id: customer_Id} });
+        return await Customer.find({ where: { customer_id: customer_Id } });
     }
 
 
@@ -72,6 +72,42 @@ export class CustomerResolver {
             code: 200,
             success: true,
             message: "Create Success",
+        };
+    }
+
+    @Mutation((_return) => CustomerMutationResponse)
+    async UpdateCustomer(
+        @Arg("customer_id") customer_id: number,
+        @Arg("phone") phone: string,
+    ): Promise<CustomerMutationResponse> {
+
+        const existPhone = await Customer.findOne({ where: { phone: phone } })
+
+        if (existPhone?.customer_id) {
+            return {
+                code: 200,
+                success: false,
+                message: "លេខនេះមានរួចហើយ!!!",
+            };
+        }
+
+        const update = await Customer.update({
+            customer_id: customer_id,
+        }, {
+            phone: phone
+        })
+        if (update.affected) {
+            return {
+                code: 200,
+                success: true,
+                message: "Update Member Success",
+            };
+        }
+        //Return Failed
+        return {
+            code: 200,
+            success: false,
+            message: "Update Member Failed",
         };
     }
 }
