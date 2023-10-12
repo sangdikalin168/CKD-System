@@ -11,6 +11,7 @@ import {
 import { TypeOptions, toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInvoice";
+
 const notify = (
   message: string,
   auto_Close: boolean | number,
@@ -125,27 +126,26 @@ export const RenewForm = (props) => {
   const [isShowConfirmModal, setIsShowConfirmModal] = useState(false);
   const [member_price_table, setMemberPriceTable] = useState([]);
 
-  const FilterPriceTableByMonth = (month_qty: number) => {
-    const result = price_table?.GetMemberPriceTable.filter(
-      (p) => p.month_qty == month_qty
-    );
-    setMemberPriceTable(result);
-  };
-  const FilterPriceTableByAge = (age: string) => {
-    const result = member_price_table.filter((p) => p.age == age);
-    setMemberPriceTable(result);
-  };
-
   const [month_qty, setMonthQty] = useState(1);
-  const [shift, setShift] = useState("");
+  const [shift, setShift] = useState("Full");
   const [price, setPrice] = useState(0);
+  const [age, setAge] = useState("ចាស់");
   const [promotion, setPromotion] = useState("");
 
+
+  const FilterPrice = () => {
+    const result = price_table?.GetMemberPriceTable.filter(
+      (p) => p.month_qty == month_qty && p.shift == shift && p.age == age
+    );
+    return result
+  };
+
   useEffect(() => {
-    if (price_table?.GetMemberPriceTable.length !== 0) {
-      FilterPriceTableByMonth(1);
+    if (price_table?.GetMemberPriceTable) {
+      setMemberPriceTable(FilterPrice())
     }
-  }, [price_table])
+  }, [month_qty, shift, age, price_table])
+
 
   return (
     <>
@@ -192,60 +192,80 @@ export const RenewForm = (props) => {
                         <div className="mt-2">
                           {!isShowConfirmModal ? (
                             <>
-                              <div className="space-x-2">
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByAge("ចាស់")}
-                                >
-                                  ចាស់
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByAge("ក្មេង")}
-                                >
-                                  ក្មេង
-                                </button>
+                              <div className="flex space-x-6">
+                                <div className="space-x-2">
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setAge("ចាស់"); }}
+                                  >
+                                    ចាស់
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setAge("ក្មេង"); }}
+                                  >
+                                    ក្មេង
+                                  </button>
+                                </div>
+
+                                <div className="space-x-2">
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setShift("Full") }}
+                                  >
+                                    Full
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setShift("Morning") }}
+                                  >
+                                    Morning
+                                  </button>
+                                </div>
+
+                                <div className="space-x-2">
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setMonthQty(1); }}
+                                  >
+                                    1ខែ
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setMonthQty(1.5); }}
+                                  >
+                                    1.5ខែ
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setMonthQty(3); }}
+                                  >
+                                    3ខែ
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setMonthQty(6) }}
+                                  >
+                                    6ខែ
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => { setMonthQty(12) }}
+                                  >
+                                    12ខែ
+                                  </button>
+                                </div>
                               </div>
 
-                              <div className="space-x-2">
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByMonth(1)}
-                                >
-                                  1ខែ
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByMonth(1.5)}
-                                >
-                                  1.5ខែ
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByMonth(3)}
-                                >
-                                  3ខែ
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByMonth(6)}
-                                >
-                                  6ខែ
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  onClick={() => FilterPriceTableByMonth(12)}
-                                >
-                                  12ខែ
-                                </button>
-                              </div>
                               {!loading ? (
                                 <DataTable
                                   columns={columns_price_table}
