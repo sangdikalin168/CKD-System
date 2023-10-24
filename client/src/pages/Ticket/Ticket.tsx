@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { ComponentToPrint } from "../../components/ComponentToPrint";
+import { ComponentToPrint } from "../../components/ComponentToPrint/index";
 import { v4 as uuidv4 } from "uuid";
 import { useCreateTicketPaymentMutation } from "../../generated/graphql";
 
