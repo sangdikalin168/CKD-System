@@ -55,6 +55,7 @@ function createWindow() {
     width: 1366,
     height: 768,
     autoHideMenuBar: true,
+    frame: false
   })
 
   // Test active push message to Renderer-process.

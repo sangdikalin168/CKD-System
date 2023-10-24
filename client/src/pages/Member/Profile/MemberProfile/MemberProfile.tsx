@@ -25,6 +25,7 @@ const MemberProfile = ({ ID }: any) => {
     variables: {
       customerId: ID,
     },
+    fetchPolicy: "no-cache"
   });
 
   const {
