@@ -1,8 +1,8 @@
 import { Secret, verify } from "jsonwebtoken";
 import express from "express";
-import { UserAuthPayload } from "../types/UserAuthPayload";
+import { UserAuthPayload } from "../Context/UserAuthPayload";
 import { Users } from "../Entities/Users";
-import { createToken, sendRefreshToken } from "../utils/auth";
+import { createToken, sendRefreshToken } from "../Utils/auth";
 
 const router = express.Router();
 

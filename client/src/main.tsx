@@ -27,14 +27,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = createHttpLink({
-  uri: "http://110.235.249.118:4000" + "/graphql",
+  uri: "http://localhost:4000/graphql",
   credentials: "include",
 });
-
-// const httpLink = createHttpLink({
-//   uri: "http://localhost:4000" + "/graphql",
-//   credentials: "include",
-// });
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from JWTManager if it exists

@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --port 5173",
+    "build": "vite build",
     "build_": "tsc && vite build && electron-builder",
-    "build": "electron-builder",
+    "build_electron": "electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-react-swc": "^3.3.2",
     "autoprefixer": "^10.4.15",
     "electron": "^24.4.0",
     "electron-builder": "^23.6.0",

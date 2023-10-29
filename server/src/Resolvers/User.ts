@@ -1,9 +1,9 @@
 import { Arg, Ctx, Mutation, Query, Resolver, ID, InterfaceType, ObjectType } from "type-graphql";
 import { Users } from "../Entities/Users";
 import { GetUser } from "../Types/GetUser";
-import { Context } from "../types/Context";
+import { Context } from "../Context/Context";
 import { compare, hash } from "bcryptjs";
-import { createToken, sendRefreshToken } from "../utils/auth";
+import { createToken, sendRefreshToken } from "../Utils/auth";
 import { RegisterInput } from "../Types/RegisterInput";
 
 import { Field, InputType } from 'type-graphql'
