@@ -1,10 +1,13 @@
-version: '3.4'
+version: "3.4"
 
 services:
   api:
     build:
       context: .
-      target: production
-
+      target: development
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
-      - 4002:4002
+      - 4000:4000
+    command: yarn dev

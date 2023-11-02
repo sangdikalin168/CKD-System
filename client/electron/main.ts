@@ -55,7 +55,7 @@ function createWindow() {
     width: 1366,
     height: 768,
     autoHideMenuBar: true,
-    frame: false
+    frame: true
   })
 
   // Test active push message to Renderer-process.
@@ -69,19 +69,11 @@ function createWindow() {
 
   // Emitted when the window is closed.
   win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     win = null
   })
 
-  // win.webContents.print({silent: true, printBackground: false, deviceName: 'Microsoft Print to PDF'});
 
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
-  } else {
-    win.loadURL("http://110.235.249.118:5173")
-  }
+  win.loadURL("http://localhost:5173")
 
 }
 
@@ -126,16 +118,21 @@ const printOption2 = {
 
 //handle print
 ipcMain.handle('printComponent', (_event: any, url: any) => {
-  const win = new BrowserWindow({ show: false });
-
+  const win = new BrowserWindow({ show: true });
   win.loadURL(url);
+  let count = BrowserWindow.getAllWindows()
+    .filter(b => {
+      return b.isVisible()
+    })
+    .length
 
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.print(printOptions, (success: any, failureReason: any) => {
-      console.log('Print Initiated in Main...');
-      if (!success) console.log(failureReason);
-    });
-  });
+  console.log("Test")
+  // win.webContents.on('did-finish-load', () => {
+  //   win.webContents.print(printOptions, (success: any, failureReason: any) => {
+  //     console.log('Print Initiated in Main...');
+  //     if (!success) console.log(failureReason);
+  //   });
+  // });
   return 'shown print dialog';
 });
 
@@ -143,13 +140,13 @@ ipcMain.handle('printComponent', (_event: any, url: any) => {
 //handle print
 ipcMain.handle('printComponent1', (_event: any, url: any) => {
   const win = new BrowserWindow({ show: false });
-
   win.loadURL(url);
 
   win.webContents.on('did-finish-load', () => {
     win.webContents.print(printOption2, (success: any, failureReason: any) => {
       console.log('Print Initiated in Main...');
       if (!success) console.log(failureReason);
+      win.close();
     });
   });
   return 'shown print dialog';

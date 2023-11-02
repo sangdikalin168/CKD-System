@@ -1,4 +1,4 @@
-import { PencilSquareIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
+import { PencilSquareIcon, PlusCircleIcon, BackwardIcon } from "@heroicons/react/20/solid";
 import { Fragment, useState } from "react";
 import { Tab } from "@headlessui/react";
 import {
@@ -65,14 +65,23 @@ const MemberProfile = ({ ID }: any) => {
   const [open_fruit, setOpenFruit] = useState(false);
   const [open_update, setOpenUpdate] = useState(false);
 
-
-
   if (loading_fruit_payment && loading_member_detail && loading_trainning_payment && loading_payment)
     return (<div>Loading...</div>);
 
 
   return (
     <>
+      <button
+        type="button"
+        className="mb-2 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500"
+        onClick={() => { window.location.reload(); }}
+      >
+        <BackwardIcon
+          className="-ml-0.5 mr-1.5 h-4 w-4"
+          aria-hidden="true"
+        />
+        ថយក្រោយ
+      </button>
       <div className="bg-white p-4 rounded-lg mb-4 h-screen">
         <div className="border-b border-gray-900/10">
           <h2 className="text-base font-semibold leading-7 text-gray-900">

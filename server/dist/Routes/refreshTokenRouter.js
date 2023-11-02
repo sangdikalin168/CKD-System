@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = require("jsonwebtoken");
 const express_1 = __importDefault(require("express"));
 const Users_1 = require("../Entities/Users");
-const auth_1 = require("../utils/auth");
+const auth_1 = require("../Utils/auth");
 const router = express_1.default.Router();
 router.get("/", async (req, res) => {
     const refreshToken = req.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME];
