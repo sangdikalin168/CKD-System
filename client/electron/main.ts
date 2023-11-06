@@ -118,21 +118,15 @@ const printOption2 = {
 
 //handle print
 ipcMain.handle('printComponent', (_event: any, url: any) => {
-  const win = new BrowserWindow({ show: true });
+  const win = new BrowserWindow({ show: false });
   win.loadURL(url);
-  let count = BrowserWindow.getAllWindows()
-    .filter(b => {
-      return b.isVisible()
-    })
-    .length
-
-  console.log("Test")
-  // win.webContents.on('did-finish-load', () => {
-  //   win.webContents.print(printOptions, (success: any, failureReason: any) => {
-  //     console.log('Print Initiated in Main...');
-  //     if (!success) console.log(failureReason);
-  //   });
-  // });
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.print(printOptions, (success: any, failureReason: any) => {
+      console.log('Print Initiated in Main...');
+      if (!success) console.log(failureReason);
+      win.close();
+    });
+  });
   return 'shown print dialog';
 });
 
