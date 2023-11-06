@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --host --port 5173",
+    "start_electron": "electron .",
     "build": "vite build",
     "build_": "tsc && vite build && electron-builder",
     "build_electron": "electron-builder",

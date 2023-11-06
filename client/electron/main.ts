@@ -124,6 +124,7 @@ ipcMain.handle('printComponent', (_event: any, url: any) => {
     win.webContents.print(printOptions, (success: any, failureReason: any) => {
       console.log('Print Initiated in Main...');
       if (!success) console.log(failureReason);
+      win.close();
     });
   });
   return 'shown print dialog';
