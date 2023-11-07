@@ -1,0 +1,13 @@
+query MemberPaymentDetail($paymentId: Float!) {
+  MemberPaymentDetail(payment_id: $paymentId) {
+    payment_id
+    payment_date
+    display_name
+    customer_name
+    phone
+    promotion
+    price
+    old_end
+    new_end
+  }
+}

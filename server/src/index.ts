@@ -20,7 +20,7 @@ const MysqlDataSource = new DataSource({
   port: 3306,
   connectTimeout: 24 * 3600,
   acquireTimeout: 60 * 60 * 1000,
-  host: "192.168.1.20",
+  host: "110.235.252.175",
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,

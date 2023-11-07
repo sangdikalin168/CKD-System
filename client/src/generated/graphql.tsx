@@ -187,6 +187,19 @@ export type MemberPayment = {
   user_id: Scalars['Float'];
 };
 
+export type MemberPaymentDetail = {
+  __typename?: 'MemberPaymentDetail';
+  customer_name: Scalars['String'];
+  display_name: Scalars['String'];
+  new_end: Scalars['DateTime'];
+  old_end: Scalars['DateTime'];
+  payment_date: Scalars['DateTime'];
+  payment_id: Scalars['Float'];
+  phone: Scalars['String'];
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
+};
+
 export type MemberPaymentMutationResponse = MemberPaymentResponse & {
   __typename?: 'MemberPaymentMutationResponse';
   code: Scalars['Float'];
@@ -324,6 +337,7 @@ export type Query = {
   GetMemberPriceTable: Array<MemberPriceTable>;
   GetTrainningPayment: Array<TrainningPayment>;
   GetTranningPrice: Array<TrainningPrice>;
+  MemberPaymentDetail: MemberPaymentDetail;
   get_user: GetUser;
   users: Array<Users>;
 };
@@ -356,6 +370,11 @@ export type QueryGetMemberPaymentArgs = {
 
 export type QueryGetTrainningPaymentArgs = {
   customer_id: Scalars['Float'];
+};
+
+
+export type QueryMemberPaymentDetailArgs = {
+  payment_id: Scalars['Float'];
 };
 
 
@@ -571,6 +590,13 @@ export type GetMemberPaymentQueryVariables = Exact<{
 
 
 export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: any, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, shift: string, month_qty: number }> };
+
+export type MemberPaymentDetailQueryVariables = Exact<{
+  paymentId: Scalars['Float'];
+}>;
+
+
+export type MemberPaymentDetailQuery = { __typename?: 'Query', MemberPaymentDetail: { __typename?: 'MemberPaymentDetail', payment_id: number, payment_date: any, display_name: string, customer_name: string, phone: string, promotion: string, price: number, old_end: any, new_end: any } };
 
 export type CreateTicketPaymentMutationVariables = Exact<{
   ticketCode: Scalars['String'];
@@ -1174,6 +1200,49 @@ export function useGetMemberPaymentLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetMemberPaymentQueryHookResult = ReturnType<typeof useGetMemberPaymentQuery>;
 export type GetMemberPaymentLazyQueryHookResult = ReturnType<typeof useGetMemberPaymentLazyQuery>;
 export type GetMemberPaymentQueryResult = Apollo.QueryResult<GetMemberPaymentQuery, GetMemberPaymentQueryVariables>;
+export const MemberPaymentDetailDocument = gql`
+    query MemberPaymentDetail($paymentId: Float!) {
+  MemberPaymentDetail(payment_id: $paymentId) {
+    payment_id
+    payment_date
+    display_name
+    customer_name
+    phone
+    promotion
+    price
+    old_end
+    new_end
+  }
+}
+    `;
+
+/**
+ * __useMemberPaymentDetailQuery__
+ *
+ * To run a query within a React component, call `useMemberPaymentDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMemberPaymentDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMemberPaymentDetailQuery({
+ *   variables: {
+ *      paymentId: // value for 'paymentId'
+ *   },
+ * });
+ */
+export function useMemberPaymentDetailQuery(baseOptions: Apollo.QueryHookOptions<MemberPaymentDetailQuery, MemberPaymentDetailQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MemberPaymentDetailQuery, MemberPaymentDetailQueryVariables>(MemberPaymentDetailDocument, options);
+      }
+export function useMemberPaymentDetailLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MemberPaymentDetailQuery, MemberPaymentDetailQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MemberPaymentDetailQuery, MemberPaymentDetailQueryVariables>(MemberPaymentDetailDocument, options);
+        }
+export type MemberPaymentDetailQueryHookResult = ReturnType<typeof useMemberPaymentDetailQuery>;
+export type MemberPaymentDetailLazyQueryHookResult = ReturnType<typeof useMemberPaymentDetailLazyQuery>;
+export type MemberPaymentDetailQueryResult = Apollo.QueryResult<MemberPaymentDetailQuery, MemberPaymentDetailQueryVariables>;
 export const CreateTicketPaymentDocument = gql`
     mutation CreateTicketPayment($ticketCode: String!, $price: Float!, $userId: Float!) {
   CreateTicketPayment(ticket_code: $ticketCode, price: $price, user_id: $userId) {
