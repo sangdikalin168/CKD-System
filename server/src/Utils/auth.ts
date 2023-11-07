@@ -20,8 +20,6 @@ export const createToken = (
   );
 
 export const sendRefreshToken = (res: Response, user: Users) => {
-  console.log("sendRefreshToken");
-
   res.cookie(
     process.env.REFRESH_TOKEN_COOKIE_NAME as string,
     createToken("refreshToken", user),

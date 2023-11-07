@@ -16,6 +16,7 @@ exports.MemberPaymentResolver = exports.MemberPaymentMutationResponse = exports.
 const MemberPayment_1 = require("../Entities/MemberPayment");
 const Customer_1 = require("../Entities/Customer");
 const type_graphql_1 = require("type-graphql");
+const Users_1 = require("../Entities/Users");
 let MemberPaymentResponse = class MemberPaymentResponse {
 };
 __decorate([
@@ -44,9 +45,59 @@ MemberPaymentMutationResponse = __decorate([
     (0, type_graphql_1.ObjectType)({ implements: MemberPaymentResponse })
 ], MemberPaymentMutationResponse);
 exports.MemberPaymentMutationResponse = MemberPaymentMutationResponse;
+let MemberPaymentDetail = class MemberPaymentDetail {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], MemberPaymentDetail.prototype, "payment_id", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Date)
+], MemberPaymentDetail.prototype, "payment_date", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], MemberPaymentDetail.prototype, "display_name", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], MemberPaymentDetail.prototype, "customer_name", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], MemberPaymentDetail.prototype, "phone", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], MemberPaymentDetail.prototype, "promotion", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], MemberPaymentDetail.prototype, "price", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Date)
+], MemberPaymentDetail.prototype, "old_end", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Date)
+], MemberPaymentDetail.prototype, "new_end", void 0);
+MemberPaymentDetail = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], MemberPaymentDetail);
 let MemberPaymentResolver = class MemberPaymentResolver {
     async GetMemberPayment(customer_Id) {
         return await MemberPayment_1.MemberPayment.find({ where: { customer_id: customer_Id } });
+    }
+    async MemberPaymentDetail(payment_id) {
+        const res = await MemberPayment_1.MemberPayment.createQueryBuilder("member_payment")
+            .innerJoin(Users_1.Users, "user", "member_payment.user_id = user.user_id")
+            .innerJoin(Customer_1.Customer, "customer", "member_payment.customer_id = customer.customer_id")
+            .select(["payment_id", "payment_date", "user.display_name as display_name", "customer_name", "customer.phone as phone", "promotion", "price", "old_end", "new_end"])
+            .where("payment_id = :payment_id", { payment_id: payment_id })
+            .getRawOne();
+        return res;
     }
     async CreateCustomerPayment(user_id, customer_id, promotion, price, old_end, new_end, shift, month_qty) {
         const result = await MemberPayment_1.MemberPayment.create({
@@ -96,6 +147,13 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], MemberPaymentResolver.prototype, "GetMemberPayment", null);
+__decorate([
+    (0, type_graphql_1.Query)((_return) => MemberPaymentDetail),
+    __param(0, (0, type_graphql_1.Arg)("payment_id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], MemberPaymentResolver.prototype, "MemberPaymentDetail", null);
 __decorate([
     (0, type_graphql_1.Mutation)((_return) => MemberPaymentMutationResponse),
     __param(0, (0, type_graphql_1.Arg)("user_id")),

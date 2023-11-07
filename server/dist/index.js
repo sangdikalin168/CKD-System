@@ -13,12 +13,13 @@ const apollo_server_core_1 = require("apollo-server-core");
 const type_graphql_1 = require("type-graphql");
 const refreshTokenRouter_1 = __importDefault(require("./Routes/refreshTokenRouter"));
 const Entities_1 = require("./Entities");
+const path_1 = __importDefault(require("path"));
 const MysqlDataSource = new typeorm_1.DataSource({
     type: "mysql",
     port: 3306,
     connectTimeout: 24 * 3600,
     acquireTimeout: 60 * 60 * 1000,
-    host: process.env.NODE_ENV === "development" ? process.env.DEV_SERVER : process.env.PROD_SERVER,
+    host: process.env.PROD_SERVER,
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -35,6 +36,7 @@ const main = async () => {
         console.error("Error during Data Source initialization", err);
     });
     const app = (0, express_1.default)();
+    app.use(express_1.default.static(path_1.default.resolve(__dirname, "../../client/dist")));
     app.use((0, cookie_parser_1.default)());
     app.use(express_1.default.json());
     app.use(express_1.default.urlencoded({ extended: true }));
@@ -61,15 +63,13 @@ const main = async () => {
             origin: [
                 "https://studio.apollographql.com",
                 "http://localhost:5173",
-                "http://110.235.249.118:5173",
-                "http://110.235.249.118:4000",
             ],
             credentials: true,
         },
     });
     const PORT = process.env.PORT || 4000;
     await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
-    console.log(`SERVER STARTED In ${process.env.NODE_ENV} Mode, And PORT ${PORT}`);
+    console.log(`SERVER STARTED And PORT ${PORT}`);
 };
 main().catch((err) => {
     console.log(err);

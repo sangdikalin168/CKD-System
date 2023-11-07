@@ -9,7 +9,6 @@ const createToken = (type, user) => (0, jsonwebtoken_1.sign)(Object.assign({ use
 });
 exports.createToken = createToken;
 const sendRefreshToken = (res, user) => {
-    console.log("sendRefreshToken");
     res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, (0, exports.createToken)("refreshToken", user), {
         httpOnly: true,
         secure: true,

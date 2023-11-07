@@ -13,6 +13,7 @@ import { buildSchema } from "type-graphql";
 import refreshTokenRouter from "./Routes/refreshTokenRouter";
 import { entities } from "./Entities";
 import { Context } from "./Context/Context";
+import path from "path";
 
 
 const MysqlDataSource = new DataSource({
@@ -20,7 +21,7 @@ const MysqlDataSource = new DataSource({
   port: 3306,
   connectTimeout: 24 * 3600,
   acquireTimeout: 60 * 60 * 1000,
-  host: "110.235.252.175",
+  host: process.env.PROD_SERVER,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -39,7 +40,7 @@ const main = async () => {
     });
 
   const app = express();
-  // app.use(express.static(path.resolve(__dirname, "../../client/build")));
+  app.use(express.static(path.resolve(__dirname, "../../client/dist")));
   // app.get("*", (req, res) => {
   //   res.sendFile(path.resolve(__dirname, "../../client/build", "index.html"));
   // });
@@ -82,8 +83,6 @@ const main = async () => {
       origin: [
         "https://studio.apollographql.com",
         "http://localhost:5173",
-        "http://110.235.249.118:5173",
-        "http://110.235.249.118:4000",
       ],
       credentials: true,
     },
