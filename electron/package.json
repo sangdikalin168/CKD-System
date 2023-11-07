@@ -1,0 +1,14 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^24.4.0",
+    "electron-builder": "^23.6.0"
+  },
+  "main": "dist-electron/main.js"
+}
