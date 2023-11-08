@@ -5,7 +5,7 @@ import { BsChevronDown } from "react-icons/bs";
 import { Link } from "@tanstack/react-router";
 
 export default function SidebarItem({ item }: any) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   if (item.childrens) {
     return (
@@ -34,7 +34,7 @@ export default function SidebarItem({ item }: any) {
       <Link
         className="flex gap-x-2 cursor-pointer text-sm hover:bg-blue-600 hover:text-white text-black p-2 items-center"
         to={item.path}
-        //onClick={() => (window.location.href = item.path)}
+      //onClick={() => (window.location.href = item.path)}
       >
         {item.icon ? item.icon : <MdOutlineDashboard />}
         <span className="flex-1 font-semibold">{item.title}</span>

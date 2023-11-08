@@ -54,22 +54,22 @@ const items = [
   //     },
   //   ],
   // },
-  // {
-  //   title: "Stock",
-  //   icon: <HiOutlineUserCircle className="text-2xl" />,
-  //   childrens: [
-  //     {
-  //       title: "Stock",
-  //       path: "/stock",
-  //       icon: <FaUserCog className="text-2xl" />,
-  //     },
-  //     {
-  //       title: "Stock Count",
-  //       path: "/stock_count",
-  //       icon: <HiOutlineUserCircle className="text-2xl" />,
-  //     },
-  //   ],
-  // },
+  {
+    title: "Stock",
+    icon: <HiOutlineUserCircle className="text-2xl" />,
+    childrens: [
+      {
+        title: "Stock",
+        path: "/stock",
+        icon: <FaUserCog className="text-2xl" />,
+      },
+      {
+        title: "Stock Count",
+        path: "/stock_count",
+        icon: <HiOutlineUserCircle className="text-2xl" />,
+      },
+    ],
+  },
   {
     title: "Report",
     icon: <HiOutlineUserCircle className="text-2xl" />,

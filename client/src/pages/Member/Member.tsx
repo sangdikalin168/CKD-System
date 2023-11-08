@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+//@ts-nocheck
 import { PencilIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
