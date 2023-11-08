@@ -5,7 +5,7 @@ import { BsChevronDown } from "react-icons/bs";
 import { Link } from "@tanstack/react-router";
 
 export default function SidebarItem({ item }: any) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   if (item.childrens) {
     return (
