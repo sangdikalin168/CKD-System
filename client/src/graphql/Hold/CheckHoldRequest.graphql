@@ -1,0 +1,15 @@
+mutation CheckHoldRequest(
+  $checkedBy: Float!
+  $requestId: Float!
+  $checkerComment: String!
+) {
+  CheckHoldRequest(
+    checked_by: $checkedBy
+    request_id: $requestId
+    checker_comment: $checkerComment
+  ) {
+    code
+    success
+    message
+  }
+}

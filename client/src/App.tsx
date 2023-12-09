@@ -17,6 +17,7 @@ import { useAuthContext } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Report } from "./pages/Report/Report";
+import HoldRequest from "./pages/Request/HoldRequest/HoldRequest";
 
 // Create a root route
 const rootRoute = new RootRoute({
@@ -72,6 +73,11 @@ const reportRoute = new Route({
   path: "/income",
   component: Report,
 });
+const holdRequestRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/hold_request",
+  component: HoldRequest,
+});
 const notFoundRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "*",
@@ -84,6 +90,7 @@ const routeTree = rootRoute.addChildren([
   ticketRoute,
   membersRoute,
   reportRoute,
+  holdRequestRoute,
   notFoundRoute,
 ]);
 
@@ -101,6 +108,7 @@ function App() {
   //#region
   const { checkAuth, isAuthenticated, setIsLoading } = useAuthContext();
   const authenticate = async () => {
+    setIsLoading(true);
     await checkAuth();
     setIsLoading(false);
   };
@@ -127,7 +135,7 @@ function App() {
 
   useEffect(() => {
     authenticate();
-  }, [checkAuth]);
+  }, []);
 
   if (!connection) {
     return (

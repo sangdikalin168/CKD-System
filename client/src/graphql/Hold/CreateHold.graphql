@@ -1,0 +1,11 @@
+mutation CreateHold($newEnd: String!, $customerId: Float!, $requestId: Float!) {
+  CreateHold(
+    new_end: $newEnd
+    customer_id: $customerId
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}

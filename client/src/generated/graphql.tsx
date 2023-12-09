@@ -150,6 +150,69 @@ export type GetUser = {
   user_id: Scalars['ID'];
 };
 
+export type Hold = {
+  __typename?: 'Hold';
+  fee: Scalars['Float'];
+  hold_date: Scalars['String'];
+  hold_id: Scalars['Float'];
+  request_id: Scalars['Float'];
+};
+
+export type HoldJoin = {
+  __typename?: 'HoldJoin';
+  approved_by: Scalars['Float'];
+  approved_date: Scalars['String'];
+  approved_name?: Maybe<Scalars['String']>;
+  approver_comment: Scalars['String'];
+  checked_by: Scalars['Float'];
+  checker_approved_date: Scalars['String'];
+  checker_comment: Scalars['String'];
+  checker_name?: Maybe<Scalars['String']>;
+  customer_id: Scalars['Float'];
+  customer_name: Scalars['String'];
+  display_name: Scalars['String'];
+  from_date: Scalars['String'];
+  new_end: Scalars['String'];
+  old_end: Scalars['String'];
+  reason: Scalars['String'];
+  request_by: Scalars['Float'];
+  request_date: Scalars['String'];
+  request_id: Scalars['Float'];
+  to_date: Scalars['String'];
+};
+
+export type HoldMutationResponse = HoldResponse & {
+  __typename?: 'HoldMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
+export type HoldRequest = {
+  __typename?: 'HoldRequest';
+  approved_by: Scalars['Float'];
+  approved_date: Scalars['String'];
+  approver_comment: Scalars['String'];
+  checked_by: Scalars['Float'];
+  checker_approved_date: Scalars['String'];
+  checker_comment: Scalars['String'];
+  customer_id: Scalars['Float'];
+  from_date: Scalars['String'];
+  new_end: Scalars['String'];
+  old_end: Scalars['String'];
+  reason: Scalars['String'];
+  request_by: Scalars['Float'];
+  request_date: Scalars['String'];
+  request_id: Scalars['Float'];
+  to_date: Scalars['String'];
+};
+
+export type HoldResponse = {
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
 export type ICustomerResponse = {
   code: Scalars['Float'];
   message?: Maybe<Scalars['String']>;
@@ -235,16 +298,34 @@ export type MemberPriceTableMutationResponse = IMemberPriceTableResponse & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  ApproveHoldRequest: HoldMutationResponse;
+  CheckHoldRequest: HoldMutationResponse;
   CreateCouponPayment: CouponPaymentMutationResponse;
   CreateCustomer: CustomerMutationResponse;
   CreateCustomerPayment: MemberPaymentMutationResponse;
   CreateFruitPayment: FruitPaymentMutationResponse;
+  CreateHold: HoldMutationResponse;
+  CreateHoldRequest: HoldMutationResponse;
   CreateTicketPayment: TicketPaymentMutationResponse;
   CreateTrainningPayment: TrainningPaymentMutationResponse;
   UpdateCustomer: CustomerMutationResponse;
   create_user: UserMutationResponse;
   login: UserMutationResponse;
   logout: UserMutationResponse;
+};
+
+
+export type MutationApproveHoldRequestArgs = {
+  approved_by: Scalars['Float'];
+  approver_comment: Scalars['String'];
+  request_id: Scalars['Float'];
+};
+
+
+export type MutationCheckHoldRequestArgs = {
+  checked_by: Scalars['Float'];
+  checker_comment: Scalars['String'];
+  request_id: Scalars['Float'];
 };
 
 
@@ -286,6 +367,24 @@ export type MutationCreateFruitPaymentArgs = {
   price: Scalars['Float'];
   promotion: Scalars['String'];
   user_id: Scalars['Float'];
+};
+
+
+export type MutationCreateHoldArgs = {
+  customer_id: Scalars['Float'];
+  new_end: Scalars['String'];
+  request_id: Scalars['Float'];
+};
+
+
+export type MutationCreateHoldRequestArgs = {
+  customer_id: Scalars['Float'];
+  from_date: Scalars['String'];
+  new_end: Scalars['String'];
+  old_end: Scalars['String'];
+  reason: Scalars['String'];
+  request_by: Scalars['Float'];
+  to_date: Scalars['String'];
 };
 
 
@@ -337,6 +436,7 @@ export type Query = {
   GetMemberPriceTable: Array<MemberPriceTable>;
   GetTrainningPayment: Array<TrainningPayment>;
   GetTranningPrice: Array<TrainningPrice>;
+  HoldRequests: Array<HoldJoin>;
   MemberPaymentDetail: MemberPaymentDetail;
   get_user: GetUser;
   users: Array<Users>;
@@ -463,6 +563,37 @@ export type TranningPriceResponse = {
   success: Scalars['Boolean'];
 };
 
+export type Transfer = {
+  __typename?: 'Transfer';
+  fee: Scalars['Float'];
+  receiver_id: Scalars['Float'];
+  receiver_new_end: Scalars['String'];
+  receiver_old_end: Scalars['String'];
+  request_id: Scalars['Float'];
+  sender_id: Scalars['Float'];
+  sender_new_end: Scalars['String'];
+  sender_old_date: Scalars['String'];
+  transfer_by: Scalars['Float'];
+  transfer_date: Scalars['String'];
+  transfer_id: Scalars['Float'];
+};
+
+export type TransferRequest = {
+  __typename?: 'TransferRequest';
+  approved_by: Scalars['String'];
+  approved_date: Scalars['String'];
+  approver_comment: Scalars['String'];
+  checked_by: Scalars['String'];
+  checker_approved_date: Scalars['String'];
+  checker_comment: Scalars['String'];
+  reason: Scalars['String'];
+  receiver_id: Scalars['Float'];
+  request_by: Scalars['Float'];
+  request_date: Scalars['String'];
+  request_id: Scalars['Float'];
+  sender_id: Scalars['Float'];
+};
+
 export type UserMutationResponse = IMutationResponse & {
   __typename?: 'UserMutationResponse';
   accessToken?: Maybe<Scalars['String']>;
@@ -562,6 +693,51 @@ export type GetFruitPriceTableQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetFruitPriceTableQuery = { __typename?: 'Query', GetFruitPriceTable: Array<{ __typename?: 'FruitPrice', id: number, name: string, age: string, month_qty: number, price: number }> };
+
+export type ApproveHoldRequestMutationVariables = Exact<{
+  approverComment: Scalars['String'];
+  approvedBy: Scalars['Float'];
+  requestId: Scalars['Float'];
+}>;
+
+
+export type ApproveHoldRequestMutation = { __typename?: 'Mutation', ApproveHoldRequest: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CheckHoldRequestMutationVariables = Exact<{
+  checkedBy: Scalars['Float'];
+  requestId: Scalars['Float'];
+  checkerComment: Scalars['String'];
+}>;
+
+
+export type CheckHoldRequestMutation = { __typename?: 'Mutation', CheckHoldRequest: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CreateHoldMutationVariables = Exact<{
+  newEnd: Scalars['String'];
+  customerId: Scalars['Float'];
+  requestId: Scalars['Float'];
+}>;
+
+
+export type CreateHoldMutation = { __typename?: 'Mutation', CreateHold: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CreateHoldRequestMutationVariables = Exact<{
+  newEnd: Scalars['String'];
+  oldEnd: Scalars['String'];
+  toDate: Scalars['String'];
+  fromDate: Scalars['String'];
+  reason: Scalars['String'];
+  customerId: Scalars['Float'];
+  requestBy: Scalars['Float'];
+}>;
+
+
+export type CreateHoldRequestMutation = { __typename?: 'Mutation', CreateHoldRequest: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checker_approved_date: string, approved_by: number, approver_comment: string, approved_date: string, display_name: string, checker_name?: string | null, approved_name?: string | null, customer_name: string }> };
 
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
@@ -1063,6 +1239,226 @@ export function useGetFruitPriceTableLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetFruitPriceTableQueryHookResult = ReturnType<typeof useGetFruitPriceTableQuery>;
 export type GetFruitPriceTableLazyQueryHookResult = ReturnType<typeof useGetFruitPriceTableLazyQuery>;
 export type GetFruitPriceTableQueryResult = Apollo.QueryResult<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>;
+export const ApproveHoldRequestDocument = gql`
+    mutation ApproveHoldRequest($approverComment: String!, $approvedBy: Float!, $requestId: Float!) {
+  ApproveHoldRequest(
+    approver_comment: $approverComment
+    approved_by: $approvedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type ApproveHoldRequestMutationFn = Apollo.MutationFunction<ApproveHoldRequestMutation, ApproveHoldRequestMutationVariables>;
+
+/**
+ * __useApproveHoldRequestMutation__
+ *
+ * To run a mutation, you first call `useApproveHoldRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useApproveHoldRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [approveHoldRequestMutation, { data, loading, error }] = useApproveHoldRequestMutation({
+ *   variables: {
+ *      approverComment: // value for 'approverComment'
+ *      approvedBy: // value for 'approvedBy'
+ *      requestId: // value for 'requestId'
+ *   },
+ * });
+ */
+export function useApproveHoldRequestMutation(baseOptions?: Apollo.MutationHookOptions<ApproveHoldRequestMutation, ApproveHoldRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ApproveHoldRequestMutation, ApproveHoldRequestMutationVariables>(ApproveHoldRequestDocument, options);
+      }
+export type ApproveHoldRequestMutationHookResult = ReturnType<typeof useApproveHoldRequestMutation>;
+export type ApproveHoldRequestMutationResult = Apollo.MutationResult<ApproveHoldRequestMutation>;
+export type ApproveHoldRequestMutationOptions = Apollo.BaseMutationOptions<ApproveHoldRequestMutation, ApproveHoldRequestMutationVariables>;
+export const CheckHoldRequestDocument = gql`
+    mutation CheckHoldRequest($checkedBy: Float!, $requestId: Float!, $checkerComment: String!) {
+  CheckHoldRequest(
+    checked_by: $checkedBy
+    request_id: $requestId
+    checker_comment: $checkerComment
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CheckHoldRequestMutationFn = Apollo.MutationFunction<CheckHoldRequestMutation, CheckHoldRequestMutationVariables>;
+
+/**
+ * __useCheckHoldRequestMutation__
+ *
+ * To run a mutation, you first call `useCheckHoldRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckHoldRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkHoldRequestMutation, { data, loading, error }] = useCheckHoldRequestMutation({
+ *   variables: {
+ *      checkedBy: // value for 'checkedBy'
+ *      requestId: // value for 'requestId'
+ *      checkerComment: // value for 'checkerComment'
+ *   },
+ * });
+ */
+export function useCheckHoldRequestMutation(baseOptions?: Apollo.MutationHookOptions<CheckHoldRequestMutation, CheckHoldRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckHoldRequestMutation, CheckHoldRequestMutationVariables>(CheckHoldRequestDocument, options);
+      }
+export type CheckHoldRequestMutationHookResult = ReturnType<typeof useCheckHoldRequestMutation>;
+export type CheckHoldRequestMutationResult = Apollo.MutationResult<CheckHoldRequestMutation>;
+export type CheckHoldRequestMutationOptions = Apollo.BaseMutationOptions<CheckHoldRequestMutation, CheckHoldRequestMutationVariables>;
+export const CreateHoldDocument = gql`
+    mutation CreateHold($newEnd: String!, $customerId: Float!, $requestId: Float!) {
+  CreateHold(new_end: $newEnd, customer_id: $customerId, request_id: $requestId) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateHoldMutationFn = Apollo.MutationFunction<CreateHoldMutation, CreateHoldMutationVariables>;
+
+/**
+ * __useCreateHoldMutation__
+ *
+ * To run a mutation, you first call `useCreateHoldMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateHoldMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createHoldMutation, { data, loading, error }] = useCreateHoldMutation({
+ *   variables: {
+ *      newEnd: // value for 'newEnd'
+ *      customerId: // value for 'customerId'
+ *      requestId: // value for 'requestId'
+ *   },
+ * });
+ */
+export function useCreateHoldMutation(baseOptions?: Apollo.MutationHookOptions<CreateHoldMutation, CreateHoldMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateHoldMutation, CreateHoldMutationVariables>(CreateHoldDocument, options);
+      }
+export type CreateHoldMutationHookResult = ReturnType<typeof useCreateHoldMutation>;
+export type CreateHoldMutationResult = Apollo.MutationResult<CreateHoldMutation>;
+export type CreateHoldMutationOptions = Apollo.BaseMutationOptions<CreateHoldMutation, CreateHoldMutationVariables>;
+export const CreateHoldRequestDocument = gql`
+    mutation CreateHoldRequest($newEnd: String!, $oldEnd: String!, $toDate: String!, $fromDate: String!, $reason: String!, $customerId: Float!, $requestBy: Float!) {
+  CreateHoldRequest(
+    new_end: $newEnd
+    old_end: $oldEnd
+    to_date: $toDate
+    from_date: $fromDate
+    reason: $reason
+    customer_id: $customerId
+    request_by: $requestBy
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateHoldRequestMutationFn = Apollo.MutationFunction<CreateHoldRequestMutation, CreateHoldRequestMutationVariables>;
+
+/**
+ * __useCreateHoldRequestMutation__
+ *
+ * To run a mutation, you first call `useCreateHoldRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateHoldRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createHoldRequestMutation, { data, loading, error }] = useCreateHoldRequestMutation({
+ *   variables: {
+ *      newEnd: // value for 'newEnd'
+ *      oldEnd: // value for 'oldEnd'
+ *      toDate: // value for 'toDate'
+ *      fromDate: // value for 'fromDate'
+ *      reason: // value for 'reason'
+ *      customerId: // value for 'customerId'
+ *      requestBy: // value for 'requestBy'
+ *   },
+ * });
+ */
+export function useCreateHoldRequestMutation(baseOptions?: Apollo.MutationHookOptions<CreateHoldRequestMutation, CreateHoldRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateHoldRequestMutation, CreateHoldRequestMutationVariables>(CreateHoldRequestDocument, options);
+      }
+export type CreateHoldRequestMutationHookResult = ReturnType<typeof useCreateHoldRequestMutation>;
+export type CreateHoldRequestMutationResult = Apollo.MutationResult<CreateHoldRequestMutation>;
+export type CreateHoldRequestMutationOptions = Apollo.BaseMutationOptions<CreateHoldRequestMutation, CreateHoldRequestMutationVariables>;
+export const HoldRequestsDocument = gql`
+    query HoldRequests {
+  HoldRequests {
+    request_id
+    request_by
+    request_date
+    customer_id
+    reason
+    from_date
+    to_date
+    old_end
+    new_end
+    checked_by
+    checker_comment
+    checker_approved_date
+    approved_by
+    approver_comment
+    approved_date
+    display_name
+    checker_name
+    approved_name
+    customer_name
+  }
+}
+    `;
+
+/**
+ * __useHoldRequestsQuery__
+ *
+ * To run a query within a React component, call `useHoldRequestsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHoldRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHoldRequestsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHoldRequestsQuery(baseOptions?: Apollo.QueryHookOptions<HoldRequestsQuery, HoldRequestsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HoldRequestsQuery, HoldRequestsQueryVariables>(HoldRequestsDocument, options);
+      }
+export function useHoldRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HoldRequestsQuery, HoldRequestsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HoldRequestsQuery, HoldRequestsQueryVariables>(HoldRequestsDocument, options);
+        }
+export type HoldRequestsQueryHookResult = ReturnType<typeof useHoldRequestsQuery>;
+export type HoldRequestsLazyQueryHookResult = ReturnType<typeof useHoldRequestsLazyQuery>;
+export type HoldRequestsQueryResult = Apollo.QueryResult<HoldRequestsQuery, HoldRequestsQueryVariables>;
 export const LoginDocument = gql`
     mutation Login($loginInput: LoginInput!) {
   login(loginInput: $loginInput) {

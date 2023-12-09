@@ -1,0 +1,23 @@
+mutation CreateHoldRequest(
+  $newEnd: String!
+  $oldEnd: String!
+  $toDate: String!
+  $fromDate: String!
+  $reason: String!
+  $customerId: Float!
+  $requestBy: Float!
+) {
+  CreateHoldRequest(
+    new_end: $newEnd
+    old_end: $oldEnd
+    to_date: $toDate
+    from_date: $fromDate
+    reason: $reason
+    customer_id: $customerId
+    request_by: $requestBy
+  ) {
+    code
+    success
+    message
+  }
+}

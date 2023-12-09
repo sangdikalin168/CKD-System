@@ -23,49 +23,18 @@ const items = [
     path: "/members",
     icon: <HiOutlineTicket className="text-2xl" />,
   },
-  // {
-  //   title: "Product",
-  //   icon: <HiOutlineUserCircle className="text-2xl" />,
-  //   childrens: [
-  //     {
-  //       title: "Product List",
-  //       path: "/product",
-  //       icon: <HiOutlineUserCircle className="text-2xl" />,
-  //     },
-  //     {
-  //       title: "Service",
-  //       path: "/other_product",
-  //       icon: <HiOutlineUserCircle className="text-2xl" />,
-  //     },
-  //     {
-  //       title: "Category",
-  //       path: "/category",
-  //       icon: <FaUserCog className="text-2xl" />,
-  //     },
-  //     {
-  //       title: "Brand",
-  //       path: "/brand",
-  //       icon: <FaUserCog className="text-2xl" />,
-  //     },
-  //     {
-  //       title: "Specification",
-  //       path: "/specification",
-  //       icon: <FaUserCog className="text-2xl" />,
-  //     },
-  //   ],
-  // },
   {
-    title: "Stock",
+    title: "Request",
     icon: <HiOutlineUserCircle className="text-2xl" />,
     childrens: [
       {
-        title: "Stock",
-        path: "/stock",
-        icon: <FaUserCog className="text-2xl" />,
+        title: "Hold Request",
+        path: "/hold_request",
+        icon: <HiOutlineUserCircle className="text-2xl" />,
       },
       {
-        title: "Stock Count",
-        path: "/stock_count",
+        title: "Transfer",
+        path: "/transfer_request",
         icon: <HiOutlineUserCircle className="text-2xl" />,
       },
     ],

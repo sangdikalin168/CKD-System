@@ -25,7 +25,7 @@ export class Users extends BaseEntity {
   password!: string;
 
   @Field()
-  @Column({ type: "date", default: () => "CURRENT_DATE" })
+  @Column({ type: "date", default: () => "CURRENT_TIMESTAMP" })
   created_at!: string;
 
   @Field()

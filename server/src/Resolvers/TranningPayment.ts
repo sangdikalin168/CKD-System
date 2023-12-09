@@ -33,6 +33,8 @@ export class TrainningPaymentMutationResponse implements TrainningPaymentRespons
     message?: string;
 }
 
+
+
 @Resolver()
 export class TranningPaymentResolver {
 

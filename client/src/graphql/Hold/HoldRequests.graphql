@@ -1,0 +1,23 @@
+query HoldRequests {
+  HoldRequests {
+    request_id
+    request_by
+    request_date
+    customer_id
+    reason
+    from_date
+    to_date
+    old_end
+    new_end
+    checked_by
+    checker_comment
+    checker_approved_date
+    approved_by
+    approver_comment
+    approved_date
+    display_name
+    checker_name
+    approved_name
+    customer_name
+  }
+}

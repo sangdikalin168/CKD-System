@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { CurrencyDollarIcon } from "@heroicons/react/20/solid";
+import { CurrencyDollarIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Fragment, useEffect, useRef, useState } from "react";
 import DataTable from "../../Component/DataTable";
@@ -11,6 +11,8 @@ import {
 import { TypeOptions, toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInvoice";
+import { DateTimePicker } from "../../../../components/DateTimePicker/DateTimePicker";
+import Notifications from "../../../../components/Notification";
 
 const notify = (
   message: string,
@@ -129,7 +131,7 @@ export const RenewForm = (props) => {
   const [month_qty, setMonthQty] = useState(1);
   const [shift, setShift] = useState("Full");
   const [price, setPrice] = useState(0);
-  const [age, setAge] = useState("ចាស់");
+  const [age, setAge] = useState("ធំ");
   const [promotion, setPromotion] = useState("");
 
 
@@ -145,7 +147,6 @@ export const RenewForm = (props) => {
       setMemberPriceTable(FilterPrice())
     }
   }, [month_qty, shift, age, price_table])
-
 
   return (
     <>
@@ -179,7 +180,7 @@ export const RenewForm = (props) => {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
+                <Dialog.Panel className="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="">
                       <div className="mt-3 text-center">
@@ -197,16 +198,16 @@ export const RenewForm = (props) => {
                                   <button
                                     type="button"
                                     className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    onClick={() => { setAge("ចាស់"); }}
+                                    onClick={() => { setAge("ធំ"); }}
                                   >
-                                    ចាស់
+                                    ធំ
                                   </button>
                                   <button
                                     type="button"
                                     className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    onClick={() => { setAge("ក្មេង"); }}
+                                    onClick={() => { setAge("តូច"); }}
                                   >
-                                    ក្មេង
+                                    តូច
                                   </button>
                                 </div>
 
@@ -367,7 +368,8 @@ const ConfirmModal = (props: any) => {
   };
 
   const effectiveDate = new Date(props.old_end);
-  const renewalDate = getRenewalDate(effectiveDate, props.month_qty);
+  const [renewalDate, setRenewalDate] = useState(getRenewalDate(effectiveDate, props.month_qty))
+  //const renewalDate = getRenewalDate(effectiveDate, props.month_qty);
   const [createMemberPayment] = useCreateCustomerPaymentMutation();
 
   const [payment_id, setPaymentID] = useState(0);
@@ -420,6 +422,23 @@ const ConfirmModal = (props: any) => {
   });
   const buttonRef = useRef<HTMLInputElement>(null);
 
+  const [showDateTo, setShowDateTo] = useState(false);
+
+  const handleCloseDateTo = (state: boolean) => {
+    setShowDateTo(state);
+  };
+  const [selectedDateTo, setSelectedDateTo] = useState(
+    date_format(new Date(renewalDate))
+  );
+
+  const handleChangeDateTo = (selectedDate: Date) => {
+    if (selectedDate < new Date(renewalDate)) {
+      setSelectedDateTo(date_format(selectedDate));
+    } else {
+      Notifications("ត្រឹមត្រូវ", "error")
+    }
+  };
+
   useEffect(() => {
     // This function will be called after the component re-renders
     if (payment_id > 0) {
@@ -441,12 +460,34 @@ const ConfirmModal = (props: any) => {
       <p className="text-lg font-semibold leading-6 text-gray-900">
         សុពលភាពចាស់: {props.old_end}
       </p>
-      <p className="text-lg font-semibold leading-6 text-gray-900 mb-2 ">
-        ថ្ងៃបង់ប្រាក់បន្ទាប់: {date_format(renewalDate)}
-      </p>
+
+      <div>
+        <p className="text-lg font-semibold leading-6 text-gray-900 mb-2">
+          ថ្ងៃបង់ប្រាក់បន្ទាប់: {date_format(renewalDate)}
+        </p>
+
+        <div className="flex">
+          <button
+            type="button"
+            className="justify-center rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            onClick={() => setRenewalDate(selectedDateTo)}
+          >
+            កែប្រែថ្ងៃបញ្ចប់
+          </button>
+          <DateTimePicker
+            onChange={handleChangeDateTo}
+            value={selectedDateTo}
+            show={showDateTo}
+            setShow={handleCloseDateTo}
+            classNames={"top-[-62px]"}
+          />
+        </div>
+
+      </div>
+
       <button
         type="button"
-        className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+        className="mt-5 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
         onClick={() => props.setIsShowConfirmModal(false)}
       >
         បោះបង់
@@ -459,7 +500,7 @@ const ConfirmModal = (props: any) => {
         យល់ព្រម
       </button>
 
-      <div className="hidden1">
+      <div className="hidden">
         <MemberInvoice
           ref={componentRef}
           invoice_id={payment_id}

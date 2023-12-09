@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-//@ts-nocheck
-import { PencilIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
+import { EyeDropperIcon, EyeIcon, PencilIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import LoadingPage from "../../components/LoadingPage/LoadingPage";
@@ -65,6 +63,12 @@ export const Member = () => {
       header: (info) => <span>{info.column.id}</span>,
       footer: (info) => info.column.id,
     }),
+    columnHelper.accessor((row) => row.end_membership_date, {
+      id: "End Date",
+      cell: (info) => info.getValue(),
+      header: (info) => <span>{info.column.id}</span>,
+      footer: (info) => info.column.id,
+    }),
     columnHelper.accessor((row) => row.customer_id, {
       id: "Action",
       cell: (info) => (
@@ -80,7 +84,7 @@ export const Member = () => {
                     setCustomerID(info.row.original.customer_id);
                   }}
                 >
-                  <PencilIcon
+                  <EyeIcon
                     className="h-4 w-4 text-gray-500"
                     aria-hidden="true"
                   />
@@ -142,6 +146,7 @@ export const Member = () => {
       setData_table(data.GetCustomers);
     }
   }, [data]);
+
   return (
     <>
       {!member_loading ? (

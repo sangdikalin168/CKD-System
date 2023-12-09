@@ -216,7 +216,7 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                         <th
                           key={header.id}
                           scope="col"
-                          className="group px-6 py-3 text-left text-xs font-medium text-black tracking-wider"
+                          className="group px-2 py-3 text-left text-xs font-medium text-black tracking-wider"
                         >
                           <div className="flex items-center justify-between">
                             {/* Add a sort direction indicator */}
@@ -249,8 +249,7 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                       <tr key={row.id} className="divide-x divide-gray-200 dark:divide-gray-300">
                         {row.getVisibleCells().map((cell) => {
                           return (
-                            // <td key={cell.id} className="px-6 py-1 whitespace-nowrap"></td>
-                            <td key={cell.id} className="px-6 py-1 whitespace">
+                            <td key={cell.id} className="px-2 py-1 whitespace">
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()

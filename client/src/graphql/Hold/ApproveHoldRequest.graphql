@@ -1,0 +1,15 @@
+mutation ApproveHoldRequest(
+  $approverComment: String!
+  $approvedBy: Float!
+  $requestId: Float!
+) {
+  ApproveHoldRequest(
+    approver_comment: $approverComment
+    approved_by: $approvedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}
