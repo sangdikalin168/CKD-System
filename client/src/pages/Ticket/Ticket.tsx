@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { ComponentToPrint } from "../../components/ComponentToPrint/index";
@@ -19,6 +18,11 @@ const notify = (
       type: toastType,
     });
   }
+};
+
+const datetime_format = (date_time: string) => {
+  const date = new Date(date_time);
+  return date.toLocaleDateString("fr-CA") + " " + date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
 };
 
 export default function Ticket() {
@@ -148,6 +152,7 @@ export default function Ticket() {
             ref={componentRef}
             price={price}
             name={seller}
+            date={datetime_format(new Date())}
             uuid={uuid + "Ticket"}
           />
         </div>

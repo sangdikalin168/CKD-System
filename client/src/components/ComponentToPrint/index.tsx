@@ -22,7 +22,7 @@ export const ComponentToPrint = React.forwardRef((props, ref) => {
                     />
 
                     {props.uuid}
-                    <p className="text-lg font-semibold text-black">ការបរិច្ចេទ: {`01-01-2023`}</p>
+                    <p className="text-lg font-semibold text-black">ការបរិច្ចេទ: {props.date}</p>
                     <p className="text-lg font-semibold text-black">Cashier: {props.name}</p>
                     <div className="flex text-lg text-black font-semibold">
                         <div className="flex-grow">តម្លៃសំបុត្រ </div><strong>{props.price}</strong>

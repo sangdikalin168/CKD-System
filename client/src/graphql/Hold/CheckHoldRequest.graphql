@@ -1,12 +1,14 @@
 mutation CheckHoldRequest(
+  $checkerStatus: String!
+  $checkerComment: String!
   $checkedBy: Float!
   $requestId: Float!
-  $checkerComment: String!
 ) {
   CheckHoldRequest(
+    checker_status: $checkerStatus
+    checker_comment: $checkerComment
     checked_by: $checkedBy
     request_id: $requestId
-    checker_comment: $checkerComment
   ) {
     code
     success

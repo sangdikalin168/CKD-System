@@ -37,7 +37,7 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
         setShowDateFrom(state);
     };
     const [selectedDateFrom, setSelectedDateFrom] = useState(
-        date_format(new Date(old_end))
+        date_format(new Date())
     );
     const handleChangeDateFrom = (selectedDate: Date) => {
         //TODO: Condition Must Bigger Than Present

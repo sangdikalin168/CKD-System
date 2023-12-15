@@ -164,16 +164,21 @@ export type HoldJoin = {
   approved_date: Scalars['String'];
   approved_name?: Maybe<Scalars['String']>;
   approver_comment: Scalars['String'];
+  approver_status: Scalars['String'];
   checked_by: Scalars['Float'];
-  checker_approved_date: Scalars['String'];
+  checked_date: Scalars['String'];
   checker_comment: Scalars['String'];
   checker_name?: Maybe<Scalars['String']>;
+  checker_status: Scalars['String'];
   customer_id: Scalars['Float'];
   customer_name: Scalars['String'];
   display_name: Scalars['String'];
   from_date: Scalars['String'];
   new_end: Scalars['String'];
   old_end: Scalars['String'];
+  process: Scalars['String'];
+  processed_by: Scalars['Float'];
+  processed_name?: Maybe<Scalars['String']>;
   reason: Scalars['String'];
   request_by: Scalars['Float'];
   request_date: Scalars['String'];
@@ -193,13 +198,17 @@ export type HoldRequest = {
   approved_by: Scalars['Float'];
   approved_date: Scalars['String'];
   approver_comment: Scalars['String'];
+  approver_status: Scalars['String'];
   checked_by: Scalars['Float'];
-  checker_approved_date: Scalars['String'];
+  checked_date: Scalars['String'];
   checker_comment: Scalars['String'];
+  checker_status: Scalars['String'];
   customer_id: Scalars['Float'];
   from_date: Scalars['String'];
   new_end: Scalars['String'];
   old_end: Scalars['String'];
+  process: Scalars['String'];
+  processed_by: Scalars['Float'];
   reason: Scalars['String'];
   request_by: Scalars['Float'];
   request_date: Scalars['String'];
@@ -318,6 +327,7 @@ export type Mutation = {
 export type MutationApproveHoldRequestArgs = {
   approved_by: Scalars['Float'];
   approver_comment: Scalars['String'];
+  approver_status: Scalars['String'];
   request_id: Scalars['Float'];
 };
 
@@ -325,6 +335,7 @@ export type MutationApproveHoldRequestArgs = {
 export type MutationCheckHoldRequestArgs = {
   checked_by: Scalars['Float'];
   checker_comment: Scalars['String'];
+  checker_status: Scalars['String'];
   request_id: Scalars['Float'];
 };
 
@@ -695,6 +706,7 @@ export type GetFruitPriceTableQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetFruitPriceTableQuery = { __typename?: 'Query', GetFruitPriceTable: Array<{ __typename?: 'FruitPrice', id: number, name: string, age: string, month_qty: number, price: number }> };
 
 export type ApproveHoldRequestMutationVariables = Exact<{
+  approverStatus: Scalars['String'];
   approverComment: Scalars['String'];
   approvedBy: Scalars['Float'];
   requestId: Scalars['Float'];
@@ -704,9 +716,10 @@ export type ApproveHoldRequestMutationVariables = Exact<{
 export type ApproveHoldRequestMutation = { __typename?: 'Mutation', ApproveHoldRequest: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
 
 export type CheckHoldRequestMutationVariables = Exact<{
+  checkerStatus: Scalars['String'];
+  checkerComment: Scalars['String'];
   checkedBy: Scalars['Float'];
   requestId: Scalars['Float'];
-  checkerComment: Scalars['String'];
 }>;
 
 
@@ -737,7 +750,7 @@ export type CreateHoldRequestMutation = { __typename?: 'Mutation', CreateHoldReq
 export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checker_approved_date: string, approved_by: number, approver_comment: string, approved_date: string, display_name: string, checker_name?: string | null, approved_name?: string | null, customer_name: string }> };
+export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, display_name: string, customer_name: string, checker_name?: string | null, approved_name?: string | null, process: string, processed_name?: string | null, processed_by: number }> };
 
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
@@ -1240,8 +1253,9 @@ export type GetFruitPriceTableQueryHookResult = ReturnType<typeof useGetFruitPri
 export type GetFruitPriceTableLazyQueryHookResult = ReturnType<typeof useGetFruitPriceTableLazyQuery>;
 export type GetFruitPriceTableQueryResult = Apollo.QueryResult<GetFruitPriceTableQuery, GetFruitPriceTableQueryVariables>;
 export const ApproveHoldRequestDocument = gql`
-    mutation ApproveHoldRequest($approverComment: String!, $approvedBy: Float!, $requestId: Float!) {
+    mutation ApproveHoldRequest($approverStatus: String!, $approverComment: String!, $approvedBy: Float!, $requestId: Float!) {
   ApproveHoldRequest(
+    approver_status: $approverStatus
     approver_comment: $approverComment
     approved_by: $approvedBy
     request_id: $requestId
@@ -1267,6 +1281,7 @@ export type ApproveHoldRequestMutationFn = Apollo.MutationFunction<ApproveHoldRe
  * @example
  * const [approveHoldRequestMutation, { data, loading, error }] = useApproveHoldRequestMutation({
  *   variables: {
+ *      approverStatus: // value for 'approverStatus'
  *      approverComment: // value for 'approverComment'
  *      approvedBy: // value for 'approvedBy'
  *      requestId: // value for 'requestId'
@@ -1281,11 +1296,12 @@ export type ApproveHoldRequestMutationHookResult = ReturnType<typeof useApproveH
 export type ApproveHoldRequestMutationResult = Apollo.MutationResult<ApproveHoldRequestMutation>;
 export type ApproveHoldRequestMutationOptions = Apollo.BaseMutationOptions<ApproveHoldRequestMutation, ApproveHoldRequestMutationVariables>;
 export const CheckHoldRequestDocument = gql`
-    mutation CheckHoldRequest($checkedBy: Float!, $requestId: Float!, $checkerComment: String!) {
+    mutation CheckHoldRequest($checkerStatus: String!, $checkerComment: String!, $checkedBy: Float!, $requestId: Float!) {
   CheckHoldRequest(
+    checker_status: $checkerStatus
+    checker_comment: $checkerComment
     checked_by: $checkedBy
     request_id: $requestId
-    checker_comment: $checkerComment
   ) {
     code
     success
@@ -1308,9 +1324,10 @@ export type CheckHoldRequestMutationFn = Apollo.MutationFunction<CheckHoldReques
  * @example
  * const [checkHoldRequestMutation, { data, loading, error }] = useCheckHoldRequestMutation({
  *   variables: {
+ *      checkerStatus: // value for 'checkerStatus'
+ *      checkerComment: // value for 'checkerComment'
  *      checkedBy: // value for 'checkedBy'
  *      requestId: // value for 'requestId'
- *      checkerComment: // value for 'checkerComment'
  *   },
  * });
  */
@@ -1421,14 +1438,19 @@ export const HoldRequestsDocument = gql`
     new_end
     checked_by
     checker_comment
-    checker_approved_date
+    checked_date
+    checker_status
     approved_by
     approver_comment
     approved_date
+    approver_status
     display_name
+    customer_name
     checker_name
     approved_name
-    customer_name
+    process
+    processed_name
+    processed_by
   }
 }
     `;

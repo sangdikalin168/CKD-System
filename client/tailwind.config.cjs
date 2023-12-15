@@ -8,6 +8,11 @@ module.exports = {
   theme: {
     extend: {},
   },
+  variants: {
+    extend: {
+      visibility: ["group-hover"],
+    },
+  },
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),

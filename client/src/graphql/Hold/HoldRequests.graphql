@@ -11,13 +11,18 @@ query HoldRequests {
     new_end
     checked_by
     checker_comment
-    checker_approved_date
+    checked_date
+    checker_status
     approved_by
     approver_comment
     approved_date
+    approver_status
     display_name
+    customer_name
     checker_name
     approved_name
-    customer_name
+    process
+    processed_name
+    processed_by
   }
 }

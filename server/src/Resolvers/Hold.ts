@@ -44,6 +44,9 @@ export class HoldJoin extends HoldRequest {
 
     @Field({ nullable: true })
     approved_name: string;
+
+    @Field({ nullable: true })
+    processed_name: string;
 }
 
 const NOW = new Date().toLocaleString("sv-SE").replace(/,/g, "");
@@ -53,8 +56,7 @@ export class HoldResolver {
 
     @Query((_return) => [HoldJoin])
     async HoldRequests() {
-        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name, checked_by,(SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checker_approved_date, approved_by,(SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name,approver_comment,approved_date FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id
-        ORDER BY request_date ASC;`)
+        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date ASC;`)
         return JSON.parse(JSON.stringify(result));
     }
 
@@ -89,14 +91,16 @@ export class HoldResolver {
     async CheckHoldRequest(
         @Arg("request_id") request_id: number,
         @Arg("checked_by") checked_by: number,
-        @Arg("checker_comment") checker_comment: string
+        @Arg("checker_comment") checker_comment: string,
+        @Arg("checker_status") checker_status: string
     ): Promise<HoldMutationResponse> {
         await HoldRequest.update({
             request_id: request_id
         }, {
             checker_comment: checker_comment,
             checked_by: checked_by,
-            checker_approved_date: NOW
+            checked_date: NOW,
+            checker_status: checker_status
         })
 
         return {
@@ -111,13 +115,15 @@ export class HoldResolver {
         @Arg("request_id") request_id: number,
         @Arg("approved_by") approved_by: number,
         @Arg("approver_comment") approver_comment: string,
+        @Arg("approver_status") approver_status: string,
     ): Promise<HoldMutationResponse> {
         await HoldRequest.update({
             request_id: request_id
         }, {
             approved_by: approved_by,
             approved_date: NOW,
-            approver_comment: approver_comment
+            approver_comment: approver_comment,
+            approver_status: approver_status
         })
 
         return {

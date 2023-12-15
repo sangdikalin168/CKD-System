@@ -50,7 +50,11 @@ export class HoldRequest extends BaseEntity {
 
     @Field()
     @Column({ type: "datetime", default: "2000-01-01" })
-    checker_approved_date: string;
+    checked_date: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    checker_status: string;
 
     @Field()
     @Column({ default: 0 })
@@ -63,4 +67,16 @@ export class HoldRequest extends BaseEntity {
     @Field()
     @Column({ type: "datetime", default: "2000-01-01" })
     approved_date: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    approver_status: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    process: string;
+
+    @Field()
+    @Column({ default: 0 })
+    processed_by: number;
 }

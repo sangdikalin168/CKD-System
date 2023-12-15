@@ -18,12 +18,18 @@ type HoldRequest = {
     customer_name: string
     checker_name: string
     checked_by: number
-    checker_approved_date: string
+    checked_date: string
+    checker_status: string
     checker_comment: string
     approved_name: string
     approved_by: number
     approved_date: string
     approver_comment: string
+    approver_status: string
+    process: string
+    processed_by: number
+    processed_name: string
+
 }
 
 const datetime_format = (date_time: string) => {
@@ -98,24 +104,33 @@ const HoldRequest = () => {
             cell: (info) => (
                 <>
                     {
-                        info.row.original.checked_by === -1 ?
-                            <strong className="text-red-500">Rejected</strong>
+                        info.row.original.checker_status === "Pending" ?
+                            <button
+                                type="button"
+                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                onClick={() => {
+                                    HandleCheckerApprove();
+                                    setRequestID(info.row.original.request_id)
+                                }}
+                            >
+                                Action
+                            </button>
                             :
                             <>
                                 {
-                                    info.row.original.checked_by > 0 ? <strong className="text-green-500">Approved</strong> :
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                            onClick={() => {
-                                                HandleCheckerApprove();
-                                                setRequestID(info.row.original.request_id)
-                                            }}
-                                        >
-                                            Action
-                                        </button>
+                                    info.row.original.checker_status === "Approved" ?
+                                        <div className="group">
+                                            <strong className="text-green-500 visible group-hover:invisible">Approved</strong>
+                                            <strong className="text-green-500 invisible group-hover:visible">{info.row.original.checker_comment}</strong>
+                                        </div>
+                                        :
+                                        <div className="group">
+                                            <strong className="text-red-500 visible group-hover:invisible">Rejected</strong>
+                                            <strong className="text-red-500 invisible group-hover:visible">{info.row.original.checker_comment}</strong>
+                                        </div>
                                 }
                             </>
+
                     }
                 </>
 
@@ -128,23 +143,33 @@ const HoldRequest = () => {
             cell: (info) => (
                 <>
                     {
-                        info.row.original.approved_by === -1 ? <strong className="text-red-500">Rejected</strong>
+                        info.row.original.approver_status === "Pending" ?
+                            <button
+                                type="button"
+                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                onClick={() => {
+                                    CheckApproverRole();
+                                    setRequestID(info.row.original.request_id)
+                                }}
+                            >
+                                Action
+                            </button>
                             :
                             <>
                                 {
-                                    info.row.original.approved_by > 0 ? <strong className="text-green-500">Approved</strong> :
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                            onClick={() => {
-                                                setOpenApprover(true);
-                                                setRequestID(info.row.original.request_id);
-                                            }}
-                                        >
-                                            Action
-                                        </button>
+                                    info.row.original.checker_status === "Approved" ?
+                                        <div className="group">
+                                            <strong className="text-green-500 visible group-hover:invisible">Approved</strong>
+                                            <strong className="text-green-500 invisible group-hover:visible">{info.row.original.approver_comment}</strong>
+                                        </div>
+                                        :
+                                        <div className="group">
+                                            <strong className="text-red-500 visible group-hover:invisible">Rejected</strong>
+                                            <strong className="text-red-500 invisible group-hover:visible">{info.row.original.approver_comment}</strong>
+                                        </div>
                                 }
                             </>
+
                     }
                 </>
 
@@ -153,32 +178,44 @@ const HoldRequest = () => {
             footer: (info) => info.column.id,
         }),
         columnHelper.accessor((row) => row.request_id, {
-            id: "Status",
+            id: "Process",
             cell: (info) => (
                 <div className="flex">
                     {
-                        info.row.original.checker_name && info.row.original.approved_name !== null ?
+                        info.row.original.checker_status === "Approved" && info.row.original.approver_status === "Approved" ?
                             <>
-                                <span className="hidden sm:block">
-                                    <button
-                                        type="button"
-                                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    // onClick={() => {
-                                    //     setShowProfile(!showProfile);
-                                    //     setCustomerID(info.row.original.customer_id);
-                                    // }}
-                                    >
-                                        <PrinterIcon
-                                            className="h-4 w-4 text-gray-500"
-                                            aria-hidden="true"
-                                        />
-                                    </button>
-                                </span>
-                            </> : <strong className="text-red-600">Pending</strong>
+                                {
+                                    info.row.original.processed_by === 0 ?
+                                        <span className="hidden sm:block">
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                            // onClick={() => {
+                                            //     setShowProfile(!showProfile);
+                                            //     setCustomerID(info.row.original.customer_id);
+                                            // }}
+                                            >
+                                                <PrinterIcon
+                                                    className="h-4 w-4 text-gray-500"
+                                                    aria-hidden="true"
+                                                />
+                                            </button>
+                                        </span>
+                                        :
+                                        <p>{info.row.original.processed_name}</p>
+                                }
+
+                            </>
+                            :
+                            <>
+                                {
+                                    <p>Pending</p>
+                                }
+                            </>
                     }
                 </div>
             ),
-            header: () => <span>Action</span>,
+            header: () => <span>Process</span>,
             footer: (info) => info.column.id,
         }),
     ];
@@ -188,7 +225,6 @@ const HoldRequest = () => {
     const [checkerApprove] = useCheckHoldRequestMutation();
     const [approveHold] = useApproveHoldRequestMutation();
 
-
     const HandleCheckerApprove = async () => {
         //TODO: Check Permission
         const userRole = localStorage.getItem("role");
@@ -196,9 +232,17 @@ const HoldRequest = () => {
             setOpenChecker(true)
             return;
         }
-
         Notifications("អ្នកមិនមានសិទ្ធិទេ", "error")
+    }
 
+    const CheckApproverRole = async () => {
+        //TODO: Check Permission
+        const userRole = localStorage.getItem("role");
+        if (userRole === "Admin") {
+            setOpenApprover(true)
+            return;
+        }
+        Notifications("អ្នកមិនមានសិទ្ធិទេ", "error")
     }
 
     const [getCustomer, { data: member }] = useGetCustomerDetailLazyQuery({ fetchPolicy: "no-cache" });
@@ -275,9 +319,10 @@ const HoldRequest = () => {
                                                 //TODO: Update To Checked
                                                 const res = await checkerApprove({
                                                     variables: {
-                                                        checkedBy: parseInt(localStorage.getItem("user_id")),
+                                                        checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
-                                                        checkerComment: description
+                                                        checkerComment: description,
+                                                        checkerStatus: "Approved"
                                                     }
                                                 })
 
@@ -301,9 +346,10 @@ const HoldRequest = () => {
                                                 //TODO: Update To Checked
                                                 const res = await checkerApprove({
                                                     variables: {
-                                                        checkedBy: -1,
+                                                        checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
-                                                        checkerComment: description
+                                                        checkerComment: description,
+                                                        checkerStatus: "Rejected"
                                                     }
                                                 })
 
@@ -380,9 +426,10 @@ const HoldRequest = () => {
                                                 //TODO: Update To Checked
                                                 const res = await approveHold({
                                                     variables: {
-                                                        approvedBy: parseInt(localStorage.getItem("user_id")),
+                                                        approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
-                                                        approverComment: description
+                                                        approverComment: description,
+                                                        approverStatus: "Approved"
                                                     }
                                                 })
 
@@ -406,14 +453,15 @@ const HoldRequest = () => {
                                                 //TODO: Update To Checked
                                                 const res = await approveHold({
                                                     variables: {
-                                                        approvedBy: -1,
+                                                        approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
-                                                        approverComment: description
+                                                        approverComment: description,
+                                                        approverStatus: "Rejected"
                                                     }
                                                 })
 
                                                 if (res.data?.ApproveHoldRequest.success) {
-                                                    Notifications("Approved", "success")
+                                                    Notifications("Rejected", "success")
                                                     refetch();
                                                     setOpenApprover(false);
                                                     return;
