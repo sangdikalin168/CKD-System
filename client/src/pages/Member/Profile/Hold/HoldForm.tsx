@@ -90,7 +90,7 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
         const new_end = calculateNewEndDate(new Date(selectedDateTo), days);
         const res = await createHoldRequest({
             variables: {
-                requestBy: parseInt(localStorage.getItem("user_id")),
+                requestBy: parseInt(localStorage.getItem("user_id") || "99"),
                 customerId: customer_id,
                 reason: reason,
                 fromDate: selectedDateFrom,
