@@ -176,6 +176,7 @@ export type HoldJoin = {
   from_date: Scalars['String'];
   new_end: Scalars['String'];
   old_end: Scalars['String'];
+  phone: Scalars['String'];
   process: Scalars['String'];
   processed_by: Scalars['Float'];
   processed_name?: Maybe<Scalars['String']>;
@@ -189,6 +190,7 @@ export type HoldJoin = {
 export type HoldMutationResponse = HoldResponse & {
   __typename?: 'HoldMutationResponse';
   code: Scalars['Float'];
+  hold_id?: Maybe<Scalars['Float']>;
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
 };
@@ -218,6 +220,7 @@ export type HoldRequest = {
 
 export type HoldResponse = {
   code: Scalars['Float'];
+  hold_id?: Maybe<Scalars['Float']>;
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
 };
@@ -384,6 +387,7 @@ export type MutationCreateFruitPaymentArgs = {
 export type MutationCreateHoldArgs = {
   customer_id: Scalars['Float'];
   new_end: Scalars['String'];
+  processed_by: Scalars['Float'];
   request_id: Scalars['Float'];
 };
 
@@ -729,10 +733,11 @@ export type CreateHoldMutationVariables = Exact<{
   newEnd: Scalars['String'];
   customerId: Scalars['Float'];
   requestId: Scalars['Float'];
+  processedBy: Scalars['Float'];
 }>;
 
 
-export type CreateHoldMutation = { __typename?: 'Mutation', CreateHold: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+export type CreateHoldMutation = { __typename?: 'Mutation', CreateHold: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null, hold_id?: number | null } };
 
 export type CreateHoldRequestMutationVariables = Exact<{
   newEnd: Scalars['String'];
@@ -750,7 +755,7 @@ export type CreateHoldRequestMutation = { __typename?: 'Mutation', CreateHoldReq
 export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, display_name: string, customer_name: string, checker_name?: string | null, approved_name?: string | null, process: string, processed_name?: string | null, processed_by: number }> };
+export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, display_name: string, customer_name: string, checker_name?: string | null, approved_name?: string | null, process: string, processed_name?: string | null, processed_by: number, phone: string }> };
 
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
@@ -1339,11 +1344,17 @@ export type CheckHoldRequestMutationHookResult = ReturnType<typeof useCheckHoldR
 export type CheckHoldRequestMutationResult = Apollo.MutationResult<CheckHoldRequestMutation>;
 export type CheckHoldRequestMutationOptions = Apollo.BaseMutationOptions<CheckHoldRequestMutation, CheckHoldRequestMutationVariables>;
 export const CreateHoldDocument = gql`
-    mutation CreateHold($newEnd: String!, $customerId: Float!, $requestId: Float!) {
-  CreateHold(new_end: $newEnd, customer_id: $customerId, request_id: $requestId) {
+    mutation CreateHold($newEnd: String!, $customerId: Float!, $requestId: Float!, $processedBy: Float!) {
+  CreateHold(
+    new_end: $newEnd
+    customer_id: $customerId
+    request_id: $requestId
+    processed_by: $processedBy
+  ) {
     code
     success
     message
+    hold_id
   }
 }
     `;
@@ -1365,6 +1376,7 @@ export type CreateHoldMutationFn = Apollo.MutationFunction<CreateHoldMutation, C
  *      newEnd: // value for 'newEnd'
  *      customerId: // value for 'customerId'
  *      requestId: // value for 'requestId'
+ *      processedBy: // value for 'processedBy'
  *   },
  * });
  */
@@ -1451,6 +1463,7 @@ export const HoldRequestsDocument = gql`
     process
     processed_name
     processed_by
+    phone
   }
 }
     `;

@@ -22,6 +22,9 @@ export abstract class HoldResponse {
 
     @Field({ nullable: true })
     message?: string;
+
+    @Field({ nullable: true })
+    hold_id?: number;
 }
 
 @ObjectType({ implements: HoldResponse })
@@ -29,6 +32,7 @@ export class HoldMutationResponse implements HoldResponse {
     code: number;
     success: boolean;
     message?: string;
+    hold_id?: number | undefined;
 }
 
 @ObjectType()
@@ -38,6 +42,9 @@ export class HoldJoin extends HoldRequest {
 
     @Field()
     customer_name: string;
+
+    @Field()
+    phone: string;
 
     @Field({ nullable: true })
     checker_name: string;
@@ -56,7 +63,7 @@ export class HoldResolver {
 
     @Query((_return) => [HoldJoin])
     async HoldRequests() {
-        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date ASC;`)
+        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name,customer.phone, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date ASC;`)
         return JSON.parse(JSON.stringify(result));
     }
 
@@ -138,6 +145,7 @@ export class HoldResolver {
         @Arg("request_id") request_id: number,
         @Arg("customer_id") customer_id: number,
         @Arg("new_end") new_end: string,
+        @Arg("processed_by") processed_by: number,
     ): Promise<HoldMutationResponse> {
         const res = await Hold.create({
             request_id: request_id,
@@ -151,10 +159,19 @@ export class HoldResolver {
                 end_membership_date: new_end
             })
             if (update.affected) {
+
+                const update_request = await HoldRequest.update({
+                    request_id: request_id
+                }, {
+                    process: "Done",
+                    processed_by: processed_by
+                })
+
                 return {
                     code: 200,
                     success: true,
                     message: "Update Member Success",
+                    hold_id: res.hold_id
                 };
             }
         }

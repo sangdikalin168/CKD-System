@@ -1,11 +1,18 @@
-mutation CreateHold($newEnd: String!, $customerId: Float!, $requestId: Float!) {
+mutation CreateHold(
+  $newEnd: String!
+  $customerId: Float!
+  $requestId: Float!
+  $processedBy: Float!
+) {
   CreateHold(
     new_end: $newEnd
     customer_id: $customerId
     request_id: $requestId
+    processed_by: $processedBy
   ) {
     code
     success
     message
+    hold_id
   }
 }
