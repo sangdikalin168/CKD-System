@@ -6,8 +6,6 @@
     "dev": "vite --host --port 5173",
     "start_electron": "electron .",
     "build": "vite build",
-    "build_": "tsc && vite build && electron-builder",
-    "build_electron": "electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview --host",
     "gen": "graphql-codegen --config codegen.yml"
@@ -47,8 +45,6 @@
     "@vitejs/plugin-react": "^4.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "autoprefixer": "^10.4.15",
-    "electron": "^24.4.0",
-    "electron-builder": "^23.6.0",
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
