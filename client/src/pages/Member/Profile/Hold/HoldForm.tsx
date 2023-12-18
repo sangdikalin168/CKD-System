@@ -1,8 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useRef, useState } from "react";
 import { DateTimePicker } from "../../../../components/DateTimePicker/DateTimePicker";
-import DatePicker from "tailwind-datepicker-react";
-import { IOptions } from "tailwind-datepicker-react/types/Options";
 import { useCreateHoldRequestMutation } from "../../../../generated/graphql";
 import Notifications from "../../../../components/Notification";
 
@@ -14,14 +12,13 @@ const date_format = (date_time: string | Date) => {
 const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
 
     const cancelButtonRef = useRef(null);
-    const [loading, setLoading] = useState(false);
     const [showDateTo, setShowDateTo] = useState(false);
 
     const handleCloseDateTo = (state: boolean) => {
         setShowDateTo(state);
     };
     const [selectedDateTo, setSelectedDateTo] = useState(
-        date_format(new Date(old_end))
+        date_format(new Date().setDate(new Date().getDate() + 1))
     );
 
     const handleChangeDateTo = (selectedDate: Date) => {
@@ -64,10 +61,6 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
 
         // Convert the difference from milliseconds to days
         const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-        console.log(daysDifference);
-
-
         return daysDifference;
     }
 
@@ -88,9 +81,11 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
 
         const days = countDaysBetweenDates(new Date(), new Date(old_end))
         const new_end = calculateNewEndDate(new Date(selectedDateTo), days);
+        setNewEnd(new_end)
+
         const res = await createHoldRequest({
             variables: {
-                requestBy: parseInt(localStorage.getItem("user_id")),
+                requestBy: parseInt(localStorage.getItem("user_id") || "99"),
                 customerId: customer_id,
                 reason: reason,
                 fromDate: selectedDateFrom,
@@ -105,6 +100,7 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
             return;
         }
     }
+    const [new_end, setNewEnd] = useState("");
 
     return (
         <Transition.Root show={open_hold} as={Fragment}>
@@ -142,6 +138,7 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
                                     <div className="">
                                         <div className="mt-3">
                                             <div className="grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
+
                                                 <div className="sm:col-span-2">
                                                     <label className="block text-sm font-medium leading-6 text-gray-900">
                                                         មូលហេតុនៃការសុំច្បាប់
@@ -171,6 +168,7 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
                                                     />
                                                 </div>
 
+                                                {/* DateTime Picker */}
                                                 <div className="col-span-2">
                                                     <label className="mb-2 block text-sm font-medium leading-6 text-gray-900">
                                                         ដល់ថ្ងៃទី
@@ -182,6 +180,34 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
                                                         setShow={handleCloseDateTo}
                                                         classNames={"top-[-62px]"}
                                                     />
+                                                </div>
+
+                                                <div className="sm:col-span-2">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Old End
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            readOnly
+                                                            value={old_end}
+                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-2">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        New End
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            readOnly
+                                                            value={new_end}
+                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
