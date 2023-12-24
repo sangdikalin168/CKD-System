@@ -99,9 +99,6 @@ const MemberProfile = ({ ID }: any) => {
       </button>
       <div className="bg-white p-4 rounded-lg mb-4 h-screen">
         <div className="border-b border-gray-900/10">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Personal Information
-          </h2>
           <div className="mt-2 grid grid-cols-1 gap-x-4 sm:grid-cols-6">
             <div className="shadow-lg rounded-lg p-2">
               <img
@@ -197,6 +194,18 @@ const MemberProfile = ({ ID }: any) => {
                     aria-hidden="true"
                   />
                   សុំច្បាប់
+                </button>
+
+                <button
+                  type="button"
+                  className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2"
+                  onClick={() => HandleHold(details?.end_membership_date)}
+                >
+                  <PlusCircleIcon
+                    className="-ml-0.5 mr-1.5 h-4 w-4"
+                    aria-hidden="true"
+                  />
+                  ផ្ទេរសុពលភាព
                 </button>
               </div>
             </div>

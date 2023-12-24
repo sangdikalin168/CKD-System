@@ -38,7 +38,11 @@ export class TransferRequest extends BaseEntity {
 
     @Field()
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    checker_approved_date: string;
+    checked_date: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    checker_status: string;
 
     @Field()
     @Column()
@@ -51,4 +55,16 @@ export class TransferRequest extends BaseEntity {
     @Field()
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     approved_date: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    approver_status: string;
+
+    @Field()
+    @Column({ default: "Pending" })
+    process: string;
+
+    @Field()
+    @Column({ default: 0 })
+    processed_by: number;
 }

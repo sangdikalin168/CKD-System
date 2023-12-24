@@ -41,13 +41,13 @@ const main = async () => {
 
   const app = express();
   app.use(express.static(path.resolve(__dirname, "../../client/dist")));
+
   // app.get("*", (req, res) => {
-  //   res.sendFile(path.resolve(__dirname, "../../client/build", "index.html"));
+  //   res.sendFile(path.resolve(__dirname, "../../client/dist", "index.html"));
   // });
 
   //app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(cookieParser());
-  // app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use("/refresh_token", refreshTokenRouter);

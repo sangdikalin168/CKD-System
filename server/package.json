@@ -38,9 +38,12 @@
     "typeorm": "^0.3.17"
   },
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start1": "npm run build && node dist/index.js",
+    "start": "ts-node src/index.ts",
     "dev": "nodemon ./src/index.ts",
-    "build": "rimraf ./dist && tsc"
+    "build1": "rimraf ./dist && tsc",
+    "build": "tsc",
+    "pm2": "pm2 start dist/index.js --name my-app"
   },
   "exports": {
     "./GraphQLUpload.js": "./GraphQLUpload.js",

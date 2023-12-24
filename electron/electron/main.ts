@@ -73,8 +73,8 @@ function createWindow() {
   })
 
 
-  //win.loadURL("http://localhost:4000")
-  win.loadURL("http://localhost:5173")
+  win.loadURL("http://localhost:4000")
+  //win.loadURL("http://localhost:5173")
 
 }
 
@@ -82,7 +82,6 @@ function createWindow() {
 app.on('window-all-closed', () => {
   app.quit()
 })
-
 
 
 // app.whenReady().then(createWindow)

@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import React from "react";
 import QRCode from "react-qr-code";
-
-
 
 // https://reactjs.org/docs/refs-and-the-dom.html#refs-and-function-components
 export const ComponentToPrint = React.forwardRef((props, ref) => {
@@ -22,7 +19,7 @@ export const ComponentToPrint = React.forwardRef((props, ref) => {
                     />
 
                     {props.uuid}
-                    <p className="text-lg font-semibold text-black">ការបរិច្ចេទ: {props.date}</p>
+                    <p className="text-lg font-semibold text-red-500">ការបរិច្ចេទ: {props.date}</p>
                     <p className="text-lg font-semibold text-black">Cashier: {props.name}</p>
                     <div className="flex text-lg text-black font-semibold">
                         <div className="flex-grow">តម្លៃសំបុត្រ </div><strong>{props.price}</strong>

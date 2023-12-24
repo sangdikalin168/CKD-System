@@ -38,7 +38,7 @@ export default function Ticket() {
       const data = target.contentWindow.document.documentElement.outerHTML;
       const blob = new Blob([data], { type: "text/html; charset=utf-8" });
       const url = URL.createObjectURL(blob);
-      window.electronAPI.printComponent1(url, (response: any) => {
+      window.electronAPI.previewComponent(url, (response: any) => {
         console.log("Main: ", response);
       });
     });
@@ -54,7 +54,7 @@ export default function Ticket() {
 
   const handleGetQRCode = async (price: number) => {
     setPrice(price);
-    setSeller(localStorage.getItem("display_name"));
+    setSeller(localStorage.getItem("display_name") || "");
     const unique_id = await uuidv4();
     const small_id = await unique_id.slice(0, 16);
     const result = await setUuid(small_id);
