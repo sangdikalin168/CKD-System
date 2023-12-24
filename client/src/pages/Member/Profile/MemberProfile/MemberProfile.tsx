@@ -17,6 +17,7 @@ import { FruitPayment } from "../FruitPayment/FruitPayment";
 import { UpdateProfile } from "./UpdateProfile";
 import Notifications from "../../../../components/Notification";
 import HoldForm from "../Hold/HoldForm";
+import Transfer from "../Transfer/Transfer";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -67,6 +68,21 @@ const MemberProfile = ({ ID }: any) => {
   const [open_fruit, setOpenFruit] = useState(false);
   const [open_update, setOpenUpdate] = useState(false);
   const [open_hold, setOpenHold] = useState(false);
+  const [open_transfer, setOpenTransfer] = useState(false);
+
+
+  const ShowTransferForm = (date: string) => {
+    //TODO: Compare End Date Between Now
+    const currentDate = new Date();
+    const end_date = new Date(date);
+
+    if (end_date >= currentDate) {
+      console.log('Active');
+      setOpenTransfer(true);
+    } else if (end_date < currentDate) {
+      Notifications("សមាជិកផុតសុពលភាពហើយ", "info")
+    }
+  }
 
   const HandleHold = (date: string) => {
     //TODO: Compare End Date Between Now
@@ -199,7 +215,7 @@ const MemberProfile = ({ ID }: any) => {
                 <button
                   type="button"
                   className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2"
-                  onClick={() => HandleHold(details?.end_membership_date)}
+                  onClick={() => ShowTransferForm(details?.end_membership_date)}
                 >
                   <PlusCircleIcon
                     className="-ml-0.5 mr-1.5 h-4 w-4"
@@ -358,6 +374,8 @@ const MemberProfile = ({ ID }: any) => {
         customer_id={ID}
         old_end={details?.end_membership_date}
       />
+
+      <Transfer open={open_transfer} setOpen={setOpenTransfer} sender_data={details} />
 
     </>
   );

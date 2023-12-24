@@ -1,21 +1,30 @@
-import React, { Fragment, useState } from 'react';
-import { Transition, Dialog } from 'your-transition-library'; // Replace with the appropriate import
+import { Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useRef, useState } from 'react';
+
+
+interface ModalProps {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  onConfirm: () => void
+  children: React.ReactElement
+}
 
 const Modal = ({
   open,
-  onClose,
+  setOpen,
   onConfirm,
-  title,
   children,
-}) => {
-  const [reason, setReason] = useState('');
+}: ModalProps) => {
+
+  const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
-        onClose={onClose}
+        onClose={setOpen}
+        initialFocus={cancelButtonRef}
       >
         <Transition.Child
           as={Fragment}
@@ -53,7 +62,7 @@ const Modal = ({
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                     onClick={() => {
-                      onConfirm(reason);
+                      onConfirm()
                     }}
                   >
                     Confirm
@@ -61,7 +70,7 @@ const Modal = ({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={onClose}
+                    onClick={() => setOpen(false)}
                   >
                     Cancel
                   </button>
