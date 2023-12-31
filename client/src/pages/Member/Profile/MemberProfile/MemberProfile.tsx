@@ -18,6 +18,7 @@ import { UpdateProfile } from "./UpdateProfile";
 import Notifications from "../../../../components/Notification";
 import HoldForm from "../Hold/HoldForm";
 import Transfer from "../Transfer/Transfer";
+import { BiTransfer } from "react-icons/bi";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -217,7 +218,7 @@ const MemberProfile = ({ ID }: any) => {
                   className="w-full inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-green-500 mb-2"
                   onClick={() => ShowTransferForm(details?.end_membership_date)}
                 >
-                  <PlusCircleIcon
+                  <BiTransfer
                     className="-ml-0.5 mr-1.5 h-4 w-4"
                     aria-hidden="true"
                   />

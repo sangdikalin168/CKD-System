@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputField from "../../../../components/Input/InputField";
 import Modal from "../../../../components/Modal/Modal";
 import Notifications from "../../../../components/Notification";
@@ -15,6 +15,7 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
     const [show_customer, setShowCustomer] = useState(true);
     const [new_end, setNewEnd] = useState("");
 
+
     const FindCustomer = (customer_id: number) => {
         Notifications("Customer Not Found!!!", "error")
     }
@@ -23,7 +24,7 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
         alert(sender_data.customer_name)
     }
 
-    function countDaysBetweenDates(startDate, endDate) {
+    function countDaysBetweenDates(startDate: Date, endDate: Date) {
         // Convert both dates to UTC to ensure accurate calculation
         const utcStartDate = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
         const utcEndDate = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
@@ -60,11 +61,23 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
+
+                        {/* Sender */}
+                        <div className="col-span-6 text-red-500">
+                            <p className="font-bold">អ្នកផ្ទេរ</p>
+                            <p>សុពលភាពចាស់ : {sender_data.end_membership_date} ({countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
+                            <p>សុពលភាពថ្មី : {calculateNewEndDate(sender_data.end_membership_date, -countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date)))} ({-countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
+                        </div>
+
+                        <p className="col-span-6 text-red-500">------------------------------------------------------------------------------</p>
+                        {/* Receiver */}
+                        <div className="col-span-6 text-blue-500">
+                            <p className="font-bold">អ្នកផ្ទេរ</p>
+                            <p>សុពលភាពចាស់ : {sender_data.end_membership_date} ({countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
+                            <p>សុពលភាពថ្មី : {calculateNewEndDate(sender_data.end_membership_date, -countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date)))} ({-countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
+                        </div>
+
                         <InputField classNames={"col-span-6"} value={reason} type={"text"} label={"មូលហេតុនៃការផ្ទេរ"} onChange={setReason} />
-                        <InputField classNames={"col-span-3"} value={"Sok Soksa"} type={"text"} label={"អ្នកទទួល"} readOnly={true} />
-                        <InputField classNames={"col-span-3"} value={""} type={"text"} label={"Phone"} readOnly={true} />
-                        <InputField classNames={"col-span-3"} value={""} type={"text"} label={"Old End"} readOnly={true} />
-                        <InputField classNames={"col-span-3"} value={new_end} type={"text"} label={"New End"} readOnly={true} />
                     </div>
                 )
             }
