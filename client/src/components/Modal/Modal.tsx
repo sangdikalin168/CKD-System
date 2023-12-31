@@ -1,11 +1,12 @@
 import { Dialog, Transition } from '@headlessui/react';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useRef } from 'react';
 
 
 interface ModalProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   onConfirm: () => void
+  onCancel: () => void
   children: React.ReactElement
 }
 
@@ -13,6 +14,7 @@ const Modal = ({
   open,
   setOpen,
   onConfirm,
+  onCancel,
   children,
 }: ModalProps) => {
 
@@ -70,7 +72,7 @@ const Modal = ({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => { setOpen(false); onCancel(); }}
                   >
                     Cancel
                   </button>

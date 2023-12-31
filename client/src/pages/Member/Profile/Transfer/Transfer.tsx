@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import InputField from "../../../../components/Input/InputField";
 import Modal from "../../../../components/Modal/Modal";
 import Notifications from "../../../../components/Notification";
+import { useGetCustomerDetailLazyQuery, useGetCustomerDetailQuery } from "../../../../generated/graphql";
 
 const date_format = (date_time: string | Date) => {
     const date = new Date(date_time);
@@ -12,16 +13,38 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
 
     const [reason, setReason] = useState("")
     const [customer_id, setCustomerID] = useState(0)
-    const [show_customer, setShowCustomer] = useState(true);
+    const [show_customer, setShowCustomer] = useState(false);
     const [new_end, setNewEnd] = useState("");
+    const [receiver, setReceiver] = useState()
 
 
-    const FindCustomer = (customer_id: number) => {
-        Notifications("Customer Not Found!!!", "error")
+    const [getMemberDetail] = useGetCustomerDetailLazyQuery();
+
+
+    const FindCustomer = async (customer_id: number) => {
+
+        if (customer_id === "") {
+            Notifications("Please Input Customer ID", "error")
+            return;
+        }
+
+        const { data } = await getMemberDetail({
+            variables: {
+                customerId: parseInt(customer_id)
+            }
+        })
+
+        if (data.GetCustomerDetail.length <= 0) {
+            Notifications("Customer Not Found!!!", "error")
+            return;
+        }
+        setShowCustomer(true)
+        setReceiver(data.GetCustomerDetail[0]);
+
     }
 
     const SendRequest = () => {
-        alert(sender_data.customer_name)
+        ReceiverNewEnd()
     }
 
     function countDaysBetweenDates(startDate: Date, endDate: Date) {
@@ -45,8 +68,18 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
         return date_format(endDate);
     }
 
+    function ReceiverNewEnd() {
+        const remain_days = countDaysBetweenDates(new Date(), new Date(receiver?.end_membership_date))
+        if (remain_days <= 0) {
+            return sender_data.end_membership_date
+        } else {
+            const sender_remain = countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))
+            return calculateNewEndDate(receiver?.end_membership_date, sender_remain)
+        }
+    }
+
     return (
-        <Modal open={open} setOpen={setOpen} onConfirm={SendRequest}>
+        <Modal open={open} setOpen={setOpen} onConfirm={SendRequest} onCancel={() => { setShowCustomer(false); setCustomerID(0) }}>
             {
                 show_customer !== true ? (
                     <div className="grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
@@ -72,9 +105,11 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
                         <p className="col-span-6 text-red-500">------------------------------------------------------------------------------</p>
                         {/* Receiver */}
                         <div className="col-span-6 text-blue-500">
-                            <p className="font-bold">អ្នកផ្ទេរ</p>
-                            <p>សុពលភាពចាស់ : {sender_data.end_membership_date} ({countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
-                            <p>សុពលភាពថ្មី : {calculateNewEndDate(sender_data.end_membership_date, -countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date)))} ({-countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
+                            <p className="font-bold">អ្នកទទួល</p>
+                            <p>ឈ្មោះ : {receiver?.customer_name}</p>
+                            <p>លេខទូរស័ព្ទ : {receiver?.phone}</p>
+                            <p>សុពលភាពចាស់ : {receiver?.end_membership_date} ({countDaysBetweenDates(new Date(), new Date(receiver?.end_membership_date))}ថ្ងៃ)</p>
+                            <p>សុពលភាពថ្មី : {ReceiverNewEnd()} ({countDaysBetweenDates(new Date(), new Date(sender_data.end_membership_date))}ថ្ងៃ)</p>
                         </div>
 
                         <InputField classNames={"col-span-6"} value={reason} type={"text"} label={"មូលហេតុនៃការផ្ទេរ"} onChange={setReason} />
