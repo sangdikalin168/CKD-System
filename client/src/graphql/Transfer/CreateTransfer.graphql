@@ -1,0 +1,25 @@
+mutation CreateTransfer(
+  $receiverNewEnd: String!
+  $receiverOldEnd: String!
+  $receiverId: Float!
+  $senderNewEnd: String!
+  $senderOldDate: String!
+  $senderId: Float!
+  $processedBy: Float!
+  $requestId: Float!
+) {
+  CreateTransfer(
+    receiver_new_end: $receiverNewEnd
+    receiver_old_end: $receiverOldEnd
+    receiver_id: $receiverId
+    sender_new_end: $senderNewEnd
+    sender_old_date: $senderOldDate
+    sender_id: $senderId
+    processed_by: $processedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}

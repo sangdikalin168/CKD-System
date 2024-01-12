@@ -1,0 +1,17 @@
+mutation CreateTransferRequest(
+  $reason: String!
+  $receiverId: Float!
+  $senderId: Float!
+  $requestBy: Float!
+) {
+  CreateTransferRequest(
+    reason: $reason
+    receiver_id: $receiverId
+    sender_id: $senderId
+    request_by: $requestBy
+  ) {
+    code
+    success
+    message
+  }
+}

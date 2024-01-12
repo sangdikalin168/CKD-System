@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InputField from "../../../../components/Input/InputField";
 import Modal from "../../../../components/Modal/Modal";
 import Notifications from "../../../../components/Notification";
-import { useGetCustomerDetailLazyQuery, useGetCustomerDetailQuery } from "../../../../generated/graphql";
+import { useCreateTransferRequestMutation, useGetCustomerDetailLazyQuery } from "../../../../generated/graphql";
 
 const date_format = (date_time: string | Date) => {
     const date = new Date(date_time);
@@ -14,15 +14,14 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
     const [reason, setReason] = useState("")
     const [customer_id, setCustomerID] = useState(0)
     const [show_customer, setShowCustomer] = useState(false);
-    const [new_end, setNewEnd] = useState("");
     const [receiver, setReceiver] = useState()
 
 
     const [getMemberDetail] = useGetCustomerDetailLazyQuery();
+    const [createTransferRequest] = useCreateTransferRequestMutation();
 
 
     const FindCustomer = async (customer_id: number) => {
-
         if (customer_id === "") {
             Notifications("Please Input Customer ID", "error")
             return;
@@ -43,8 +42,23 @@ const Transfer = ({ open, setOpen, sender_data }: any) => {
 
     }
 
-    const SendRequest = () => {
-        ReceiverNewEnd()
+    const SendRequest = async () => {
+        const res = await createTransferRequest({
+            variables: {
+                reason: reason,
+                receiverId: receiver.customer_id,
+                senderId: sender_data.customer_id,
+                requestBy: parseInt(localStorage.getItem("user_id") || "99"),
+            }
+        })
+
+        if (res.data?.CreateTransferRequest.success) {
+            Notifications("Success", "success")
+            setOpen(false)
+            return;
+        }
+
+        Notifications("Error", "error")
     }
 
     function countDaysBetweenDates(startDate: Date, endDate: Date) {

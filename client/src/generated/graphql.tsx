@@ -311,7 +311,9 @@ export type MemberPriceTableMutationResponse = IMemberPriceTableResponse & {
 export type Mutation = {
   __typename?: 'Mutation';
   ApproveHoldRequest: HoldMutationResponse;
+  ApproveTransferRequest: TransferMutationResponse;
   CheckHoldRequest: HoldMutationResponse;
+  CheckTransferRequest: TransferMutationResponse;
   CreateCouponPayment: CouponPaymentMutationResponse;
   CreateCustomer: CustomerMutationResponse;
   CreateCustomerPayment: MemberPaymentMutationResponse;
@@ -320,6 +322,8 @@ export type Mutation = {
   CreateHoldRequest: HoldMutationResponse;
   CreateTicketPayment: TicketPaymentMutationResponse;
   CreateTrainningPayment: TrainningPaymentMutationResponse;
+  CreateTransfer: TransferMutationResponse;
+  CreateTransferRequest: TransferMutationResponse;
   UpdateCustomer: CustomerMutationResponse;
   create_user: UserMutationResponse;
   login: UserMutationResponse;
@@ -335,7 +339,23 @@ export type MutationApproveHoldRequestArgs = {
 };
 
 
+export type MutationApproveTransferRequestArgs = {
+  approved_by: Scalars['Float'];
+  approver_comment: Scalars['String'];
+  approver_status: Scalars['String'];
+  request_id: Scalars['Float'];
+};
+
+
 export type MutationCheckHoldRequestArgs = {
+  checked_by: Scalars['Float'];
+  checker_comment: Scalars['String'];
+  checker_status: Scalars['String'];
+  request_id: Scalars['Float'];
+};
+
+
+export type MutationCheckTransferRequestArgs = {
   checked_by: Scalars['Float'];
   checker_comment: Scalars['String'];
   checker_status: Scalars['String'];
@@ -419,6 +439,26 @@ export type MutationCreateTrainningPaymentArgs = {
 };
 
 
+export type MutationCreateTransferArgs = {
+  processed_by: Scalars['Float'];
+  receiver_id: Scalars['Float'];
+  receiver_new_end: Scalars['String'];
+  receiver_old_end: Scalars['String'];
+  request_id: Scalars['Float'];
+  sender_id: Scalars['Float'];
+  sender_new_end: Scalars['String'];
+  sender_old_date: Scalars['String'];
+};
+
+
+export type MutationCreateTransferRequestArgs = {
+  reason: Scalars['String'];
+  receiver_id: Scalars['Float'];
+  request_by: Scalars['Float'];
+  sender_id: Scalars['Float'];
+};
+
+
 export type MutationUpdateCustomerArgs = {
   customer_id: Scalars['Float'];
   phone: Scalars['String'];
@@ -453,6 +493,7 @@ export type Query = {
   GetTranningPrice: Array<TrainningPrice>;
   HoldRequests: Array<HoldJoin>;
   MemberPaymentDetail: MemberPaymentDetail;
+  TransferRequests: Array<TransferJoin>;
   get_user: GetUser;
   users: Array<Users>;
 };
@@ -593,20 +634,67 @@ export type Transfer = {
   transfer_id: Scalars['Float'];
 };
 
-export type TransferRequest = {
-  __typename?: 'TransferRequest';
-  approved_by: Scalars['String'];
+export type TransferJoin = {
+  __typename?: 'TransferJoin';
+  approved_by: Scalars['Float'];
   approved_date: Scalars['String'];
   approver_comment: Scalars['String'];
-  checked_by: Scalars['String'];
-  checker_approved_date: Scalars['String'];
+  approver_name?: Maybe<Scalars['String']>;
+  approver_status: Scalars['String'];
+  checked_by: Scalars['Float'];
+  checked_date: Scalars['String'];
   checker_comment: Scalars['String'];
+  checker_name?: Maybe<Scalars['String']>;
+  checker_status: Scalars['String'];
+  display_name: Scalars['String'];
+  process: Scalars['String'];
+  processed_by: Scalars['Float'];
+  processed_name?: Maybe<Scalars['String']>;
+  reason: Scalars['String'];
+  receiver_id: Scalars['Float'];
+  receiver_name: Scalars['String'];
+  receiver_old_end: Scalars['String'];
+  receiver_phone: Scalars['String'];
+  request_by: Scalars['Float'];
+  request_date: Scalars['String'];
+  request_id: Scalars['Float'];
+  sender_id: Scalars['Float'];
+  sender_name: Scalars['String'];
+  sender_old_end: Scalars['String'];
+  sender_phone: Scalars['String'];
+};
+
+export type TransferMutationResponse = TransferResponse & {
+  __typename?: 'TransferMutationResponse';
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
+export type TransferRequest = {
+  __typename?: 'TransferRequest';
+  approved_by: Scalars['Float'];
+  approved_date: Scalars['String'];
+  approver_comment: Scalars['String'];
+  approver_status: Scalars['String'];
+  checked_by: Scalars['Float'];
+  checked_date: Scalars['String'];
+  checker_comment: Scalars['String'];
+  checker_status: Scalars['String'];
+  process: Scalars['String'];
+  processed_by: Scalars['Float'];
   reason: Scalars['String'];
   receiver_id: Scalars['Float'];
   request_by: Scalars['Float'];
   request_date: Scalars['String'];
   request_id: Scalars['Float'];
   sender_id: Scalars['Float'];
+};
+
+export type TransferResponse = {
+  code: Scalars['Float'];
+  message?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
 };
 
 export type UserMutationResponse = IMutationResponse & {
@@ -823,6 +911,55 @@ export type GetTranningPriceQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetTranningPriceQuery = { __typename?: 'Query', GetTranningPrice: Array<{ __typename?: 'TrainningPrice', id: number, name: string, type: string, month_qty: number, price: number }> };
+
+export type ApproveTransferRequestMutationVariables = Exact<{
+  approverStatus: Scalars['String'];
+  approverComment: Scalars['String'];
+  approvedBy: Scalars['Float'];
+  requestId: Scalars['Float'];
+}>;
+
+
+export type ApproveTransferRequestMutation = { __typename?: 'Mutation', ApproveTransferRequest: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CheckTransferRequestMutationVariables = Exact<{
+  checkerStatus: Scalars['String'];
+  checkerComment: Scalars['String'];
+  checkedBy: Scalars['Float'];
+  requestId: Scalars['Float'];
+}>;
+
+
+export type CheckTransferRequestMutation = { __typename?: 'Mutation', CheckTransferRequest: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CreateTransferMutationVariables = Exact<{
+  receiverNewEnd: Scalars['String'];
+  receiverOldEnd: Scalars['String'];
+  receiverId: Scalars['Float'];
+  senderNewEnd: Scalars['String'];
+  senderOldDate: Scalars['String'];
+  senderId: Scalars['Float'];
+  processedBy: Scalars['Float'];
+  requestId: Scalars['Float'];
+}>;
+
+
+export type CreateTransferMutation = { __typename?: 'Mutation', CreateTransfer: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type CreateTransferRequestMutationVariables = Exact<{
+  reason: Scalars['String'];
+  receiverId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  requestBy: Scalars['Float'];
+}>;
+
+
+export type CreateTransferRequestMutation = { __typename?: 'Mutation', CreateTransferRequest: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type TransferRequestsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TransferRequestsQuery = { __typename?: 'Query', TransferRequests: Array<{ __typename?: 'TransferJoin', request_id: number, request_by: number, request_date: string, reason: string, sender_id: number, receiver_id: number, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, process: string, processed_by: number, display_name: string, sender_name: string, sender_phone: string, receiver_name: string, receiver_phone: string, checker_name?: string | null, processed_name?: string | null, approver_name?: string | null, receiver_old_end: string, sender_old_end: string }> };
 
 
 export const CreateCouponPaymentDocument = gql`
@@ -1837,3 +1974,242 @@ export function useGetTranningPriceLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetTranningPriceQueryHookResult = ReturnType<typeof useGetTranningPriceQuery>;
 export type GetTranningPriceLazyQueryHookResult = ReturnType<typeof useGetTranningPriceLazyQuery>;
 export type GetTranningPriceQueryResult = Apollo.QueryResult<GetTranningPriceQuery, GetTranningPriceQueryVariables>;
+export const ApproveTransferRequestDocument = gql`
+    mutation ApproveTransferRequest($approverStatus: String!, $approverComment: String!, $approvedBy: Float!, $requestId: Float!) {
+  ApproveTransferRequest(
+    approver_status: $approverStatus
+    approver_comment: $approverComment
+    approved_by: $approvedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type ApproveTransferRequestMutationFn = Apollo.MutationFunction<ApproveTransferRequestMutation, ApproveTransferRequestMutationVariables>;
+
+/**
+ * __useApproveTransferRequestMutation__
+ *
+ * To run a mutation, you first call `useApproveTransferRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useApproveTransferRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [approveTransferRequestMutation, { data, loading, error }] = useApproveTransferRequestMutation({
+ *   variables: {
+ *      approverStatus: // value for 'approverStatus'
+ *      approverComment: // value for 'approverComment'
+ *      approvedBy: // value for 'approvedBy'
+ *      requestId: // value for 'requestId'
+ *   },
+ * });
+ */
+export function useApproveTransferRequestMutation(baseOptions?: Apollo.MutationHookOptions<ApproveTransferRequestMutation, ApproveTransferRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ApproveTransferRequestMutation, ApproveTransferRequestMutationVariables>(ApproveTransferRequestDocument, options);
+      }
+export type ApproveTransferRequestMutationHookResult = ReturnType<typeof useApproveTransferRequestMutation>;
+export type ApproveTransferRequestMutationResult = Apollo.MutationResult<ApproveTransferRequestMutation>;
+export type ApproveTransferRequestMutationOptions = Apollo.BaseMutationOptions<ApproveTransferRequestMutation, ApproveTransferRequestMutationVariables>;
+export const CheckTransferRequestDocument = gql`
+    mutation CheckTransferRequest($checkerStatus: String!, $checkerComment: String!, $checkedBy: Float!, $requestId: Float!) {
+  CheckTransferRequest(
+    checker_status: $checkerStatus
+    checker_comment: $checkerComment
+    checked_by: $checkedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CheckTransferRequestMutationFn = Apollo.MutationFunction<CheckTransferRequestMutation, CheckTransferRequestMutationVariables>;
+
+/**
+ * __useCheckTransferRequestMutation__
+ *
+ * To run a mutation, you first call `useCheckTransferRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckTransferRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkTransferRequestMutation, { data, loading, error }] = useCheckTransferRequestMutation({
+ *   variables: {
+ *      checkerStatus: // value for 'checkerStatus'
+ *      checkerComment: // value for 'checkerComment'
+ *      checkedBy: // value for 'checkedBy'
+ *      requestId: // value for 'requestId'
+ *   },
+ * });
+ */
+export function useCheckTransferRequestMutation(baseOptions?: Apollo.MutationHookOptions<CheckTransferRequestMutation, CheckTransferRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckTransferRequestMutation, CheckTransferRequestMutationVariables>(CheckTransferRequestDocument, options);
+      }
+export type CheckTransferRequestMutationHookResult = ReturnType<typeof useCheckTransferRequestMutation>;
+export type CheckTransferRequestMutationResult = Apollo.MutationResult<CheckTransferRequestMutation>;
+export type CheckTransferRequestMutationOptions = Apollo.BaseMutationOptions<CheckTransferRequestMutation, CheckTransferRequestMutationVariables>;
+export const CreateTransferDocument = gql`
+    mutation CreateTransfer($receiverNewEnd: String!, $receiverOldEnd: String!, $receiverId: Float!, $senderNewEnd: String!, $senderOldDate: String!, $senderId: Float!, $processedBy: Float!, $requestId: Float!) {
+  CreateTransfer(
+    receiver_new_end: $receiverNewEnd
+    receiver_old_end: $receiverOldEnd
+    receiver_id: $receiverId
+    sender_new_end: $senderNewEnd
+    sender_old_date: $senderOldDate
+    sender_id: $senderId
+    processed_by: $processedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateTransferMutationFn = Apollo.MutationFunction<CreateTransferMutation, CreateTransferMutationVariables>;
+
+/**
+ * __useCreateTransferMutation__
+ *
+ * To run a mutation, you first call `useCreateTransferMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTransferMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTransferMutation, { data, loading, error }] = useCreateTransferMutation({
+ *   variables: {
+ *      receiverNewEnd: // value for 'receiverNewEnd'
+ *      receiverOldEnd: // value for 'receiverOldEnd'
+ *      receiverId: // value for 'receiverId'
+ *      senderNewEnd: // value for 'senderNewEnd'
+ *      senderOldDate: // value for 'senderOldDate'
+ *      senderId: // value for 'senderId'
+ *      processedBy: // value for 'processedBy'
+ *      requestId: // value for 'requestId'
+ *   },
+ * });
+ */
+export function useCreateTransferMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransferMutation, CreateTransferMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTransferMutation, CreateTransferMutationVariables>(CreateTransferDocument, options);
+      }
+export type CreateTransferMutationHookResult = ReturnType<typeof useCreateTransferMutation>;
+export type CreateTransferMutationResult = Apollo.MutationResult<CreateTransferMutation>;
+export type CreateTransferMutationOptions = Apollo.BaseMutationOptions<CreateTransferMutation, CreateTransferMutationVariables>;
+export const CreateTransferRequestDocument = gql`
+    mutation CreateTransferRequest($reason: String!, $receiverId: Float!, $senderId: Float!, $requestBy: Float!) {
+  CreateTransferRequest(
+    reason: $reason
+    receiver_id: $receiverId
+    sender_id: $senderId
+    request_by: $requestBy
+  ) {
+    code
+    success
+    message
+  }
+}
+    `;
+export type CreateTransferRequestMutationFn = Apollo.MutationFunction<CreateTransferRequestMutation, CreateTransferRequestMutationVariables>;
+
+/**
+ * __useCreateTransferRequestMutation__
+ *
+ * To run a mutation, you first call `useCreateTransferRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTransferRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTransferRequestMutation, { data, loading, error }] = useCreateTransferRequestMutation({
+ *   variables: {
+ *      reason: // value for 'reason'
+ *      receiverId: // value for 'receiverId'
+ *      senderId: // value for 'senderId'
+ *      requestBy: // value for 'requestBy'
+ *   },
+ * });
+ */
+export function useCreateTransferRequestMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransferRequestMutation, CreateTransferRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTransferRequestMutation, CreateTransferRequestMutationVariables>(CreateTransferRequestDocument, options);
+      }
+export type CreateTransferRequestMutationHookResult = ReturnType<typeof useCreateTransferRequestMutation>;
+export type CreateTransferRequestMutationResult = Apollo.MutationResult<CreateTransferRequestMutation>;
+export type CreateTransferRequestMutationOptions = Apollo.BaseMutationOptions<CreateTransferRequestMutation, CreateTransferRequestMutationVariables>;
+export const TransferRequestsDocument = gql`
+    query TransferRequests {
+  TransferRequests {
+    request_id
+    request_by
+    request_date
+    reason
+    sender_id
+    receiver_id
+    checked_by
+    checker_comment
+    checked_date
+    checker_status
+    approved_by
+    approver_comment
+    approved_date
+    approver_status
+    process
+    processed_by
+    display_name
+    sender_name
+    sender_phone
+    receiver_name
+    receiver_phone
+    checker_name
+    processed_name
+    approver_name
+    receiver_old_end
+    sender_old_end
+  }
+}
+    `;
+
+/**
+ * __useTransferRequestsQuery__
+ *
+ * To run a query within a React component, call `useTransferRequestsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTransferRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTransferRequestsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTransferRequestsQuery(baseOptions?: Apollo.QueryHookOptions<TransferRequestsQuery, TransferRequestsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TransferRequestsQuery, TransferRequestsQueryVariables>(TransferRequestsDocument, options);
+      }
+export function useTransferRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TransferRequestsQuery, TransferRequestsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TransferRequestsQuery, TransferRequestsQueryVariables>(TransferRequestsDocument, options);
+        }
+export type TransferRequestsQueryHookResult = ReturnType<typeof useTransferRequestsQuery>;
+export type TransferRequestsLazyQueryHookResult = ReturnType<typeof useTransferRequestsLazyQuery>;
+export type TransferRequestsQueryResult = Apollo.QueryResult<TransferRequestsQuery, TransferRequestsQueryVariables>;

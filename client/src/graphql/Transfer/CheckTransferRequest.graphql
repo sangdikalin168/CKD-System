@@ -1,0 +1,17 @@
+mutation CheckTransferRequest(
+  $checkerStatus: String!
+  $checkerComment: String!
+  $checkedBy: Float!
+  $requestId: Float!
+) {
+  CheckTransferRequest(
+    checker_status: $checkerStatus
+    checker_comment: $checkerComment
+    checked_by: $checkedBy
+    request_id: $requestId
+  ) {
+    code
+    success
+    message
+  }
+}

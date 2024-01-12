@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Report } from "./pages/Report/Report";
 import HoldRequest from "./pages/Request/HoldRequest/HoldRequest";
+import TransferRequest from "./pages/Request/TransferRequest/TransferRequest";
 
 // Create a root route
 const rootRoute = new RootRoute({
@@ -78,6 +79,11 @@ const holdRequestRoute = new Route({
   path: "/hold_request",
   component: HoldRequest,
 });
+const transferRequestRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/transfer_request",
+  component: TransferRequest,
+});
 const notFoundRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "*",
@@ -90,7 +96,7 @@ const routeTree = rootRoute.addChildren([
   ticketRoute,
   membersRoute,
   reportRoute,
-  holdRequestRoute,
+  holdRequestRoute, transferRequestRoute,
   notFoundRoute,
 ]);
 

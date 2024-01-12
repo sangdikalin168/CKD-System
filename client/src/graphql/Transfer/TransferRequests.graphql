@@ -1,0 +1,30 @@
+query TransferRequests {
+  TransferRequests {
+    request_id
+    request_by
+    request_date
+    reason
+    sender_id
+    receiver_id
+    checked_by
+    checker_comment
+    checked_date
+    checker_status
+    approved_by
+    approver_comment
+    approved_date
+    approver_status
+    process
+    processed_by
+    display_name
+    sender_name
+    sender_phone
+    receiver_name
+    receiver_phone
+    checker_name
+    processed_name
+    approver_name
+    receiver_old_end
+    sender_old_end
+  }
+}

@@ -78,7 +78,6 @@ const MemberProfile = ({ ID }: any) => {
     const end_date = new Date(date);
 
     if (end_date >= currentDate) {
-      console.log('Active');
       setOpenTransfer(true);
     } else if (end_date < currentDate) {
       Notifications("សមាជិកផុតសុពលភាពហើយ", "info")

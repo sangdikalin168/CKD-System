@@ -29,8 +29,8 @@ export class TransferRequest extends BaseEntity {
     receiver_id: number;
 
     @Field()
-    @Column()
-    checked_by: string;
+    @Column({ default: 0 })
+    checked_by: number;
 
     @Field()
     @Column()
@@ -45,8 +45,8 @@ export class TransferRequest extends BaseEntity {
     checker_status: string;
 
     @Field()
-    @Column()
-    approved_by: string;
+    @Column({ default: 0 })
+    approved_by: number;
 
     @Field()
     @Column()

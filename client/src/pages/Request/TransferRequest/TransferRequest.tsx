@@ -1,38 +1,40 @@
-import { createColumnHelper } from "@tanstack/react-table";
-import DataTable from "../../../components/DataTable/DataTable"
-import LoadingPage from "../../../components/LoadingPage/LoadingPage"
-import { useApproveHoldRequestMutation, useCheckHoldRequestMutation, useCreateHoldMutation, useGetCustomerDetailLazyQuery, useGetMemberPaymentLazyQuery, useHoldRequestsQuery } from "../../../generated/graphql";
-import { PrinterIcon } from "@heroicons/react/20/solid";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import Notifications from "../../../components/Notification";
-import { HoldInvoice } from "../../../components/ComponentToPrint/HoldInvoice";
-import { useReactToPrint } from "react-to-print";
+import { createColumnHelper } from '@tanstack/react-table';
+import DataTable from '../../../components/DataTable/DataTable';
+import LoadingPage from '../../../components/LoadingPage/LoadingPage';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { useApproveTransferRequestMutation, useCheckTransferRequestMutation, useCreateTransferMutation, useTransferRequestsQuery } from '../../../generated/graphql';
+import Notifications from '../../../components/Notification';
+import { PrinterIcon } from '@heroicons/react/20/solid';
+import { useReactToPrint } from 'react-to-print';
+import { TransferInvoice } from '../../../components/ComponentToPrint/TransferInvoice';
 
-type HoldRequest = {
-    display_name: string
+type TransferRequest = {
     request_id: number
+    request_by: number
     request_date: string
     reason: string
-    from_date: string
-    to_date: string
-    old_end: string
-    new_end: string
-    customer_id: number
-    customer_name: string
-    phone: string
-    checker_name: string
+    sender_id: number
+    sender_phone: string
+    sender_old_end: string
+    receiver_id: number
     checked_by: number
+    checker_comment: string
     checked_date: string
     checker_status: string
-    checker_comment: string
-    approved_name: string
     approved_by: number
-    approved_date: string
     approver_comment: string
+    approved_date: string
     approver_status: string
     process: string
     processed_by: number
+    display_name: string
+    sender_name: string
+    receiver_name: string
+    receiver_old_end: string
+    receiver_phone: string
+    checker_name: string
+    approver_name: string
     processed_name: string
 
 }
@@ -47,9 +49,8 @@ const date_format = (date_time: string) => {
     return date.toLocaleDateString("fr-CA");
 };
 
-
-const HoldRequest = () => {
-    const columnHelper = createColumnHelper<HoldRequest>();
+const TransferRequest = () => {
+    const columnHelper = createColumnHelper<TransferRequest>();
     const columns = [
         columnHelper.accessor((row) => row.display_name, {
             id: "អ្នកស្នើ",
@@ -63,8 +64,31 @@ const HoldRequest = () => {
             header: (info) => <span>{info.column.id}</span>,
             footer: (info) => info.column.id,
         }),
-        columnHelper.accessor((row) => row.customer_name, {
-            id: "ឈ្មោះអតិថិជន",
+        columnHelper.accessor((row) => row.sender_name, {
+            id: "ពីឈ្មោះ",
+            cell: (info) =>
+                <div
+                    onClick={async () => {
+                        await getCustomer({
+                            variables: {
+                                customerId: info.row.original.customer_id
+                            }
+                        })
+                        await getCustomerPayment({
+                            variables: {
+                                customerId: info.row.original.customer_id
+                            }
+                        })
+                        setOpen(true)
+                    }}
+                >
+                    {info.getValue()}
+                </div >,
+            header: (info) => <span>{info.column.id}</span>,
+            footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor((row) => row.receiver_name, {
+            id: "ទៅឈ្មោះ",
             cell: (info) =>
                 <div
                     onClick={async () => {
@@ -89,18 +113,6 @@ const HoldRequest = () => {
         columnHelper.accessor((row) => row.reason, {
             id: "មូលហេតុ",
             cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_date, {
-            id: "ចាប់ពី",
-            cell: (info) => date_format(info.getValue()),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_date, {
-            id: "ដល់",
-            cell: (info) => date_format(info.getValue()),
             header: (info) => <span>{info.column.id}</span>,
             footer: (info) => info.column.id,
         }),
@@ -143,7 +155,7 @@ const HoldRequest = () => {
             header: (info) => <span>{info.column.id}</span>,
             footer: (info) => info.column.id,
         }),
-        columnHelper.accessor((row) => row.approved_name, {
+        columnHelper.accessor((row) => row.approver_name, {
             id: "អ្នកសម្រេច",
             cell: (info) => (
                 <>
@@ -199,17 +211,11 @@ const HoldRequest = () => {
                                                     setOpenPrint(true)
                                                     setRequestID(row_data.request_id)
                                                     setInvoiceDetail({
-                                                        invoice_id: 0,
-                                                        customer_name: row_data.customer_name,
-                                                        cashier: localStorage.getItem("display_name") || "",
+                                                        invoice_id: 0, cashier: localStorage.getItem("display_name") || "",
                                                         payment_date: datetime_format(new Date()),
-                                                        phone: row_data.phone,
-                                                        start_date: date_format(row_data.from_date),
-                                                        end_date: date_format(row_data.to_date),
-                                                        old_end: date_format(row_data.old_end),
-                                                        new_end: date_format(row_data.new_end),
+                                                        sender_id: row_data.sender_id, sender_name: row_data.sender_name, sender_phone: row_data.sender_phone, sender_old_end: row_data.sender_old_end, sender_new_end: SenderNewEnd(row_data.sender_old_end),
+                                                        receiver_id: row_data.receiver_id, receiver_name: row_data.receiver_name, receiver_phone: row_data.receiver_phone, receiver_old_end: row_data.receiver_old_end, receiver_new_end: ReceiverNewEnd(row_data.sender_old_end, row_data.receiver_old_end),
                                                     })
-                                                    setCustomerID(row_data.customer_id)
                                                 }}
                                             >
                                                 <PrinterIcon
@@ -237,10 +243,40 @@ const HoldRequest = () => {
         }),
     ];
 
-    const { data, loading, refetch } = useHoldRequestsQuery({ fetchPolicy: "no-cache" })
+    function countDaysBetweenDates(startDate: Date, endDate: Date) {
+        // Convert both dates to UTC to ensure accurate calculation
+        const utcStartDate = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const utcEndDate = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 
-    const [checkerApprove] = useCheckHoldRequestMutation();
-    const [approveHold] = useApproveHoldRequestMutation();
+        // Calculate the difference in milliseconds
+        const timeDifference = utcEndDate - utcStartDate;
+
+        // Convert the difference from milliseconds to days
+        const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        return daysDifference;
+    }
+
+    function calculateNewEndDate(startDate: string, daysToAdd: number) {
+        // Clone the start date to avoid modifying the original date
+        const endDate = new Date(startDate);
+        // Use setDate to add the specified number of days
+        endDate.setDate(endDate.getDate() + daysToAdd);
+        return date_format(endDate);
+    }
+
+    function SenderNewEnd(old_end: string) {
+        return calculateNewEndDate(old_end, -countDaysBetweenDates(new Date(), new Date(old_end)))
+    }
+
+    function ReceiverNewEnd(sender_old_end: string, receiver_old_end: string) {
+        const remain_days = countDaysBetweenDates(new Date(), new Date(receiver_old_end))
+        if (remain_days <= 0) {
+            return invoice_detail.sender_old_end
+        } else {
+            const sender_remain = countDaysBetweenDates(new Date(), new Date(sender_old_end))
+            return calculateNewEndDate(receiver_old_end, sender_remain)
+        }
+    }
 
     const HandleCheckerApprove = async () => {
         //TODO: Check Permission
@@ -262,61 +298,35 @@ const HoldRequest = () => {
         Notifications("អ្នកមិនមានសិទ្ធិទេ", "error")
     }
 
-    const [getCustomer, { data: member }] = useGetCustomerDetailLazyQuery({ fetchPolicy: "no-cache" });
-    const [getCustomerPayment, { data: payment }] = useGetMemberPaymentLazyQuery({ fetchPolicy: "no-cache" });
-    const [createHold] = useCreateHoldMutation()
-
-    const [open, setOpen] = useState(false)
-    const cancelButtonRef = useRef(null)
+    const [checkerApprove] = useCheckTransferRequestMutation();
+    const [approveTransfer] = useApproveTransferRequestMutation();
+    const [createTransfer] = useCreateTransferMutation();
+    const { data, loading, refetch } = useTransferRequestsQuery({ fetchPolicy: "no-cache" })
 
     const [open_checker, setOpenChecker] = useState(false)
     const [open_approver, setOpenApprover] = useState(false)
-    const [open_print, setOpenPrint] = useState(false)
-    const [description, setDescription] = useState("")
     const [request_id, setRequestID] = useState(0)
-    const [customer_id, setCustomerID] = useState(0)
+    const [description, setDescription] = useState("")
+    const [open_print, setOpenPrint] = useState(false)
+    const cancelButtonRef = useRef<HTMLButtonElement>(null)
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const InvoiceRef = useRef<HTMLDivElement>(null);
 
     const [invoice_detail, setInvoiceDetail] = useState({
-        invoice_id: 0,
-        payment_date: "",
-        cashier: "",
-        customer_name: "",
-        phone: "",
-        start_date: "", end_date: "",
-        old_end: "", new_end: ""
+        invoice_id: 0, cashier: "", payment_date: "",
+        sender_id: 0, sender_name: "", sender_phone: "", sender_old_end: "", sender_new_end: "",
+        receiver_id: 0, receiver_name: "", receiver_phone: "", receiver_old_end: "", receiver_new_end: "",
     })
 
-    const HoldInvoiceRef = useRef<HTMLDivElement>(null);
-    const buttonRef = useRef<HTMLButtonElement>(null);
-
-    async function ProcessHold(): Promise<void> {
-
-        const { data: { CreateHold: res } } = await createHold({
-            variables: {
-                newEnd: invoice_detail.new_end,
-                customerId: customer_id,
-                requestId: request_id,
-                processedBy: parseInt(localStorage.getItem("user_id") || "99")
-            }
-        })
-
-        if (res.success) {
-            setInvoiceDetail({ ...invoice_detail, invoice_id: res.hold_id })
-            return;
-        }
-
-        Notifications("បរាជ័យ", "error")
-    }
-
     const handlePrint = useReactToPrint({
-        content: () => HoldInvoiceRef.current,
+        content: () => InvoiceRef.current,
         print: async (printIframe: HTMLIFrameElement) => {
             // Do whatever you want here, including asynchronous work
-            await handlePrint1(printIframe);
+            await SendToElectronPrinter(printIframe);
         }
     });
 
-    const handlePrint1 = async (target: HTMLIFrameElement) => {
+    const SendToElectronPrinter = async (target: HTMLIFrameElement) => {
         return new Promise(() => {
             console.log("forwarding print request to the main process...");
             const data = target.contentWindow.document.documentElement.outerHTML;
@@ -327,6 +337,29 @@ const HoldRequest = () => {
             });
         });
     };
+
+    async function ProcessTransfer(): Promise<void> {
+
+        const { sender_id, sender_old_end, sender_new_end, receiver_id, receiver_old_end, receiver_new_end } = invoice_detail
+
+        const { data: { CreateTransfer: res } } = await createTransfer({
+            variables: {
+                requestId: request_id,
+                processedBy: parseInt(localStorage.getItem("user_id") || "99"),
+                receiverNewEnd: receiver_new_end,
+                receiverOldEnd: receiver_old_end,
+                receiverId: receiver_id,
+                senderNewEnd: sender_new_end,
+                senderOldDate: sender_old_end,
+                senderId: sender_id
+            }
+        })
+        if (res.success) {
+            setInvoiceDetail({ ...invoice_detail, invoice_id: res.transfer_id })
+            return;
+        }
+        Notifications("បរាជ័យ", "error")
+    }
 
     useEffect(() => {
         // This function will be called after the component re-renders
@@ -342,7 +375,7 @@ const HoldRequest = () => {
             {!loading ? (
                 <DataTable
                     columns={columns}
-                    data={data?.HoldRequests}
+                    data={data?.TransferRequests}
                 />
             ) : (
                 <LoadingPage message={"Loading"} />
@@ -355,7 +388,7 @@ const HoldRequest = () => {
                 onClick={handlePrint}
             >
                 Print
-            </button>
+            </button >
 
             {/* Checker Approve Or Reject */}
             <Transition.Root show={open_checker} as={Fragment}>
@@ -416,7 +449,7 @@ const HoldRequest = () => {
                                                     }
                                                 })
 
-                                                if (res.data?.CheckHoldRequest.success) {
+                                                if (res.data?.CheckTransferRequest.success) {
                                                     Notifications("Approved", "success")
                                                     setOpenChecker(false);
                                                     refetch();
@@ -443,7 +476,7 @@ const HoldRequest = () => {
                                                     }
                                                 })
 
-                                                if (res.data?.CheckHoldRequest.success) {
+                                                if (res.data?.CheckTransferRequest.success) {
                                                     setOpenChecker(false)
                                                     refetch();
                                                     Notifications("Rejected", "success")
@@ -462,7 +495,7 @@ const HoldRequest = () => {
                         </div>
                     </div>
                 </Dialog>
-            </Transition.Root>
+            </Transition.Root >
 
             {/* Admin Approve Or Reject */}
             <Transition.Root show={open_approver} as={Fragment}>
@@ -514,7 +547,7 @@ const HoldRequest = () => {
                                             className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                             onClick={async () => {
                                                 //TODO: Update To Checked
-                                                const res = await approveHold({
+                                                const res = await approveTransfer({
                                                     variables: {
                                                         approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
@@ -523,7 +556,7 @@ const HoldRequest = () => {
                                                     }
                                                 })
 
-                                                if (res.data?.ApproveHoldRequest.success) {
+                                                if (res.data?.ApproveTransferRequest.success) {
                                                     Notifications("Approved", "success")
                                                     setOpenApprover(false);
                                                     refetch();
@@ -541,7 +574,7 @@ const HoldRequest = () => {
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                             onClick={async () => {
                                                 //TODO: Update To Checked
-                                                const res = await approveHold({
+                                                const res = await approveTransfer({
                                                     variables: {
                                                         approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
                                                         requestId: request_id,
@@ -550,7 +583,7 @@ const HoldRequest = () => {
                                                     }
                                                 })
 
-                                                if (res.data?.ApproveHoldRequest.success) {
+                                                if (res.data?.ApproveTransferRequest.success) {
                                                     Notifications("Rejected", "success")
                                                     refetch();
                                                     setOpenApprover(false);
@@ -569,81 +602,7 @@ const HoldRequest = () => {
                         </div>
                     </div>
                 </Dialog>
-            </Transition.Root>
-
-            {/* Customer Payment */}
-            <Transition.Root show={open} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                            >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                                                    ពត៌មានអតិថិជន
-                                                </Dialog.Title>
-                                                <div className="mt-2">
-                                                    <table className="min-w-full divide-y divide-gray-200">
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                                                <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-                                                                payment?.GetMemberPayment.map((payment, index) => {
-                                                                    return (
-                                                                        <tr key={index} className="odd:bg-white even:bg-gray-100 text-left">
-                                                                            <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-800">{date_format(payment.payment_date)}</td>
-                                                                            <td>{payment.promotion}</td>
-                                                                        </tr>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            Close
-                                        </button>
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition.Root>
+            </Transition.Root >
 
             {/* Receiptionist Print Payment */}
             <Transition.Root show={open_print} as={Fragment}>
@@ -676,11 +635,11 @@ const HoldRequest = () => {
                                         <div className="sm:flex sm:items-start">
                                             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                 <div className="mt-2">
-                                                    <HoldInvoice
-                                                        ref={HoldInvoiceRef}
+                                                    <TransferInvoice
+                                                        ref={InvoiceRef}
                                                         invoice_detail={invoice_detail}
                                                     >
-                                                    </HoldInvoice>
+                                                    </TransferInvoice>
                                                 </div>
                                             </div>
                                         </div>
@@ -689,7 +648,7 @@ const HoldRequest = () => {
                                         <button
                                             type="button"
                                             className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => ProcessHold()}
+                                            onClick={() => ProcessTransfer()}
                                         >
                                             Process
                                         </button>
@@ -706,9 +665,9 @@ const HoldRequest = () => {
                         </div>
                     </div>
                 </Dialog>
-            </Transition.Root >
+            </Transition.Root>
         </>
     )
 }
 
-export default HoldRequest
+export default TransferRequest

@@ -147,7 +147,7 @@ export default function Ticket() {
             );
           })}
         </div>
-        <div className="hidden1">
+        <div className="hidden">
           <ComponentToPrint
             ref={componentRef}
             price={price}
