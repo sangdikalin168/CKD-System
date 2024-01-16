@@ -432,11 +432,12 @@ const ConfirmModal = (props: any) => {
   );
 
   const handleChangeDateTo = (selectedDate: Date) => {
-    if (selectedDate < new Date(renewalDate)) {
-      setSelectedDateTo(date_format(selectedDate));
-    } else {
-      Notifications("ត្រឹមត្រូវ", "error")
-    }
+    // if (selectedDate < new Date(renewalDate)) {
+    //   setSelectedDateTo(date_format(selectedDate));
+    // } else {
+    //   Notifications("ត្រឹមត្រូវ", "error")
+    // }
+    setSelectedDateTo(date_format(selectedDate));
   };
 
   useEffect(() => {

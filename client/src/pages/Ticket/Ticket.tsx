@@ -38,7 +38,7 @@ export default function Ticket() {
       const data = target.contentWindow.document.documentElement.outerHTML;
       const blob = new Blob([data], { type: "text/html; charset=utf-8" });
       const url = URL.createObjectURL(blob);
-      window.electronAPI.previewComponent(url, (response: any) => {
+      window.electronAPI.printComponent1(url, (response: any) => {
         console.log("Main: ", response);
       });
     });
