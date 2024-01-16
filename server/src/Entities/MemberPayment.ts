@@ -30,6 +30,10 @@ export class MemberPayment extends BaseEntity {
 
     @Field()
     @Column({ type: "date", default: () => "CURRENT_DATE" })
+    start_date: string;
+
+    @Field()
+    @Column({ type: "date", default: () => "CURRENT_DATE" })
     old_end!: string;
 
     @Field()

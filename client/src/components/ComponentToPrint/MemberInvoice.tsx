@@ -54,6 +54,10 @@ export const MemberInvoice = React.forwardRef((props, ref) => {
                         </tr>
                         <tr>
                             <td className="text-center">-</td>
+                            <td className="text-left" id="new_end">Start Date: {props.start_date}</td>
+                        </tr>
+                        <tr>
+                            <td className="text-center">-</td>
                             <td className="text-left" id="new_end">សុពលភាពថ្មី: {props.new_end}</td>
                         </tr>
                     </tbody>

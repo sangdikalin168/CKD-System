@@ -60,6 +60,9 @@ class MemberPaymentDetail {
     price: number
 
     @Field()
+    start_date: Date
+
+    @Field()
     old_end: Date
 
     @Field()
@@ -79,7 +82,7 @@ export class MemberPaymentResolver {
         const res = await MemberPayment.createQueryBuilder("member_payment")
             .innerJoin(Users, "user", "member_payment.user_id = user.user_id")
             .innerJoin(Customer, "customer", "member_payment.customer_id = customer.customer_id")
-            .select(["payment_id", "payment_date", "user.display_name as display_name", "customer_name", "customer.phone as phone", "promotion", "price", "old_end", "new_end"])
+            .select(["payment_id", "payment_date", "user.display_name as display_name", "customer_name", "customer.phone as phone", "promotion", "price", "old_end", "new_end", "start_date"])
             .where("payment_id = :payment_id", { payment_id: payment_id })
             .getRawOne();
         return res;
@@ -93,6 +96,7 @@ export class MemberPaymentResolver {
         @Arg("price") price: number,
         @Arg("old_end") old_end: string,
         @Arg("new_end") new_end: string,
+        @Arg("start_date") start_date: string,
         @Arg("shift") shift: string,
         @Arg("month_qty") month_qty: number,
     ): Promise<MemberPaymentMutationResponse> {
@@ -104,6 +108,7 @@ export class MemberPaymentResolver {
             price: price,
             old_end: old_end,
             new_end: new_end,
+            start_date: start_date,
             shift: shift,
             month_qty: month_qty
         }).save();

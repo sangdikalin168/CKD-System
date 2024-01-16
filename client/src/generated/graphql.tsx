@@ -259,6 +259,7 @@ export type MemberPayment = {
   price: Scalars['Float'];
   promotion: Scalars['String'];
   shift: Scalars['String'];
+  start_date: Scalars['String'];
   user_id: Scalars['Float'];
 };
 
@@ -273,6 +274,7 @@ export type MemberPaymentDetail = {
   phone: Scalars['String'];
   price: Scalars['Float'];
   promotion: Scalars['String'];
+  start_date: Scalars['DateTime'];
 };
 
 export type MemberPaymentMutationResponse = MemberPaymentResponse & {
@@ -389,6 +391,7 @@ export type MutationCreateCustomerPaymentArgs = {
   price: Scalars['Float'];
   promotion: Scalars['String'];
   shift: Scalars['String'];
+  start_date: Scalars['String'];
   user_id: Scalars['Float'];
 };
 
@@ -855,6 +858,7 @@ export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'Us
 export type CreateCustomerPaymentMutationVariables = Exact<{
   monthQty: Scalars['Float'];
   shift: Scalars['String'];
+  startDate: Scalars['String'];
   newEnd: Scalars['String'];
   oldEnd: Scalars['String'];
   price: Scalars['Float'];
@@ -871,7 +875,7 @@ export type GetMemberPaymentQueryVariables = Exact<{
 }>;
 
 
-export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: any, user_id: number, customer_id: number, promotion: string, price: number, old_end: string, new_end: string, shift: string, month_qty: number }> };
+export type GetMemberPaymentQuery = { __typename?: 'Query', GetMemberPayment: Array<{ __typename?: 'MemberPayment', payment_id: number, payment_date: any, user_id: number, customer_id: number, promotion: string, price: number, start_date: string, old_end: string, new_end: string, shift: string, month_qty: number }> };
 
 export type MemberPaymentDetailQueryVariables = Exact<{
   paymentId: Scalars['Float'];
@@ -1673,10 +1677,11 @@ export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const CreateCustomerPaymentDocument = gql`
-    mutation CreateCustomerPayment($monthQty: Float!, $shift: String!, $newEnd: String!, $oldEnd: String!, $price: Float!, $promotion: String!, $customerId: Float!, $userId: Float!) {
+    mutation CreateCustomerPayment($monthQty: Float!, $shift: String!, $startDate: String!, $newEnd: String!, $oldEnd: String!, $price: Float!, $promotion: String!, $customerId: Float!, $userId: Float!) {
   CreateCustomerPayment(
     month_qty: $monthQty
     shift: $shift
+    start_date: $startDate
     new_end: $newEnd
     old_end: $oldEnd
     price: $price
@@ -1708,6 +1713,7 @@ export type CreateCustomerPaymentMutationFn = Apollo.MutationFunction<CreateCust
  *   variables: {
  *      monthQty: // value for 'monthQty'
  *      shift: // value for 'shift'
+ *      startDate: // value for 'startDate'
  *      newEnd: // value for 'newEnd'
  *      oldEnd: // value for 'oldEnd'
  *      price: // value for 'price'
@@ -1733,6 +1739,7 @@ export const GetMemberPaymentDocument = gql`
     customer_id
     promotion
     price
+    start_date
     old_end
     new_end
     shift

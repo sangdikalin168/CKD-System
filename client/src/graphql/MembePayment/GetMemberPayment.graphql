@@ -6,6 +6,7 @@ query GetMemberPayment($customerId: Float!) {
     customer_id
     promotion
     price
+    start_date
     old_end
     new_end
     shift

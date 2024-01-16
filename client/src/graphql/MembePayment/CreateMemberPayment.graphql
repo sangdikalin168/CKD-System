@@ -1,6 +1,7 @@
 mutation CreateCustomerPayment(
   $monthQty: Float!
   $shift: String!
+  $startDate: String!
   $newEnd: String!
   $oldEnd: String!
   $price: Float!
@@ -11,6 +12,7 @@ mutation CreateCustomerPayment(
   CreateCustomerPayment(
     month_qty: $monthQty
     shift: $shift
+    start_date: $startDate
     new_end: $newEnd
     old_end: $oldEnd
     price: $price

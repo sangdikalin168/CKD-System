@@ -12,7 +12,6 @@ import { TypeOptions, toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInvoice";
 import { DateTimePicker } from "../../../../components/DateTimePicker/DateTimePicker";
-import Notifications from "../../../../components/Notification";
 
 const notify = (
   message: string,
@@ -335,7 +334,6 @@ const ConfirmModal = (props: any) => {
         const renewalDate = new Date(today);
         renewalDate.setDate(renewalDate.getDate() + 15);
         renewalDate.setMonth(renewalDate.getMonth() + duration);
-        //renewalDate.setFullYear(renewalDate.getFullYear() + duration / 12);
         return renewalDate;
       } else {
         duration = today.getMonth() - effectiveDate.getMonth() + month_qty;
@@ -343,7 +341,6 @@ const ConfirmModal = (props: any) => {
         const renewalDate = new Date(effectiveDate);
         renewalDate.setDate(renewalDate.getDate() + 15);
         renewalDate.setMonth(renewalDate.getMonth() + month_qty);
-        //renewalDate.setFullYear(renewalDate.getFullYear() + month_qty / 12);
         return renewalDate;
       }
     }
@@ -351,25 +348,25 @@ const ConfirmModal = (props: any) => {
     const today = new Date();
     let duration = 0;
     if (effectiveDate < today) {
+      console.log("1");
       duration = today.getMonth() - today.getMonth() + month_qty;
       // Add the duration to the effective date to get the next renewal date.
       const renewalDate = new Date(today);
       renewalDate.setMonth(renewalDate.getMonth() + duration);
-      //renewalDate.setFullYear(renewalDate.getFullYear() + duration / 12);
       return renewalDate;
     } else {
+
       duration = today.getMonth() - effectiveDate.getMonth() + month_qty;
       // Add the duration to the effective date to get the next renewal date.
       const renewalDate = new Date(effectiveDate);
       renewalDate.setMonth(renewalDate.getMonth() + month_qty);
-      //renewalDate.setFullYear(renewalDate.getFullYear() + month_qty / 12);
       return renewalDate;
     }
   };
 
-  const effectiveDate = new Date(props.old_end);
-  const [renewalDate, setRenewalDate] = useState(getRenewalDate(effectiveDate, props.month_qty))
-  //const renewalDate = getRenewalDate(effectiveDate, props.month_qty);
+  const old_end = new Date(props.old_end);
+  const [start_date, setStartDate] = useState(date_format(new Date()));
+  const [renewalDate, setRenewalDate] = useState(getRenewalDate(old_end, props.month_qty))
   const [createMemberPayment] = useCreateCustomerPaymentMutation();
 
   const [payment_id, setPaymentID] = useState(0);
@@ -385,6 +382,7 @@ const ConfirmModal = (props: any) => {
         promotion: props.promotion,
         customerId: props.customer_id,
         userId: props.user_id,
+        startDate: start_date
       },
     });
 
@@ -427,17 +425,20 @@ const ConfirmModal = (props: any) => {
   const handleCloseDateTo = (state: boolean) => {
     setShowDateTo(state);
   };
-  const [selectedDateTo, setSelectedDateTo] = useState(
-    date_format(new Date(renewalDate))
-  );
 
-  const handleChangeDateTo = (selectedDate: Date) => {
-    // if (selectedDate < new Date(renewalDate)) {
-    //   setSelectedDateTo(date_format(selectedDate));
-    // } else {
-    //   Notifications("ត្រឹមត្រូវ", "error")
-    // }
-    setSelectedDateTo(date_format(selectedDate));
+  const CalculateNewEnd = (effectiveDate: Date, month_qty: number) => {
+    // Get the current date.
+    let duration = 0;
+    duration = effectiveDate.getMonth() - effectiveDate.getMonth() + month_qty;
+    // Add the duration to the effective date to get the next renewal date.
+    const renewalDate = new Date(effectiveDate);
+    renewalDate.setMonth(renewalDate.getMonth() + duration);
+    return renewalDate;
+  };
+
+  const handleChangeStartDate = (selectedDate: Date) => {
+    setStartDate(date_format(selectedDate))
+    setRenewalDate(CalculateNewEnd(selectedDate, props.month_qty))
   };
 
   useEffect(() => {
@@ -458,31 +459,32 @@ const ConfirmModal = (props: any) => {
       >
         Print
       </button>
-      <p className="text-lg font-semibold leading-6 text-gray-900">
-        សុពលភាពចាស់: {props.old_end}
-      </p>
+
 
       <div>
-        <p className="text-lg font-semibold leading-6 text-gray-900 mb-2">
-          ថ្ងៃបង់ប្រាក់បន្ទាប់: {date_format(renewalDate)}
-        </p>
-
         <div className="flex">
           <button
             type="button"
-            className="justify-center rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-            onClick={() => setRenewalDate(selectedDateTo)}
+            className="justify-center rounded-l-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
           >
-            កែប្រែថ្ងៃបញ្ចប់
+            Start Date
           </button>
           <DateTimePicker
-            onChange={handleChangeDateTo}
-            value={selectedDateTo}
+            onChange={handleChangeStartDate}
+            value={start_date}
             show={showDateTo}
             setShow={handleCloseDateTo}
             classNames={"top-[-62px]"}
           />
         </div>
+
+        <p className="text-2xl font-semibold leading-6 text-gray-900 mt-10 mb-5">
+          សុពលភាពចាស់: {props.old_end}
+        </p>
+
+        <p className="text-2xl font-semibold leading-6 text-gray-900 mb-2">
+          Start Date: {start_date} -----{'>'} End Date : {date_format(renewalDate)}
+        </p>
 
       </div>
 
@@ -501,7 +503,7 @@ const ConfirmModal = (props: any) => {
         យល់ព្រម
       </button>
 
-      <div className="hidden">
+      <div className="hidden1">
         <MemberInvoice
           ref={componentRef}
           invoice_id={payment_id}
@@ -511,6 +513,7 @@ const ConfirmModal = (props: any) => {
           phone={props.phone}
           promotion={props.promotion}
           price={props.price}
+          start_date={start_date}
           old_end={props.old_end}
           new_end={date_format(renewalDate)}
           shift={props.shift}
