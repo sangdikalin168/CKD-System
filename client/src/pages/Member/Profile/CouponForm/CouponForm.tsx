@@ -16,7 +16,7 @@ const notify = (
 ) => {
   if (!toast.isActive("alert")) {
     toast(message, {
-      autoClose: auto_Close ? 500 : false,
+      autoClose: auto_Close ? 5000 : false,
       toastId: "alert",
       type: toastType,
     });
@@ -44,10 +44,14 @@ export const CouponPayment = (props: any) => {
 
   const [coupon_code, setCouponCode] = useState("");
   const [payment_id, setPaymentID] = useState(0);
+  const [btn_sell_status, setBtnSellStatus] = useState(false);
 
   const [createCouponPayment] = useCreateCouponPaymentMutation();
 
   const CreateCouponPayment = async () => {
+    setBtnSellStatus(true);
+    
+    // Hide Or Disable Sell Button To advoice duplicate data
     const result = await createCouponPayment({
       variables: {
         userId: props.user_id,
@@ -184,6 +188,7 @@ export const CouponPayment = (props: any) => {
                                       តម្លៃ: {data?.GetCouponCard[0].price}$
                                     </p>
                                     <button
+                                      disabled={btn_sell_status}
                                       type="button"
                                       className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                       onClick={() => CreateCouponPayment()}

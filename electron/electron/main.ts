@@ -72,9 +72,7 @@ function createWindow() {
     win = null
   })
 
-
-  //win.loadURL("http://localhost:4000")
-  win.loadURL("http://110.235.249.118:5173")
+  win.loadURL("http://localhost:5173/")
 
 }
 
@@ -82,6 +80,8 @@ function createWindow() {
 app.on('window-all-closed', () => {
   app.quit()
 })
+
+app.commandLine.appendSwitch('enable-features=GuestViewCrossProcessFrames');
 
 
 // app.whenReady().then(createWindow)
