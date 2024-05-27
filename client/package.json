@@ -3,11 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host --port 5173",
-    "start_electron": "electron .",
-    "build": "vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview --host",
+    "dev": "set \"REACT_APP_ENV=development\" && vite --host",
+    "prod": "set \"REACT_APP_ENV=production\" && vite --host",
+    "build": "tsc && vite build",
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {

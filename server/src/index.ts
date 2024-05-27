@@ -21,7 +21,7 @@ const MysqlDataSource = new DataSource({
   port: 3306,
   connectTimeout: 24 * 3600,
   acquireTimeout: 60 * 60 * 1000,
-  host: process.env.DEV_SERVER,
+  host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -42,20 +42,10 @@ const main = async () => {
   const app = express();
   app.use(express.static(path.resolve(__dirname, "../../client/dist")));
 
-  // app.get("*", (req, res) => {
-  //   res.sendFile(path.resolve(__dirname, "../../client/dist", "index.html"));
-  // });
-
-  //app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use("/refresh_token", refreshTokenRouter);
-
-  // app.use(
-  //   "/images/products/",
-  //   express.static(path.join(__dirname, "images/products"))
-  // );
 
   const httpServer = createServer(app);
 
@@ -83,6 +73,8 @@ const main = async () => {
       origin: [
         "https://studio.apollographql.com",
         "http://localhost:5173",
+        "http://localhost:5173:4000",
+        "http://110.235.252.175:4000",
       ],
       credentials: true,
     },

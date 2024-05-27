@@ -21,7 +21,6 @@
     "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-jwt": "^7.7.7",
     "express-mysql-session": "^2.1.8",
@@ -35,15 +34,14 @@
     "node-telegram-bot-api": "^0.61.0",
     "node-windows": "^1.0.0-beta.8",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "dotenv": "^16.4.1",
+		"dotenv-cli": "^7.3.0"
   },
   "scripts": {
-    "start1": "npm run build && node dist/index.js",
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon ./src/index.ts",
-    "build1": "rimraf ./dist && tsc",
-    "build": "tsc",
-    "pm2": "pm2 start dist/index.js --name my-app"
+    "dev": "dotenv -e dev.env nodemon ./src/index.ts",
+    "start": "dotenv -e prod.env nodemon ./src/index.ts",
+    "build": "tsc -p ."
   },
   "exports": {
     "./GraphQLUpload.js": "./GraphQLUpload.js",

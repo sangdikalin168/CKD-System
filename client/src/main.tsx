@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 import App from "./App.tsx";
-//import "./index.css";
 import "../src/index.css";
 import {
   ApolloClient,
@@ -28,7 +28,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: API_BASE_URL,
   credentials: "include",
 });
 
