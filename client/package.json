@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "set \"REACT_APP_ENV=development\" && vite --host",
-    "prod": "set \"REACT_APP_ENV=production\" && vite --host",
+    "start": "set \"REACT_APP_ENV=production\" && vite --host",
     "build": "tsc && vite build",
     "gen": "graphql-codegen --config codegen.yml"
   },
