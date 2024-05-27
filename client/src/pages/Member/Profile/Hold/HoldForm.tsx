@@ -40,10 +40,11 @@ const HoldForm = ({ open_hold, setOpenHold, customer_id, old_end }: any) => {
         //TODO: Condition Must Bigger Than Present
         //TODO: Compare End Date Between Present
         const currentDate = new Date();
-        if (selectedDate > currentDate) {
+        if (date_format(selectedDate) >= date_format(currentDate)) {
             setSelectedDateFrom(date_format(selectedDate));
-        } else if (selectedDate < currentDate) {
+        } else if (date_format(selectedDate) < date_format(currentDate)) {
             Notifications("ថ្ងៃចាប់ផ្តើមមិនត្រឹមត្រូវ", "error")
+            console.log(date_format(selectedDate), date_format(currentDate));
         }
     };
 
