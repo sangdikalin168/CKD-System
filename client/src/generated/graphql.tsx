@@ -45,10 +45,13 @@ export type CouponPayment = {
   card_name: Scalars['String'];
   coupon_code: Scalars['String'];
   customer_id: Scalars['Float'];
+  key_qty: Scalars['Float'];
+  last_update: Scalars['String'];
   payment_date: Scalars['String'];
   payment_id: Scalars['Float'];
   price: Scalars['Float'];
   quantity: Scalars['Float'];
+  towel_qty: Scalars['Float'];
   user_id: Scalars['Float'];
 };
 
@@ -490,6 +493,7 @@ export type Query = {
   GetCustomers: Array<Customer>;
   GetFruitPayment: Array<FruitPayment>;
   GetFruitPriceTable: Array<FruitPrice>;
+  GetHoldRequest: Array<HoldRequest>;
   GetMemberPayment: Array<MemberPayment>;
   GetMemberPriceTable: Array<MemberPriceTable>;
   GetTrainningPayment: Array<TrainningPayment>;
@@ -518,6 +522,11 @@ export type QueryGetCustomerDetailArgs = {
 
 
 export type QueryGetFruitPaymentArgs = {
+  customer_id: Scalars['Float'];
+};
+
+
+export type QueryGetHoldRequestArgs = {
   customer_id: Scalars['Float'];
 };
 
@@ -842,6 +851,13 @@ export type CreateHoldRequestMutationVariables = Exact<{
 
 
 export type CreateHoldRequestMutation = { __typename?: 'Mutation', CreateHoldRequest: { __typename?: 'HoldMutationResponse', code: number, success: boolean, message?: string | null } };
+
+export type GetHoldRequestQueryVariables = Exact<{
+  customerId: Scalars['Float'];
+}>;
+
+
+export type GetHoldRequestQuery = { __typename?: 'Query', GetHoldRequest: Array<{ __typename?: 'HoldRequest', from_date: string, to_date: string, process: string, checker_status: string }> };
 
 export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1577,6 +1593,44 @@ export function useCreateHoldRequestMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateHoldRequestMutationHookResult = ReturnType<typeof useCreateHoldRequestMutation>;
 export type CreateHoldRequestMutationResult = Apollo.MutationResult<CreateHoldRequestMutation>;
 export type CreateHoldRequestMutationOptions = Apollo.BaseMutationOptions<CreateHoldRequestMutation, CreateHoldRequestMutationVariables>;
+export const GetHoldRequestDocument = gql`
+    query GetHoldRequest($customerId: Float!) {
+  GetHoldRequest(customer_id: $customerId) {
+    from_date
+    to_date
+    process
+    checker_status
+  }
+}
+    `;
+
+/**
+ * __useGetHoldRequestQuery__
+ *
+ * To run a query within a React component, call `useGetHoldRequestQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetHoldRequestQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetHoldRequestQuery({
+ *   variables: {
+ *      customerId: // value for 'customerId'
+ *   },
+ * });
+ */
+export function useGetHoldRequestQuery(baseOptions: Apollo.QueryHookOptions<GetHoldRequestQuery, GetHoldRequestQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetHoldRequestQuery, GetHoldRequestQueryVariables>(GetHoldRequestDocument, options);
+      }
+export function useGetHoldRequestLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetHoldRequestQuery, GetHoldRequestQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetHoldRequestQuery, GetHoldRequestQueryVariables>(GetHoldRequestDocument, options);
+        }
+export type GetHoldRequestQueryHookResult = ReturnType<typeof useGetHoldRequestQuery>;
+export type GetHoldRequestLazyQueryHookResult = ReturnType<typeof useGetHoldRequestLazyQuery>;
+export type GetHoldRequestQueryResult = Apollo.QueryResult<GetHoldRequestQuery, GetHoldRequestQueryVariables>;
 export const HoldRequestsDocument = gql`
     query HoldRequests {
   HoldRequests {

@@ -4,6 +4,7 @@ import { Tab } from "@headlessui/react";
 import {
   useGetCustomerDetailQuery,
   useGetFruitPaymentQuery,
+  useGetHoldRequestQuery,
   useGetMemberPaymentQuery,
   useGetTrainningPaymentQuery,
 } from "../../../../generated/graphql";
@@ -61,6 +62,17 @@ const MemberProfile = ({ ID }: any) => {
     fetchPolicy: "no-cache",
   })
 
+
+  const {
+    data: request_data,
+  } = useGetHoldRequestQuery({
+    variables: {
+      customerId: ID,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+
   const details = data?.GetCustomerDetail[0];
 
   const [open_coupon, setIsOpenCoupon] = useState(false);
@@ -89,9 +101,19 @@ const MemberProfile = ({ ID }: any) => {
     const currentDate = new Date();
     const end_date = new Date(date);
 
+
+
     if (end_date >= currentDate) {
-      console.log('Active');
-      setOpenHold(true);
+      if (request_data?.GetHoldRequest.length > 0) {
+        const end_hold = new Date(hold_request?.GetHoldRequest[0].to_date)
+        if (end_hold <= currentDate) {
+          setOpenHold(true);
+        } else {
+          Notifications("អតិថិជនកំពុងសុំច្បាប់", "info")
+        }
+      } else {
+        setOpenHold(true);
+      }
     } else if (end_date < currentDate) {
       Notifications("សមាជិកផុតសុពលភាពហើយ", "info")
     }

@@ -61,6 +61,12 @@ const NOW = new Date().toLocaleString("sv-SE").replace(/,/g, "");
 @Resolver()
 export class HoldResolver {
 
+    @Query((_return) => [HoldRequest])
+    async GetHoldRequest(@Arg("customer_id") customer_id: number) {
+        const result = await HoldRequest.query(`SELECT * FROM hold_request WHERE customer_id = ${customer_id} ORDER BY request_id DESC LIMIT 1;`)
+        return JSON.parse(JSON.stringify(result));
+    }
+
     @Query((_return) => [HoldJoin])
     async HoldRequests() {
         const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name,customer.phone, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date ASC;`)

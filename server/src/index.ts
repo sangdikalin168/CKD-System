@@ -75,6 +75,8 @@ const main = async () => {
         "http://localhost:5173",
         "http://localhost:5173:4000",
         "http://110.235.252.175:4000",
+        "http://192.168.100.29:5173",
+        "http://192.168.100.26:5173",
       ],
       credentials: true,
     },

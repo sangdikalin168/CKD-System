@@ -36,4 +36,16 @@ export class CouponPayment extends BaseEntity {
     @Column({ length: 255 })
     coupon_code: string;
 
+    @Field()
+    @Column({ type: "int" })
+    towel_qty: number
+
+    @Field()
+    @Column({ type: "int" })
+    key_qty: number
+
+    @Field()
+    @Column({ type: "date", default: () => "CURRENT_TIMESTAMP" })
+    last_update: string
+
 }

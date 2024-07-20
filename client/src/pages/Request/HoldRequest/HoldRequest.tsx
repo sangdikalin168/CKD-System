@@ -1,13 +1,12 @@
-import { createColumnHelper } from "@tanstack/react-table";
-import DataTable from "../../../components/DataTable/DataTable"
 import LoadingPage from "../../../components/LoadingPage/LoadingPage"
 import { useApproveHoldRequestMutation, useCheckHoldRequestMutation, useCreateHoldMutation, useGetCustomerDetailLazyQuery, useGetMemberPaymentLazyQuery, useHoldRequestsQuery } from "../../../generated/graphql";
-import { PrinterIcon } from "@heroicons/react/20/solid";
+import { CheckCircleIcon, PrinterIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Notifications from "../../../components/Notification";
 import { HoldInvoice } from "../../../components/ComponentToPrint/HoldInvoice";
 import { useReactToPrint } from "react-to-print";
+
 
 type HoldRequest = {
     display_name: string
@@ -49,193 +48,6 @@ const date_format = (date_time: string) => {
 
 
 const HoldRequest = () => {
-    const columnHelper = createColumnHelper<HoldRequest>();
-    const columns = [
-        columnHelper.accessor((row) => row.display_name, {
-            id: "អ្នកស្នើ",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_date, {
-            id: "ថ្ងៃស្នើ",
-            cell: (info) => datetime_format(info.getValue()),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.customer_name, {
-            id: "ឈ្មោះអតិថិជន",
-            cell: (info) =>
-                <div
-                    onClick={async () => {
-                        await getCustomer({
-                            variables: {
-                                customerId: info.row.original.customer_id
-                            }
-                        })
-                        await getCustomerPayment({
-                            variables: {
-                                customerId: info.row.original.customer_id
-                            }
-                        })
-                        setOpen(true)
-                    }}
-                >
-                    {info.getValue()}
-                </div >,
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.reason, {
-            id: "មូលហេតុ",
-            cell: (info) => info.getValue(),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_date, {
-            id: "ចាប់ពី",
-            cell: (info) => date_format(info.getValue()),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_date, {
-            id: "ដល់",
-            cell: (info) => date_format(info.getValue()),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.checker_name, {
-            id: "អ្នកពិនិត្យ",
-            cell: (info) => (
-                <>
-                    {
-                        info.row.original.checker_status === "Pending" ?
-                            <button
-                                type="button"
-                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                onClick={() => {
-                                    HandleCheckerApprove();
-                                    setRequestID(info.row.original.request_id)
-                                }}
-                            >
-                                Action
-                            </button>
-                            :
-                            <>
-                                {
-                                    info.row.original.checker_status === "Approved" ?
-                                        <div className="group">
-                                            <strong className="text-green-500 visible group-hover:invisible">Approved</strong>
-                                            <strong className="text-green-500 invisible group-hover:visible">{info.row.original.checker_comment}</strong>
-                                        </div>
-                                        :
-                                        <div className="group">
-                                            <strong className="text-red-500 visible group-hover:invisible">Rejected</strong>
-                                            <strong className="text-red-500 invisible group-hover:visible">{info.row.original.checker_comment}</strong>
-                                        </div>
-                                }
-                            </>
-
-                    }
-                </>
-
-            ),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.approved_name, {
-            id: "អ្នកសម្រេច",
-            cell: (info) => (
-                <>
-                    {
-                        info.row.original.approver_status === "Pending" ?
-                            <button
-                                type="button"
-                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                onClick={() => {
-                                    CheckApproverRole();
-                                    setRequestID(info.row.original.request_id)
-                                }}
-                            >
-                                Action
-                            </button>
-                            :
-                            <>
-                                {
-                                    info.row.original.checker_status === "Approved" ?
-                                        <div className="group">
-                                            <strong className="text-green-500 visible group-hover:invisible">Approved</strong>
-                                            <strong className="text-green-500 invisible group-hover:visible">{info.row.original.approver_comment}</strong>
-                                        </div>
-                                        :
-                                        <div className="group">
-                                            <strong className="text-red-500 visible group-hover:invisible">Rejected</strong>
-                                            <strong className="text-red-500 invisible group-hover:visible">{info.row.original.approver_comment}</strong>
-                                        </div>
-                                }
-                            </>
-
-                    }
-                </>
-
-            ),
-            header: (info) => <span>{info.column.id}</span>,
-            footer: (info) => info.column.id,
-        }),
-        columnHelper.accessor((row) => row.request_id, {
-            id: "Process",
-            cell: ({ row: { original: row_data } }) => (
-                <div className="flex">
-                    {
-                        row_data.checker_status === "Approved" && row_data.approver_status === "Approved" ?
-                            <>
-                                {
-                                    row_data.processed_by === 0 ?
-                                        <span className="hidden sm:block">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                                onClick={() => {
-                                                    setOpenPrint(true)
-                                                    setRequestID(row_data.request_id)
-                                                    setInvoiceDetail({
-                                                        invoice_id: 0,
-                                                        customer_name: row_data.customer_name,
-                                                        cashier: localStorage.getItem("display_name") || "",
-                                                        payment_date: datetime_format(new Date()),
-                                                        phone: row_data.phone,
-                                                        start_date: date_format(row_data.from_date),
-                                                        end_date: date_format(row_data.to_date),
-                                                        old_end: date_format(row_data.old_end),
-                                                        new_end: date_format(row_data.new_end),
-                                                    })
-                                                    setCustomerID(row_data.customer_id)
-                                                }}
-                                            >
-                                                <PrinterIcon
-                                                    className="h-4 w-4 text-gray-500"
-                                                    aria-hidden="true"
-                                                />
-                                            </button>
-                                        </span>
-                                        :
-                                        <p>{row_data.processed_name}</p>
-                                }
-
-                            </>
-                            :
-                            <>
-                                {
-                                    <p>Pending</p>
-                                }
-                            </>
-                    }
-                </div>
-            ),
-            header: () => <span>Process</span>,
-            footer: (info) => info.column.id,
-        }),
-    ];
 
     const { data, loading, refetch } = useHoldRequestsQuery({ fetchPolicy: "no-cache" })
 
@@ -256,7 +68,7 @@ const HoldRequest = () => {
         //TODO: Check Permission
         const userRole = localStorage.getItem("role");
         if (userRole === "Admin") {
-            setOpenApprover(true)
+            setOpenApprove(true)
             return;
         }
         Notifications("អ្នកមិនមានសិទ្ធិទេ", "error")
@@ -268,13 +80,19 @@ const HoldRequest = () => {
 
     const [open, setOpen] = useState(false)
     const cancelButtonRef = useRef(null)
-
-    const [open_checker, setOpenChecker] = useState(false)
-    const [open_approver, setOpenApprover] = useState(false)
     const [open_print, setOpenPrint] = useState(false)
     const [description, setDescription] = useState("")
-    const [request_id, setRequestID] = useState(0)
-    const [customer_id, setCustomerID] = useState(0)
+    const [request_info, setRequestInfo] = useState({
+        request_id: 0,
+        customer_id: 0, customer_name: "Init Name", phone: "", end_membership_date: "", reason: "",
+        from_date: "",
+        to_date: "",
+        new_end: "",
+        checker_status: ""
+
+    })
+
+    const [open_approve, setOpenApprove] = useState(false)
 
     const [invoice_detail, setInvoiceDetail] = useState({
         invoice_id: 0,
@@ -294,8 +112,8 @@ const HoldRequest = () => {
         const { data: { CreateHold: res } } = await createHold({
             variables: {
                 newEnd: invoice_detail.new_end,
-                customerId: customer_id,
-                requestId: request_id,
+                customerId: request_info.customer_id,
+                requestId: request_info.request_id,
                 processedBy: parseInt(localStorage.getItem("user_id") || "99")
             }
         })
@@ -340,10 +158,133 @@ const HoldRequest = () => {
     return (
         <>
             {!loading ? (
-                <DataTable
-                    columns={columns}
-                    data={data?.HoldRequests}
-                />
+                <div className="grid grid-cols-1 gap-6 mb-6">
+                    <div className="bg-white border border-gray-200 shadow-md shadow-black/5 p-2 rounded-md">
+                        <div className="flex items-center mb-4 order-tab">
+                            <button type="button" data-tab="order" data-tab-page="active" className=" bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tl-md rounded-bl-md hover:text-gray-600 active">Pending</button>
+                            <button type="button" data-tab="order" data-tab-page="completed" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 hover:text-gray-600">Approved</button>
+                            <button type="button" data-tab="order" data-tab-page="canceled" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tr-md rounded-br-md hover:text-gray-600">Rejected</button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[540px]">
+                                <thead>
+                                    <tr className="w-full">
+                                        <th className="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-200 text-left rounded-tl-md rounded-bl-md">ឈ្មោះអតិថិជន</th>
+                                        <th className="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-200 text-left">មូលហេតុ</th>
+
+                                        <th className="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-200 text-center">ស្ថានភាព</th>
+                                        <th className="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-200 text-center rounded-tr-md rounded-br-md">សកម្មភាព</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        data?.HoldRequests.map((request) => {
+                                            return (
+                                                <tr key={request.request_id}>
+                                                    <td className="py-2 px-2 border-b border-b-gray-50 w-10">
+                                                        <div className="flex items-center"
+                                                            onClick={() => {
+                                                                CheckApproverRole()
+                                                                setRequestInfo({
+                                                                    request_id: request.request_id,
+                                                                    customer_id: request.customer_id,
+                                                                    customer_name: request.customer_name,
+                                                                    phone: request.phone,
+                                                                    end_membership_date: request.old_end,
+                                                                    reason: request.reason,
+                                                                    from_date: request.from_date,
+                                                                    to_date: request.to_date,
+                                                                    new_end: request.new_end,
+                                                                    checker_status: request.checker_status
+                                                                })
+                                                            }}
+                                                        >
+                                                            <a href="#" className="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">{request.customer_name}</a>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-2 px-4 border-b border-b-gray-50 text-left w-10">
+                                                        <span className="text-[13px] font-medium text-black">{request.reason}</span>
+                                                    </td>
+
+                                                    <td className="py-2 px-4 border-b border-b-gray-50 text-center w-10" >
+                                                        {
+                                                            request.checker_status === "Approved" ?
+                                                                <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">
+                                                                    Approved
+                                                                </span>
+                                                                :
+                                                                <>
+                                                                    {
+                                                                        request.checker_status === "Rejected" ?
+                                                                            <span className="inline-block p-1 rounded bg-emerald-500/10 text-red-500 font-medium text-[12px] leading-none">
+                                                                                Rejected
+                                                                            </span>
+                                                                            :
+                                                                            <span className="inline-block p-1 rounded bg-emerald-500/10 text-yellow-500 font-medium text-[12px] leading-none">
+                                                                                មានទាន់ពិនិត្យ
+                                                                            </span>
+                                                                    }
+
+                                                                </>
+
+                                                        }
+                                                    </td>
+                                                    <td className="py-2 px-4 border-b border-b-gray-50 text-center w-4">
+                                                        {
+                                                            request.checker_status === "Approved" ?
+                                                                <>
+                                                                    {
+                                                                        request.process === "Pending" ?
+                                                                            <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none" onClick={() => {
+                                                                                setOpenPrint(true)
+                                                                                setInvoiceDetail({
+                                                                                    invoice_id: 0,
+                                                                                    payment_date: datetime_format(new Date()),
+                                                                                    cashier: localStorage.getItem("display_name"),
+                                                                                    customer_name: request.customer_name,
+                                                                                    phone: request.phone,
+                                                                                    start_date: date_format(request.from_date),
+                                                                                    end_date: date_format(request.to_date),
+                                                                                    old_end: date_format(request.old_end),
+                                                                                    new_end: date_format(request.new_end)
+                                                                                })
+                                                                            }}
+                                                                            >
+                                                                                <PrinterIcon
+                                                                                    className="h-4 w-4 text-gray-500"
+                                                                                    aria-hidden="true"
+                                                                                />
+                                                                            </span>
+                                                                            :
+                                                                            <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">
+                                                                                <CheckCircleIcon
+                                                                                    className="h-4 w-4 text-emerald-500"
+                                                                                    aria-hidden="true"
+                                                                                />
+                                                                            </span>
+
+                                                                    }
+
+                                                                </>
+                                                                :
+                                                                <span className="inline-block p-1 rounded bg-emerald-500/10 text-yellow-500 font-medium text-[12px] leading-none">
+                                                                    <XCircleIcon
+                                                                        className="h-4 w-4 text-red-500"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                </span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
             ) : (
                 <LoadingPage message={"Loading"} />
             )}
@@ -357,9 +298,9 @@ const HoldRequest = () => {
                 Print
             </button>
 
-            {/* Checker Approve Or Reject */}
-            <Transition.Root show={open_checker} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenChecker}>
+            {/*Approve Or Reject */}
+            <Transition.Root show={open_approve} as={Fragment}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenApprove}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -373,7 +314,7 @@ const HoldRequest = () => {
                     </Transition.Child>
 
                     <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <div className="flex min-h-full items-center sm:items-center justify-center p-4 text-center sm:p-0">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
@@ -383,186 +324,195 @@ const HoldRequest = () => {
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-[350px] sm:max-w-lg w-[350px]">
                                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
+                                        <div className="sm:items-start">
                                             <div className="w-full">
                                                 <label className="block text-sm font-medium leading-6 text-gray-900">
-                                                    បរិយាយ
+                                                    ឈ្មោះអតិថិជន
                                                 </label>
-                                                <div className="mt-2">
+                                                <input
+                                                    type="text"
+                                                    readOnly
+                                                    disabled
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                    value={request_info.customer_name}
+                                                />
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-2">
+                                                <div className="col-span-1">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        លេខទូរស័ព្ទ
+                                                    </label>
                                                     <input
                                                         type="text"
-                                                        required
-                                                        onChange={(e) => setDescription(e.target.value)}
+                                                        readOnly
+                                                        disabled
                                                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        value={request_info.phone}
+                                                    />
+                                                </div>
+
+                                                <div className="col-span-1">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        ថ្ងៃផុតសពលភាពចាស់
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        readOnly
+                                                        disabled
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        value={date_format(request_info.end_membership_date)}
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={async () => {
-                                                //TODO: Update To Checked
-                                                const res = await checkerApprove({
-                                                    variables: {
-                                                        checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
-                                                        requestId: request_id,
-                                                        checkerComment: description,
-                                                        checkerStatus: "Approved"
-                                                    }
-                                                })
 
-                                                if (res.data?.CheckHoldRequest.success) {
-                                                    Notifications("Approved", "success")
-                                                    setOpenChecker(false);
-                                                    refetch();
-                                                    return;
-                                                }
-
-                                                Notifications("Failed", "error")
-
-                                            }}
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={async () => {
-                                                //TODO: Update To Checked
-                                                const res = await checkerApprove({
-                                                    variables: {
-                                                        checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
-                                                        requestId: request_id,
-                                                        checkerComment: description,
-                                                        checkerStatus: "Rejected"
-                                                    }
-                                                })
-
-                                                if (res.data?.CheckHoldRequest.success) {
-                                                    setOpenChecker(false)
-                                                    refetch();
-                                                    Notifications("Rejected", "success")
-                                                    return;
-                                                }
-
-                                                Notifications("Failed", "error")
-
-                                            }}
-                                        >
-                                            Reject
-                                        </button>
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition.Root>
-
-            {/* Admin Approve Or Reject */}
-            <Transition.Root show={open_approver} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenApprover}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                            >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-                                            <div className="w-full">
+                                            <div className="w-full mt-2">
                                                 <label className="block text-sm font-medium leading-6 text-gray-900">
-                                                    បរិយាយ
+                                                    មូលហេតុនៃការសុំច្បាប់
                                                 </label>
-                                                <div className="mt-2">
+                                                <input
+                                                    type="text"
+                                                    readOnly
+                                                    disabled
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                    value={request_info.reason}
+                                                />
+                                            </div>
+
+
+                                            <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-2">
+                                                <div className="col-span-1">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        ចាប់ពីថ្ងៃ
+                                                    </label>
                                                     <input
                                                         type="text"
-                                                        required
-                                                        onChange={(e) => setDescription(e.target.value)}
+                                                        readOnly
+                                                        disabled
                                                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        value={date_format(request_info.from_date)}
+                                                    />
+                                                </div>
+
+                                                <div className="col-span-1">
+                                                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                        ដល់ថ្ងៃទី
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        readOnly
+                                                        disabled
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                        value={date_format(request_info.to_date)}
                                                     />
                                                 </div>
                                             </div>
+
+                                            <div className="w-full mt-2">
+                                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                    ថ្ងៃផុតសពលភាពថ្មី
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    readOnly
+                                                    disabled
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                    value={date_format(request_info.new_end)}
+                                                />
+                                            </div>
+
+
+                                            <div className="w-full mt-2">
+                                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                                    បរិយាយ
+                                                </label>
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    required
+                                                    onChange={(e) => setDescription(e.target.value)}
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={async () => {
-                                                //TODO: Update To Checked
-                                                const res = await approveHold({
-                                                    variables: {
-                                                        approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
-                                                        requestId: request_id,
-                                                        approverComment: description,
-                                                        approverStatus: "Approved"
-                                                    }
-                                                })
+                                    <div className="flex bg-gray-50 px-4 py-3 space-x-4 sm:flex sm:flex-row-reverse sm:px-6">
+                                        {
+                                            request_info.checker_status !== "Pending" ?
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                        onClick={async () => {
+                                                            //TODO: Update To Checked
+                                                            setOpenApprove(false);
+                                                        }}
+                                                    >
+                                                        Close
+                                                    </button>
+                                                </>
+                                                :
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                        onClick={async () => {
+                                                            //TODO: Update To Checked
+                                                            const res = await checkerApprove({
+                                                                variables: {
+                                                                    checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
+                                                                    requestId: request_info.request_id,
+                                                                    checkerComment: description,
+                                                                    checkerStatus: "Approved"
+                                                                }
+                                                            })
 
-                                                if (res.data?.ApproveHoldRequest.success) {
-                                                    Notifications("Approved", "success")
-                                                    setOpenApprover(false);
-                                                    refetch();
-                                                    return;
-                                                }
+                                                            if (res.data?.CheckHoldRequest.success) {
+                                                                Notifications("Approved", "success")
+                                                                setOpenApprove(false);
+                                                                refetch();
+                                                                return;
+                                                            }
 
-                                                Notifications("Failed", "error")
+                                                            Notifications("Failed", "error")
 
-                                            }}
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={async () => {
-                                                //TODO: Update To Checked
-                                                const res = await approveHold({
-                                                    variables: {
-                                                        approvedBy: parseInt(localStorage.getItem("user_id") || "0"),
-                                                        requestId: request_id,
-                                                        approverComment: description,
-                                                        approverStatus: "Rejected"
-                                                    }
-                                                })
+                                                        }}
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                                        onClick={async () => {
+                                                            //TODO: Update To Checked
+                                                            const res = await checkerApprove({
+                                                                variables: {
+                                                                    checkedBy: parseInt(localStorage.getItem("user_id") || "0"),
+                                                                    requestId: request_info.request_id,
+                                                                    checkerComment: description,
+                                                                    checkerStatus: "Rejected"
+                                                                }
+                                                            })
 
-                                                if (res.data?.ApproveHoldRequest.success) {
-                                                    Notifications("Rejected", "success")
-                                                    refetch();
-                                                    setOpenApprover(false);
-                                                    return;
-                                                }
+                                                            if (res.data?.CheckHoldRequest.success) {
+                                                                setOpenApprove(false);
+                                                                refetch();
+                                                                Notifications("Rejected", "success")
+                                                                return;
+                                                            }
 
-                                                Notifications("Failed", "error")
+                                                            Notifications("Failed", "error")
 
-                                            }}
-                                        >
-                                            Reject
-                                        </button>
+                                                        }}
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </>
+                                        }
+
+
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>
@@ -691,14 +641,14 @@ const HoldRequest = () => {
                                             className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                             onClick={() => ProcessHold()}
                                         >
-                                            Process
+                                            យល់ព្រម
                                         </button>
                                         <button
                                             type="button"
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                             onClick={() => setOpenPrint(false)}
                                         >
-                                            Close
+                                            ចាកចេញ
                                         </button>
                                     </div>
                                 </Dialog.Panel>

@@ -1,0 +1,8 @@
+query GetHoldRequest($customerId: Float!) {
+  GetHoldRequest(customer_id: $customerId) {
+    from_date
+    to_date
+    process
+    checker_status
+  }
+}

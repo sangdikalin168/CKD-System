@@ -105,17 +105,17 @@ export default function Ticket() {
           Print
         </button>
 
-        <div className="flex border-t border-gray-200">
+        <div className="mt-4 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12 gap-6">
           {ticket_list.map((list) => {
             return (
               <div
                 key={list.price}
-                className="relative bg-cyan-400 w-32 h-32 rounded-lg shadow m-2"
+                className=" bg-cyan-400 rounded-lg h-24 flex justify-center items-center"
               >
-                <span className="w-full h-full flex justify-center items-center text-5xl font-black">
+                <span className="text-2xl lg:text-3xl xl:text-4xl font-black">
                   <button
                     disabled={isLoading}
-                    className="w-full h-full"
+                    className=""
                     onClick={() => handleGetQRCode(list.price)}
                   >
                     {isLoading ? (

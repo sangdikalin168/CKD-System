@@ -203,10 +203,10 @@ export default function DataTable({ columns, data, button }: IChildProps) {
 
       {/* Table */}
       <div className="mt-2 flex flex-col">
-        <div className="-my-2 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
+        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
             <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-t-lg">
-              <table className="min-w-full divide-y divide-gray-300">
+              <table className="table table-compact w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} className="divide-x divide-gray-200 dark:divide-gray-300">
@@ -216,7 +216,7 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                         <th
                           key={header.id}
                           scope="col"
-                          className="group px-2 py-3 text-left text-xs font-medium text-black tracking-wider"
+                          className="group px-2 py-3 text-left text-xs font-medium text-red-500 tracking-wider w-96"
                         >
                           <div className="flex items-center justify-between">
                             {/* Add a sort direction indicator */}
@@ -249,7 +249,7 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                       <tr key={row.id} className="divide-x divide-gray-200 dark:divide-gray-300">
                         {row.getVisibleCells().map((cell) => {
                           return (
-                            <td key={cell.id} className="px-2 py-1 whitespace">
+                            <td key={cell.id} className="px-2 py-5 whitespace min-w-[8rem] max-w-[20rem] whitespace-normal">
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
