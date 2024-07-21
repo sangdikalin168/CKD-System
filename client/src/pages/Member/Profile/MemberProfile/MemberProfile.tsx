@@ -101,15 +101,26 @@ const MemberProfile = ({ ID }: any) => {
     const currentDate = new Date();
     const end_date = new Date(date);
 
-
-
     if (end_date >= currentDate) {
-      if (request_data?.GetHoldRequest.length > 0) {
-        const end_hold = new Date(hold_request?.GetHoldRequest[0].to_date)
-        if (end_hold <= currentDate) {
-          setOpenHold(true);
-        } else {
+      if (request_data?.GetHoldRequest.length > 0) { //TODO: If Length > 0 It's mean Customer Has Been Holded But not sure Approved or not
+
+        //TODO: Check hold is active or not
+        const end_hold = new Date(request_data?.GetHoldRequest[0].to_date)
+
+        console.log(end_hold >= currentDate);
+
+
+        if (end_hold >= currentDate && request_data?.GetHoldRequest[0].checker_status == "Approved" && request_data?.GetHoldRequest[0].process == "Done") {
+          //TODO: Check Hold Status
           Notifications("អតិថិជនកំពុងសុំច្បាប់", "info")
+
+        } else {
+          if (request_data?.GetHoldRequest[0].checker_status === "Approved" && request_data?.GetHoldRequest[0].process == "Pending") {
+            Notifications("ការសុំច្បាប់បានឯកភាពរួច! សូមចូលមើលតារាងស្នើសុំ", "info")
+            return;
+          }
+
+          setOpenHold(true);
         }
       } else {
         setOpenHold(true);
