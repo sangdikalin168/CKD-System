@@ -494,6 +494,7 @@ export type Query = {
   GetFruitPayment: Array<FruitPayment>;
   GetFruitPriceTable: Array<FruitPrice>;
   GetHoldRequest: Array<HoldRequest>;
+  GetHoldRequestByStatus: Array<HoldRequest>;
   GetMemberPayment: Array<MemberPayment>;
   GetMemberPriceTable: Array<MemberPriceTable>;
   GetTrainningPayment: Array<TrainningPayment>;
@@ -528,6 +529,11 @@ export type QueryGetFruitPaymentArgs = {
 
 export type QueryGetHoldRequestArgs = {
   customer_id: Scalars['Float'];
+};
+
+
+export type QueryGetHoldRequestByStatusArgs = {
+  status: Scalars['Float'];
 };
 
 
@@ -858,6 +864,13 @@ export type GetHoldRequestQueryVariables = Exact<{
 
 
 export type GetHoldRequestQuery = { __typename?: 'Query', GetHoldRequest: Array<{ __typename?: 'HoldRequest', from_date: string, to_date: string, process: string, checker_status: string }> };
+
+export type GetHoldRequestByStatusQueryVariables = Exact<{
+  status: Scalars['Float'];
+}>;
+
+
+export type GetHoldRequestByStatusQuery = { __typename?: 'Query', GetHoldRequestByStatus: Array<{ __typename?: 'HoldRequest', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, process: string, processed_by: number }> };
 
 export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1631,6 +1644,59 @@ export function useGetHoldRequestLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetHoldRequestQueryHookResult = ReturnType<typeof useGetHoldRequestQuery>;
 export type GetHoldRequestLazyQueryHookResult = ReturnType<typeof useGetHoldRequestLazyQuery>;
 export type GetHoldRequestQueryResult = Apollo.QueryResult<GetHoldRequestQuery, GetHoldRequestQueryVariables>;
+export const GetHoldRequestByStatusDocument = gql`
+    query GetHoldRequestByStatus($status: Float!) {
+  GetHoldRequestByStatus(status: $status) {
+    request_id
+    request_by
+    request_date
+    customer_id
+    reason
+    from_date
+    to_date
+    old_end
+    new_end
+    checked_by
+    checker_comment
+    checked_date
+    checker_status
+    approved_by
+    approver_comment
+    approved_date
+    approver_status
+    process
+    processed_by
+  }
+}
+    `;
+
+/**
+ * __useGetHoldRequestByStatusQuery__
+ *
+ * To run a query within a React component, call `useGetHoldRequestByStatusQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetHoldRequestByStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetHoldRequestByStatusQuery({
+ *   variables: {
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useGetHoldRequestByStatusQuery(baseOptions: Apollo.QueryHookOptions<GetHoldRequestByStatusQuery, GetHoldRequestByStatusQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetHoldRequestByStatusQuery, GetHoldRequestByStatusQueryVariables>(GetHoldRequestByStatusDocument, options);
+      }
+export function useGetHoldRequestByStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetHoldRequestByStatusQuery, GetHoldRequestByStatusQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetHoldRequestByStatusQuery, GetHoldRequestByStatusQueryVariables>(GetHoldRequestByStatusDocument, options);
+        }
+export type GetHoldRequestByStatusQueryHookResult = ReturnType<typeof useGetHoldRequestByStatusQuery>;
+export type GetHoldRequestByStatusLazyQueryHookResult = ReturnType<typeof useGetHoldRequestByStatusLazyQuery>;
+export type GetHoldRequestByStatusQueryResult = Apollo.QueryResult<GetHoldRequestByStatusQuery, GetHoldRequestByStatusQueryVariables>;
 export const HoldRequestsDocument = gql`
     query HoldRequests {
   HoldRequests {

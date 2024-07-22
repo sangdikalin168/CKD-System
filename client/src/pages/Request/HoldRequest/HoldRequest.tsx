@@ -6,9 +6,11 @@ import { Dialog, Transition } from "@headlessui/react";
 import Notifications from "../../../components/Notification";
 import { HoldInvoice } from "../../../components/ComponentToPrint/HoldInvoice";
 import { useReactToPrint } from "react-to-print";
+import DataTable from "../../../components/DataTable/DataTable";
+import { createColumnHelper } from "@tanstack/react-table";
 
 
-type HoldRequest = {
+type HoldRequestType = {
     display_name: string
     request_id: number
     request_date: string
@@ -54,15 +56,6 @@ const HoldRequest = () => {
     const [checkerApprove] = useCheckHoldRequestMutation();
     const [approveHold] = useApproveHoldRequestMutation();
 
-    const HandleCheckerApprove = async () => {
-        //TODO: Check Permission
-        const userRole = localStorage.getItem("role");
-        if (userRole === "Admin" || userRole === "Checker") {
-            setOpenChecker(true)
-            return;
-        }
-        Notifications("អ្នកមិនមានសិទ្ធិទេ", "error")
-    }
 
     const CheckApproverRole = async () => {
         //TODO: Check Permission
@@ -155,17 +148,137 @@ const HoldRequest = () => {
         }
     }, [invoice_detail]);
 
+    const columnHelper = createColumnHelper<HoldRequestType>();
+    const columns = [
+        columnHelper.accessor((row) => row.customer_name, {
+            id: "អតិថិជន",
+            cell: (info) => <div className="flex items-center"
+                onClick={() => {
+                    CheckApproverRole()
+                    setRequestInfo({
+                        request_id: info.row.original.request_id,
+                        customer_id: info.row.original.customer_id,
+                        customer_name: info.row.original.customer_name,
+                        phone: info.row.original.phone,
+                        end_membership_date: info.row.original.old_end,
+                        reason: info.row.original.reason,
+                        from_date: info.row.original.from_date,
+                        to_date: info.row.original.to_date,
+                        new_end: info.row.original.new_end,
+                        checker_status: info.row.original.checker_status
+                    })
+                }}
+            >
+                <a href="#" className="text-gray-600 text-sm font-medium hover:text-blue-500 truncate">{info.row.original.customer_name}</a>
+            </div>,
+            header: (info) => <span>{info.column.id}</span>,
+            footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor((row) => row.reason, {
+            id: "មូលហេតុ",
+            cell: (info) => info.getValue(),
+            header: (info) => <span>{info.column.id}</span>,
+            footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor((row) => row.reason, {
+            id: "ស្ថានភាព",
+            cell: (info) => <>
+                {
+                    info.row.original.checker_status === "Approved" ?
+                        <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">
+                            Approved
+                        </span>
+                        :
+                        <>
+                            {
+                                info.row.original.checker_status === "Rejected" ?
+                                    <span className="inline-block p-1 rounded bg-rose-500/10 text-red-500 font-medium text-[12px] leading-none">
+                                        Rejected
+                                    </span>
+                                    :
+                                    <span className="inline-block p-1 rounded bg-emerald-500/10 text-yellow-500 font-medium text-[12px] leading-none">
+                                        មានទាន់ពិនិត្យ
+                                    </span>
+                            }
+
+                        </>
+
+                }
+            </>,
+            header: (info) => <span>{info.column.id}</span>,
+            footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor((row) => row.reason, {
+            id: "Process",
+            cell: (info) => <>
+                {
+                    info.row.original.checker_status === "Approved" ?
+                        <>
+                            {
+                                info.row.original.process === "Pending" ?
+                                    <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none" onClick={() => {
+                                        setOpenPrint(true)
+                                        setInvoiceDetail({
+                                            invoice_id: 0,
+                                            payment_date: datetime_format(new Date()),
+                                            cashier: localStorage.getItem("display_name"),
+                                            customer_name: info.row.original.customer_name,
+                                            phone: info.row.original.phone,
+                                            start_date: date_format(info.row.original.from_date),
+                                            end_date: date_format(info.row.original.to_date),
+                                            old_end: date_format(info.row.original.old_end),
+                                            new_end: date_format(info.row.original.new_end)
+                                        })
+                                    }}
+                                    >
+                                        <PrinterIcon
+                                            className="h-4 w-4 text-gray-500"
+                                            aria-hidden="true"
+                                        />
+                                    </span>
+                                    :
+                                    <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">
+                                        <CheckCircleIcon
+                                            className="h-4 w-4 text-emerald-500"
+                                            aria-hidden="true"
+                                        />
+                                    </span>
+
+                            }
+
+                        </>
+                        :
+                        <span className="inline-block p-1 rounded bg-emerald-500/10 text-yellow-500 font-medium text-[12px] leading-none">
+                            <XCircleIcon
+                                className="h-4 w-4 text-red-500"
+                                aria-hidden="true"
+                            />
+                        </span>
+                }
+            </>,
+            header: (info) => <span>{info.column.id}</span>,
+            footer: (info) => info.column.id,
+        }),
+    ];
+
     return (
         <>
             {!loading ? (
                 <div className="grid grid-cols-1 gap-6 mb-6">
                     <div className="bg-white border border-gray-200 shadow-md shadow-black/5 p-2 rounded-md">
-                        <div className="flex items-center mb-4 order-tab">
-                            <button type="button" data-tab="order" data-tab-page="active" className=" bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tl-md rounded-bl-md hover:text-gray-600 active">Pending</button>
-                            <button type="button" data-tab="order" data-tab-page="completed" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 hover:text-gray-600">Approved</button>
-                            <button type="button" data-tab="order" data-tab-page="canceled" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tr-md rounded-br-md hover:text-gray-600">Rejected</button>
-                        </div>
-                        <div className="overflow-x-auto">
+                        {/* <div className="flex items-center mb-4">
+                            <button type="button" className=" bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tl-md rounded-bl-md hover:text-gray-600 active">Pending</button>
+                            <button type="button" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 hover:text-gray-600">Approved</button>
+                            <button type="button" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 hover:text-gray-600">Rejected</button>
+                            <button type="button" className="bg-gray-50 text-sm font-medium text-gray-400 py-2 px-4 rounded-tr-md rounded-br-md hover:text-gray-600">All</button>
+                        </div> */}
+
+
+                        <DataTable data={data?.HoldRequests} columns={columns} />
+
+
+
+                        {/* <div className="overflow-x-auto">
                             <table className="w-full min-w-[540px]">
                                 <thead>
                                     <tr className="w-full">
@@ -216,7 +329,7 @@ const HoldRequest = () => {
                                                                 <>
                                                                     {
                                                                         request.checker_status === "Rejected" ?
-                                                                            <span className="inline-block p-1 rounded bg-emerald-500/10 text-red-500 font-medium text-[12px] leading-none">
+                                                                            <span className="inline-block p-1 rounded bg-rose-500/10 text-red-500 font-medium text-[12px] leading-none">
                                                                                 Rejected
                                                                             </span>
                                                                             :
@@ -281,7 +394,7 @@ const HoldRequest = () => {
                                     }
                                 </tbody>
                             </table>
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>
@@ -426,7 +539,7 @@ const HoldRequest = () => {
 
                                             <div className="w-full mt-2">
                                                 <label className="block text-sm font-medium leading-6 text-gray-900">
-                                                    បរិយាយ
+                                                    មិតិយោបល់
                                                 </label>
                                                 <input
                                                     autoFocus

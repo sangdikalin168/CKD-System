@@ -1,0 +1,23 @@
+query GetHoldRequestByStatus($status: Float!) {
+  GetHoldRequestByStatus(status: $status) {
+    request_id
+    request_by
+    request_date
+    customer_id
+    reason
+    from_date
+    to_date
+    old_end
+    new_end
+    checked_by
+    checker_comment
+    checked_date
+    checker_status
+    approved_by
+    approver_comment
+    approved_date
+    approver_status
+    process
+    processed_by
+  }
+}

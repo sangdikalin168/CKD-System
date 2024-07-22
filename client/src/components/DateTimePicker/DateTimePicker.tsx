@@ -1,8 +1,6 @@
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import Datepicker from "tailwind-datepicker-react";
 
-
-
 export const DateTimePicker = (props: any) => {
   const {
     onChange,

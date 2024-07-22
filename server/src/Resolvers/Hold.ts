@@ -67,9 +67,15 @@ export class HoldResolver {
         return JSON.parse(JSON.stringify(result));
     }
 
+    @Query((_return) => [HoldRequest])
+    async GetHoldRequestByStatus(@Arg("status") status: number) {
+        const result = await HoldRequest.query(`SELECT * FROM hold_request WHERE checker_status = ${status};`)
+        return JSON.parse(JSON.stringify(result));
+    }
+
     @Query((_return) => [HoldJoin])
     async HoldRequests() {
-        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name,customer.phone, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date ASC;`)
+        const result = await HoldRequest.query(`SELECT request_id,request_by,display_name,request_date,reason,from_date,to_date,old_end,new_end,customer.customer_id,customer.customer_name,customer.phone, checked_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.checked_by) as checker_name, checker_comment, checked_date, checker_status,approved_by, (SELECT display_name FROM users WHERE users.user_id = hold_request.approved_by) as approved_name, (SELECT display_name FROM users WHERE users.user_id = hold_request.processed_by) as processed_name, processed_by, approver_comment,approved_date,approver_status,process FROM hold_request INNER JOIN customer ON customer.customer_id = hold_request.customer_id INNER JOIN users ON hold_request.request_by = users.user_id ORDER BY request_date DESC;`)
         return JSON.parse(JSON.stringify(result));
     }
 

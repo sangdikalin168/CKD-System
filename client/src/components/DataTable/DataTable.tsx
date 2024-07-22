@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import React, { Fragment, useEffect, useState } from "react";
 import {
   ColumnFiltersState,
@@ -23,7 +21,6 @@ import {
   ChevronRightIcon,
   ChevronDoubleRightIcon,
   ChevronDownIcon,
-  PlusCircleIcon
 } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
 
@@ -203,20 +200,20 @@ export default function DataTable({ columns, data, button }: IChildProps) {
 
       {/* Table */}
       <div className="mt-2 flex flex-col">
-        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+        <div className="overflow-x-auto">
+          <div className="py-2 align-middle inline-block min-w-full">
             <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-t-lg">
               <table className="table table-compact w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-200">
                   {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} className="divide-x divide-gray-200 dark:divide-gray-300">
+                    <tr key={headerGroup.id} className="divide-x divide-white dark:divide-gray-300">
                       {headerGroup.headers.map(header => (
                         // Add the sorting props to control sorting. For this example
                         // we can add them into the header props
                         <th
                           key={header.id}
                           scope="col"
-                          className="group px-2 py-3 text-left text-xs font-medium text-red-500 tracking-wider w-96"
+                          className="group px-2 py-3 text-left text-xs font-medium text-gray-400 tracking-wider w-96"
                         >
                           <div className="flex items-center justify-between">
                             {/* Add a sort direction indicator */}
@@ -243,13 +240,13 @@ export default function DataTable({ columns, data, button }: IChildProps) {
                     </tr>
                   ))}
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-300 w-32 text-sm">
+                <tbody className="bg-white divide-y divide-gray-100 w-32 text-sm">
                   {table.getRowModel().rows.map((row) => {
                     return (
-                      <tr key={row.id} className="divide-x divide-gray-200 dark:divide-gray-300">
+                      <tr key={row.id} className=" divide-gray-50 dark:divide-gray-300">
                         {row.getVisibleCells().map((cell) => {
                           return (
-                            <td key={cell.id} className="px-2 py-5 whitespace min-w-[8rem] max-w-[20rem] whitespace-normal">
+                            <td key={cell.id} className="px-2 py-2 whitespace min-w-[8rem] max-w-[20rem] whitespace-normal">
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()

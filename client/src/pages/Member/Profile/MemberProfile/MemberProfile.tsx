@@ -107,9 +107,6 @@ const MemberProfile = ({ ID }: any) => {
         //TODO: Check hold is active or not
         const end_hold = new Date(request_data?.GetHoldRequest[0].to_date)
 
-        console.log(end_hold >= currentDate);
-
-
         if (end_hold >= currentDate && request_data?.GetHoldRequest[0].checker_status == "Approved" && request_data?.GetHoldRequest[0].process == "Done") {
           //TODO: Check Hold Status
           Notifications("អតិថិជនកំពុងសុំច្បាប់", "info")
@@ -117,6 +114,11 @@ const MemberProfile = ({ ID }: any) => {
         } else {
           if (request_data?.GetHoldRequest[0].checker_status === "Approved" && request_data?.GetHoldRequest[0].process == "Pending") {
             Notifications("ការសុំច្បាប់បានឯកភាពរួច! សូមចូលមើលតារាងស្នើសុំ", "info")
+            return;
+          }
+
+          if (request_data?.GetHoldRequest[0].checker_status === "Pending") {
+            Notifications("សំណើបានដាក់រួចហើយ សូមអោយថ្នាក់លើពិនិត្យ", "info")
             return;
           }
 
@@ -146,7 +148,7 @@ const MemberProfile = ({ ID }: any) => {
         />
         ថយក្រោយ
       </button>
-      <div className="bg-white p-4 rounded-lg mb-4 h-screen">
+      <div className="bg-white p-4 rounded-lg mb-4">
         <div className="border-b border-gray-900/10">
           <div className="mt-2 grid grid-cols-1 gap-x-4 sm:grid-cols-6">
             <div className="shadow-lg rounded-lg p-2">
