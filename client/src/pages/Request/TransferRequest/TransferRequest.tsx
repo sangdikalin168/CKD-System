@@ -210,11 +210,21 @@ const TransferRequest = () => {
                                                 onClick={() => {
                                                     setOpenPrint(true)
                                                     setRequestID(row_data.request_id)
+
                                                     setInvoiceDetail({
-                                                        invoice_id: 0, cashier: localStorage.getItem("display_name") || "",
+                                                        invoice_id: 0,
+                                                        cashier: localStorage.getItem("display_name") || "",
                                                         payment_date: datetime_format(new Date()),
-                                                        sender_id: row_data.sender_id, sender_name: row_data.sender_name, sender_phone: row_data.sender_phone, sender_old_end: row_data.sender_old_end, sender_new_end: SenderNewEnd(row_data.sender_old_end),
-                                                        receiver_id: row_data.receiver_id, receiver_name: row_data.receiver_name, receiver_phone: row_data.receiver_phone, receiver_old_end: row_data.receiver_old_end, receiver_new_end: ReceiverNewEnd(row_data.sender_old_end, row_data.receiver_old_end),
+                                                        sender_id: row_data.sender_id,
+                                                        sender_name: row_data.sender_name,
+                                                        sender_phone: row_data.sender_phone,
+                                                        sender_old_end: row_data.sender_old_end,
+                                                        sender_new_end: SenderNewEnd(row_data.sender_old_end),
+                                                        receiver_id: row_data.receiver_id,
+                                                        receiver_name: row_data.receiver_name,
+                                                        receiver_phone: row_data.receiver_phone,
+                                                        receiver_old_end: row_data.receiver_old_end,
+                                                        receiver_new_end: ReceiverNewEnd(date_format(row_data.sender_old_end), row_data.receiver_old_end),
                                                     })
                                                 }}
                                             >
@@ -271,7 +281,7 @@ const TransferRequest = () => {
     function ReceiverNewEnd(sender_old_end: string, receiver_old_end: string) {
         const remain_days = countDaysBetweenDates(new Date(), new Date(receiver_old_end))
         if (remain_days <= 0) {
-            return invoice_detail.sender_old_end
+            return sender_old_end
         } else {
             const sender_remain = countDaysBetweenDates(new Date(), new Date(sender_old_end))
             return calculateNewEndDate(receiver_old_end, sender_remain)
@@ -367,6 +377,7 @@ const TransferRequest = () => {
             Notifications("ជោគជ័យ", "success")
             buttonRef.current.click();
             setOpenPrint(false);
+            refetch();
         }
     }, [invoice_detail]);
 

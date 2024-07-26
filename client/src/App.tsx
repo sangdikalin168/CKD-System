@@ -1029,6 +1029,21 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+
+  const { checkAuth, isAuthenticated, setIsLoading } = useAuthContext();
+
+  const authenticate = async () => {
+    setIsLoading(true);
+    await checkAuth();
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    authenticate();
+  }, []);
+
+  if (!isAuthenticated) return <Login />;
+
   return (
     <>
       <RouterProvider router={router} /> <ToastContainer />

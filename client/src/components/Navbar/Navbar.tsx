@@ -97,7 +97,8 @@
 
 // export default Navbar;
 
-
+import { useAuthContext } from "../../context/AuthContext";
+import JWTManager from "../../utils/jwt";
 import { IoMenu } from "react-icons/io5";
 import { useSideBarContext } from "../../context/SideBarContext";
 import { Menu, Transition } from "@headlessui/react";
@@ -109,6 +110,8 @@ function classNames(...classes: string[]) {
 
 export default function NavBar() {
     const { setExpanded } = useSideBarContext();
+    const { setIsAuthenticated } = useAuthContext();
+    const display_name = localStorage.getItem("display_name")
 
     const user = {
         name: "Tom Cook",
@@ -120,7 +123,7 @@ export default function NavBar() {
     const userNavigation = [
         { name: "Your Profile", href: "#" },
         { name: "Settings", href: "#" },
-        { name: "Sign out", href: "#" },
+        { name: "Sign out", href: "#", onclick: () => { JWTManager.deleteToken(); setIsAuthenticated(false) } }
     ];
 
     return (
@@ -133,10 +136,15 @@ export default function NavBar() {
                     <a href="#" className="text-gray-400 hover:text-gray-600 font-medium">Dashboard</a>
                 </li>
                 <li className="text-gray-600 mr-2 font-medium">/</li>
-                <li className="text-gray-600 mr-2 font-medium">Analytics</li>
+                <li className="text-gray-600 mr-2 font-medium">Home</li>
             </ul>
+
             <ul className="ml-auto flex items-center">
                 {/* Profile dropdown */}
+                <div className="mr-2 text-center invisible sm:visible lg:visible">
+                    <p className="text-black">{display_name}</p>
+                </div>
+
                 <Menu as="div" className="relative ml-3">
                     <div>
                         <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
