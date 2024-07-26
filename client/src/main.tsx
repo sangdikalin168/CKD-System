@@ -29,8 +29,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
+// const httpLink = createHttpLink({
+//   uri: `http://${window.location.hostname}:4000/graphql`,
+//   credentials: "include",
+// });
+
 const httpLink = createHttpLink({
-  uri: "http://" + window.location.hostname + ":4000",
+  uri: API_BASE_URL,
   credentials: "include",
 });
 
