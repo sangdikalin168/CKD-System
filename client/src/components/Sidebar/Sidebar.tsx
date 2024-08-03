@@ -5,26 +5,33 @@ import { FaUserCog } from "react-icons/fa";
 
 export default function SideBar() {
 
+  const Role = localStorage.getItem("role");
+
   const { expanded } = useSideBarContext();
+
   const items = [
     {
       title: "លក់សំបុត្រ",
       icon: <HiOutlineTicket className="mr-3 text-lg" />,
       path: "/ticket",
+      access: ["Sale"]
     },
     {
       title: "សមាជិក",
       icon: <HiOutlineTicket className="mr-3 text-lg" />,
       path: "/member",
+      access: ["Sale"]
     },
     {
       title: "សំណើ",
       icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+      access: ["Admin", "Sale"],
       childrens: [
         {
           title: "សំណើសុំច្បាប់",
           path: "/hold_request",
           icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+
         },
         {
           title: "សំណើផ្ទេរសុពលភាព",
@@ -36,6 +43,7 @@ export default function SideBar() {
     {
       title: "Report",
       icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+      access: ["Admin"],
       childrens: [
         {
           title: "ចំណូល",
@@ -52,6 +60,7 @@ export default function SideBar() {
     {
       title: "អ្នកប្រើប្រាស់",
       icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+      access: ["Admin"],
       childrens: [
         {
           title: "អ្នកប្រើប្រាស់",
@@ -75,7 +84,11 @@ export default function SideBar() {
       </a>
       <ul className="mt-4">
         {items.map((item: any, index: number) => (
-          <SideBarItems key={index} item={item} />
+          <>
+            {
+              item.access.includes(Role) ? <SideBarItems key={index} item={item} /> : null
+            }
+          </>
         ))}
       </ul>
     </div>

@@ -25,29 +25,7 @@ import { __Type } from "graphql";
 //         return await User.find();
 //     },
 //     member_payment: async (_: any, { dateFrom, dateTo, userId }: any) => {
-//         if (userId === 0) {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(MemberPayment, "member_payment")
-//                 .select(["promotion", "price"])
-//                 .addSelect("COUNT(member_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .groupBy("promotion")
-//                 .getRawMany()
-//             return await result;
-//         }
-//         else {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(MemberPayment, "member_payment")
-//                 .select(["promotion", "price"])
-//                 .addSelect("COUNT(member_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .andWhere("user_id = :user_id", { user_id: userId })
-//                 .groupBy("promotion")
-//                 .getRawMany()
-//             return await result;
-//         }
+
 //     },
 //     ticket_payment: async (_: any, { dateFrom, dateTo, userId }: any) => {
 //         if (userId === 0) {
@@ -75,54 +53,12 @@ import { __Type } from "graphql";
 
 //     },
 //     coupon_payment: async (_: any, { dateFrom, dateTo, userId }: any) => {
-//         if (userId === 0) {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(CouponPayment, "coupon_payment")
-//                 .select(["price", "card_name"])
-//                 .addSelect("COUNT(coupon_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .groupBy("card_name")
-//                 .getRawMany()
-//             return await result;
-//         } else {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(CouponPayment, "coupon_payment")
-//                 .select(["price", "card_name"])
-//                 .addSelect("COUNT(coupon_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .andWhere("user_id = :user_id", { user_id: userId })
-//                 .groupBy("card_name")
-//                 .getRawMany()
-//             return await result;
+
 //         }
 
 //     },
 //     trainning_payment: async (_: any, { dateFrom, dateTo, userId }: any) => {
-//         if (userId === 0) {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(TrainningPayment, "trainning_payment")
-//                 .select(["price", "promotion"])
-//                 .addSelect("COUNT(trainning_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .groupBy("promotion")
-//                 .getRawMany()
-//             return await result;
-//         }
-//         else {
-//             const result = (await AppDataSource)
-//                 .createQueryBuilder(TrainningPayment, "trainning_payment")
-//                 .select(["price", "promotion"])
-//                 .addSelect("COUNT(trainning_payment.price)", "qty")
-//                 .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//                 .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//                 .andWhere("user_id = :user_id", { user_id: userId })
-//                 .groupBy("promotion")
-//                 .getRawMany()
-//             return await result;
-//         }
+
 
 
 //     },
@@ -185,35 +121,8 @@ import { __Type } from "graphql";
 //         const data = repo.find({ where: { customer_id: customer_id } })
 //         return await data;
 //     },
-//     get_scan_log: async (_: any, { dateFrom, dateTo }: any) => {
-//         const repo = (await AppDataSource).createQueryBuilder(MemberScan, "member_scan")
-//             .select(["'Member' as name", "COUNT(date_time) as qty"])
-//             .andWhere("date_time >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//             .andWhere("date_time < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//             .getRawMany();
 
-//         const repo2 = await (await AppDataSource).createQueryBuilder(TicketLog, "ticket_log")
-//             .select(["'Ticket' as name", "COUNT(date_time) as qty"])
-//             .andWhere("date_time >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//             .andWhere("date_time < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//             .getRawMany();
 
-//         const repo3 = await (await AppDataSource).createQueryBuilder(CouponLog, "coupon_log")
-//             .select(["'Coupon' as name", "COUNT(log_datetime) as qty"])
-//             .andWhere("log_datetime >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
-//             .andWhere("log_datetime < :dateTo", { dateTo: `${dateTo} 23:00:00` })
-//             .getRawMany();
-//         const bind_array = [... await repo, ...repo2, ...repo3]
-//         return bind_array;
-//     },
-//     get_active_customer: async (_: any, { now }: any) => {
-//         const repo = (await AppDataSource).createQueryBuilder(Customer, "customer")
-//             .select(["customer_name", "phone", "end_membership_date"])
-//             .andWhere("end_membership_date >= NOW()")
-//             .orderBy("end_membership_date", "DESC")
-//             .getRawMany();
-//         return repo;
-//     },
 // }
 
 @ObjectType()
@@ -227,6 +136,45 @@ class TicketType {
 
     @Field()
     payment_date: String
+}
+
+@ObjectType()
+class MemberType {
+
+    @Field()
+    price: number
+
+    @Field()
+    qty: number
+
+    @Field()
+    promotion: String
+}
+
+@ObjectType()
+class CouponType {
+
+    @Field()
+    price: number
+
+    @Field()
+    qty: number
+
+    @Field()
+    card_name: String
+}
+
+@ObjectType()
+class TrainningType {
+
+    @Field()
+    price: number
+
+    @Field()
+    qty: number
+
+    @Field()
+    promotion: String
 }
 
 
@@ -277,6 +225,100 @@ export class IncomeReportResolver {
                 .groupBy("price")
                 .getRawMany()
             return results;
+        }
+    }
+
+    @Query((_return) => [MemberType])
+    async GetMemberPayments(
+        @Arg(("dateFrom")) dateFrom: String,
+        @Arg(("dateTo")) dateTo: String,
+        @Arg(("userId")) userId: number
+    ) {
+
+        if (userId === 0) {
+            const result = await MemberPayment
+                .createQueryBuilder("member_payment")
+                .select(["promotion", "price"])
+                .addSelect("COUNT(member_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .groupBy("promotion")
+                .getRawMany()
+            return result;
+        }
+        else {
+            const result = await MemberPayment
+                .createQueryBuilder("member_payment")
+                .select(["promotion", "price"])
+                .addSelect("COUNT(member_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .andWhere("user_id = :user_id", { user_id: userId })
+                .groupBy("promotion")
+                .getRawMany()
+            return result;
+        }
+    }
+
+    @Query((_return) => [TrainningType])
+    async GetTrainningPayments(
+        @Arg(("dateFrom")) dateFrom: String,
+        @Arg(("dateTo")) dateTo: String,
+        @Arg(("userId")) userId: number
+    ) {
+        if (userId === 0) {
+            const result = await TrainningPayment
+                .createQueryBuilder("trainning_payment")
+                .select(["price", "promotion"])
+                .addSelect("COUNT(trainning_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .groupBy("promotion")
+                .getRawMany()
+            return result;
+        }
+        else {
+            const result = await TrainningPayment
+                .createQueryBuilder("trainning_payment")
+                .select(["price", "promotion"])
+                .addSelect("COUNT(trainning_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .andWhere("user_id = :user_id", { user_id: userId })
+                .groupBy("promotion")
+                .getRawMany()
+            return result;
+        }
+    }
+
+    @Query((_return) => [CouponType])
+    async GetCouponPayments(
+        @Arg(("dateFrom")) dateFrom: String,
+        @Arg(("dateTo")) dateTo: String,
+        @Arg(("userId")) userId: number
+    ) {
+
+        if (userId === 0) {
+            const result = await CouponPayment
+                .createQueryBuilder("coupon_payment")
+                .select(["price", "card_name"])
+                .addSelect("COUNT(coupon_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .groupBy("card_name")
+                .getRawMany()
+            return result;
+        } else {
+            const result = await CouponPayment
+                .createQueryBuilder("coupon_payment")
+                .select(["price", "card_name"])
+                .addSelect("COUNT(coupon_payment.price)", "qty")
+                .andWhere("payment_date >= :dateFrom", { dateFrom: `${dateFrom} 00:00:00` })
+                .andWhere("payment_date < :dateTo", { dateTo: `${dateTo} 23:00:00` })
+                .andWhere("user_id = :user_id", { user_id: userId })
+                .groupBy("card_name")
+                .getRawMany()
+            return result;
         }
     }
 }

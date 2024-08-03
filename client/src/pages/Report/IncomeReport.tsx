@@ -17,8 +17,8 @@ const GET_TICKETPAYMENT = gql`
 `;
 
 const GET_MEMBER_PAYMENT = gql`
-  query Member_payment($dateFrom: String, $dateTo: String, $userId: Int) {
-    member_payment(dateFrom: $dateFrom, dateTo: $dateTo, userId: $userId) {
+  query GetMemberPayments($dateFrom: String!, $dateTo: String!, $userId: Float!) {
+    GetMemberPayments(dateFrom: $dateFrom, dateTo: $dateTo, userId: $userId) {
       promotion
       price
       qty
@@ -27,8 +27,8 @@ const GET_MEMBER_PAYMENT = gql`
 `;
 
 const GET_COUPON_PAYMENT = gql`
-  query Coupon_payment($dateFrom: String, $dateTo: String, $userId: Int) {
-    coupon_payment(dateFrom: $dateFrom, dateTo: $dateTo, userId: $userId) {
+  query GetCouponPayments($dateFrom: String!, $dateTo: String!, $userId: Float!) {
+    GetCouponPayments(dateFrom: $dateFrom, dateTo: $dateTo, userId: $userId) {
       price
       qty
       card_name
@@ -37,8 +37,8 @@ const GET_COUPON_PAYMENT = gql`
 `;
 
 const GET_TRAINNING_PAYMENT = gql`
-  query Trainning_payment($dateFrom: String, $userId: Int, $dateTo: String) {
-    trainning_payment(dateFrom: $dateFrom, userId: $userId, dateTo: $dateTo) {
+  query GetTrainningPayments($dateFrom: String!, $userId: Float!, $dateTo: String!) {
+    GetTrainningPayments(dateFrom: $dateFrom, userId: $userId, dateTo: $dateTo) {
       promotion
       price
       qty
@@ -56,7 +56,6 @@ const GET_SELLER = gql`
     }
   }
 `;
-
 
 
 function IncomeReport() {
@@ -123,61 +122,62 @@ function IncomeReport() {
       });
     }
 
-    // const reuslt2 = await GetMemberPayment({
-    //   variables: {
-    //     dateFrom: selectedDateFrom,
-    //     dateTo: selectedDateTo,
-    //     userId: seller_id,
-    //   },
-    // });
-    // if (!reuslt2.loading) {
-    //   await reuslt2.data.member_payment.map((data: any) => {
-    //     tmp_report.push({
-    //       item: data.promotion,
-    //       price: data.price,
-    //       qty: data.qty,
-    //       total: data.qty * data.price,
-    //     });
-    //   });
-    // }
+    const reuslt2 = await GetMemberPayment({
+      variables: {
+        dateFrom: selectedDateFrom,
+        dateTo: selectedDateTo,
+        userId: seller_id,
+      },
+    });
 
-    // const result3 = await GetCouponPayment({
-    //   variables: {
-    //     dateFrom: selectedDateFrom,
-    //     dateTo: selectedDateTo,
-    //     userId: seller_id,
-    //   },
-    // });
+    if (!reuslt2.loading) {
+      await reuslt2.data.GetMemberPayments.map((data: any) => {
+        tmp_report.push({
+          item: data.promotion,
+          price: data.price,
+          qty: data.qty,
+          total: data.qty * data.price,
+        });
+      });
+    }
 
-    // if (!result3.loading) {
-    //   await result3.data.coupon_payment.map((data: any) => {
-    //     tmp_report.push({
-    //       item: data.card_name,
-    //       price: data.price,
-    //       qty: data.qty,
-    //       total: data.qty * data.price,
-    //     });
-    //   });
-    // }
+    const result3 = await GetCouponPayment({
+      variables: {
+        dateFrom: selectedDateFrom,
+        dateTo: selectedDateTo,
+        userId: seller_id,
+      },
+    });
 
-    // const result4 = await GetTrainningPayment({
-    //   variables: {
-    //     dateFrom: selectedDateFrom,
-    //     dateTo: selectedDateTo,
-    //     userId: seller_id,
-    //   },
-    // });
+    if (!result3.loading) {
+      await result3.data.GetCouponPayments.map((data: any) => {
+        tmp_report.push({
+          item: data.card_name,
+          price: data.price,
+          qty: data.qty,
+          total: data.qty * data.price,
+        });
+      });
+    }
 
-    // if (!result4.loading) {
-    //   await result4.data.trainning_payment.map((data: any) => {
-    //     tmp_report.push({
-    //       item: data.promotion,
-    //       price: data.price,
-    //       qty: data.qty,
-    //       total: data.qty * data.price,
-    //     });
-    //   });
-    // }
+    const result4 = await GetTrainningPayment({
+      variables: {
+        dateFrom: selectedDateFrom,
+        dateTo: selectedDateTo,
+        userId: seller_id,
+      },
+    });
+
+    if (!result4.loading) {
+      await result4.data.GetTrainningPayments.map((data: any) => {
+        tmp_report.push({
+          item: data.promotion,
+          price: data.price,
+          qty: data.qty,
+          total: data.qty * data.price,
+        });
+      });
+    }
 
     const sum = tmp_report.reduce((acc: any, object: any) => {
       return acc + object.total;
