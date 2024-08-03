@@ -145,12 +145,12 @@ export default function SideBar() {
       childrens: [
         {
           title: "ចំណូល",
-          path: "/income",
+          path: "/income_report",
           icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
         },
         {
           title: "អតិថិជន",
-          path: "/expense",
+          path: "/customer_report",
           icon: <FaUserCog className="mr-3 text-lg" />,
         },
       ],

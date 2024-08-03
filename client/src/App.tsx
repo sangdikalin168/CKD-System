@@ -12,6 +12,7 @@ import { useSideBarContext } from "./context/SideBarContext";
 import SideBar from "./components/Sidebar/Sidebar";
 import NavBar from "./components/Navbar/Navbar";
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
+import IncomeReport from "./pages/Report/IncomeReport";
 
 function NoMatch() {
   return (
@@ -862,135 +863,6 @@ function Dashboard() {
   )
 }
 
-
-// Create a root route
-// const rootRoute = new RootRoute({
-//   component: Root,
-// });
-
-
-// const indexRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/",
-//   component: Ticket,
-// });
-// const ticketRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/ticket",
-//   component: Ticket,
-// });
-// const membersRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/members",
-//   component: Member,
-// });
-// const reportRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/income",
-//   component: Report,
-// });
-// const holdRequestRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/hold_request",
-//   component: HoldRequest,
-// });
-// const transferRequestRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "/transfer_request",
-//   component: TransferRequest,
-// });
-// const notFoundRoute = new Route({
-//   getParentRoute: () => rootRoute,
-//   path: "*",
-//   component: NotFound,
-// });
-
-// // Create the route tree using your routes
-// const routeTree = rootRoute.addChildren([
-//   indexRoute,
-//   ticketRoute,
-//   membersRoute,
-//   reportRoute,
-//   holdRequestRoute, transferRequestRoute,
-//   notFoundRoute,
-// ]);
-
-// // Create the router using your route tree
-// const router1 = new Router({ routeTree });
-
-// Register your router for maximum type safety
-
-// function App() {
-//   //#region
-//   const { checkAuth, isAuthenticated, setIsLoading } = useAuthContext();
-//   const authenticate = async () => {
-//     setIsLoading(true);
-//     await checkAuth();
-//     setIsLoading(false);
-//   };
-
-//   //#endregion
-
-//   const [connection, setConnection] = useState(navigator.onLine);
-
-//   function handleOffline() {
-//     setConnection(false);
-//   }
-//   function handleOnline() {
-//     setConnection(true);
-//   }
-
-//   useEffect(() => {
-//     window.addEventListener("offline", handleOffline);
-//     window.addEventListener("online", handleOnline);
-//     return () => {
-//       window.removeEventListener("offline", handleOffline);
-//       window.removeEventListener("online", handleOnline);
-//     };
-//   }, [connection]);
-
-//   useEffect(() => {
-//     authenticate();
-//   }, []);
-
-//   if (!connection) {
-//     return (
-//       <>
-//         <div className="lg:px-24 lg:py-24 md:py-20 md:px-44 px-4 py-24 items-center flex justify-center flex-col-reverse lg:flex-row md:gap-28 gap-16">
-//           <div className="xl:pt-24 w-full xl:w-1/2 relative pb-12 lg:pb-0">
-//             <div className="relative">
-//               <div className="absolute">
-//                 <div className="">
-//                   <h1 className="my-2 text-gray-800 font-bold text-2xl">
-//                     No Internet
-//                   </h1>
-//                   <p className="my-2 text-gray-800">
-//                     Sorry about that! Please visit our hompage to get where you
-//                     need to go.
-//                   </p>
-//                   <button className="sm:w-full lg:w-auto my-2 border rounded md py-4 px-8 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50">
-//                     Take me there!
-//                   </button>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </>
-//     );
-//   }
-
-//   //If Not Auth Return Login Page
-//   if (!isAuthenticated) return <Login />;
-
-//   return (
-//     <>
-//       <RouterProvider router={router} />
-//       <ToastContainer />
-//     </>
-//   );
-// }
-
 const router = createBrowserRouter([
   {
     path: "*",
@@ -1021,8 +893,8 @@ const router = createBrowserRouter([
         Component: TransferRequest,
       },
       {
-        path: "income",
-        Component: Report,
+        path: "/income_report",
+        Component: IncomeReport,
       },
     ],
   },
