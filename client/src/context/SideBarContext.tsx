@@ -5,7 +5,8 @@ interface ISideBarContext {
     setExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
-const defaultExpanded = false;
+const defaultExpanded = window.innerWidth >= 768;
+
 
 const SideBarContext = createContext<ISideBarContext>({
     expanded: defaultExpanded,

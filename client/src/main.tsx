@@ -16,6 +16,7 @@ import JWTManager from "./utils/jwt";
 import { toastify } from "./utils/toastify.tsx";
 import SideBarContextProvider from "./context/SideBarContext.tsx";
 
+
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) => {
@@ -29,9 +30,10 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = createHttpLink({
-  uri: API_BASE_URL,
+  uri: `http://${window.location.hostname}:4000/graphql`,
   credentials: "include",
 });
+
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from JWTManager if it exists

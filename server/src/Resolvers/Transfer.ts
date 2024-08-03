@@ -14,6 +14,9 @@ export abstract class TransferResponse {
 
     @Field({ nullable: true })
     message?: string;
+
+    @Field({ nullable: true })
+    transfer_id?: number;
 }
 
 @ObjectType({ implements: TransferResponse })
@@ -164,8 +167,8 @@ export class TransferResolver {
     ): Promise<TransferMutationResponse> {
         const res = await Transfer.create({
             request_id: request_id,
-            transfer_by: 1,
-            sender_id: 1,
+            transfer_by: processed_by,
+            sender_id: sender_id,
             sender_old_date: sender_old_date,
             sender_new_end: sender_new_end,
             receiver_id: receiver_id,

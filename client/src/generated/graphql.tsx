@@ -687,6 +687,7 @@ export type TransferMutationResponse = TransferResponse & {
   code: Scalars['Float'];
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
+  transfer_id?: Maybe<Scalars['Float']>;
 };
 
 export type TransferRequest = {
@@ -713,6 +714,7 @@ export type TransferResponse = {
   code: Scalars['Float'];
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
+  transfer_id?: Maybe<Scalars['Float']>;
 };
 
 export type UserMutationResponse = IMutationResponse & {
@@ -977,7 +979,7 @@ export type CreateTransferMutationVariables = Exact<{
 }>;
 
 
-export type CreateTransferMutation = { __typename?: 'Mutation', CreateTransfer: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null } };
+export type CreateTransferMutation = { __typename?: 'Mutation', CreateTransfer: { __typename?: 'TransferMutationResponse', code: number, success: boolean, message?: string | null, transfer_id?: number | null } };
 
 export type CreateTransferRequestMutationVariables = Exact<{
   reason: Scalars['String'];
@@ -2202,6 +2204,7 @@ export const CreateTransferDocument = gql`
     code
     success
     message
+    transfer_id
   }
 }
     `;
