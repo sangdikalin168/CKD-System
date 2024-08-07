@@ -101,7 +101,6 @@ const HoldRequest = () => {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     async function ProcessHold(): Promise<void> {
-
         const { data: { CreateHold: res } } = await createHold({
             variables: {
                 newEnd: invoice_detail.new_end,
@@ -145,6 +144,7 @@ const HoldRequest = () => {
             Notifications("ជោគជ័យ", "success")
             buttonRef.current.click();
             setOpenPrint(false);
+            refetch()
         }
     }, [invoice_detail]);
 
@@ -218,6 +218,7 @@ const HoldRequest = () => {
                                 info.row.original.process === "Pending" ?
                                     <span className="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none" onClick={() => {
                                         setOpenPrint(true)
+                                        setRequestInfo({ ...request_info, customer_id: info.row.original.customer_id, request_id: info.row.original.request_id })
                                         setInvoiceDetail({
                                             invoice_id: 0,
                                             payment_date: datetime_format(new Date()),

@@ -6,6 +6,7 @@ import { FaUserCog } from "react-icons/fa";
 export default function SideBar() {
 
   const Role = localStorage.getItem("role");
+  const display_name = localStorage.getItem("display_name");
 
   const { expanded } = useSideBarContext();
 
@@ -80,15 +81,15 @@ export default function SideBar() {
     <div className={`fixed left-0 top-0 w-64 h-full bg-gray-900 p-4 z-50 transition-transform ${expanded ? "" : "-translate-x-full"}`}>
       <a href="#" className="flex items-center pb-4 border-b border-b-gray-800">
         <img src="https://placehold.co/32x32" alt="" className="w-8 h-8 rounded object-cover" />
-        <span className="text-lg font-bold text-white ml-3">Premier Park</span>
+        <span className="text-lg font-bold text-white ml-3">{display_name}</span>
       </a>
       <ul className="mt-4">
         {items.map((item: any, index: number) => (
-          <>
+          <div key={index}>
             {
               item.access.includes(Role) ? <SideBarItems key={index} item={item} /> : null
             }
-          </>
+          </div>
         ))}
       </ul>
     </div>
