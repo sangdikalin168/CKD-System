@@ -57,6 +57,33 @@ const GET_SELLER = gql`
   }
 `;
 
+const GET_MEMBER_PAYMENT_DETAIL = gql`
+  query GetMemberPaymentDetail($dateTo: String!, $dateFrom: String!) {
+  GetMemberPaymentDetail(dateTo: $dateTo, dateFrom: $dateFrom) {
+    customer_name
+    promotion
+  }
+}
+`;
+
+const GET_COUPON_PAYMENT_DETAIL = gql`
+  query GetCouponPaymentDetails($dateTo: String!, $dateFrom: String!) {
+  GetCouponPaymentDetails(dateTo: $dateTo, dateFrom: $dateFrom) {
+    customer_name
+    card_name
+  }
+}
+`;
+
+const GET_TRAINNING_PAYMENT_DETAIL = gql`
+  query GetTrainningPaymentDetail($dateTo: String!, $dateFrom: String!) {
+  GetTrainningPaymentDetail(dateTo: $dateTo, dateFrom: $dateFrom) {
+    customer_name
+    promotion
+  }
+}
+`;
+
 
 function IncomeReport() {
 
@@ -73,31 +100,25 @@ function IncomeReport() {
   const [GetCouponPayment] = useLazyQuery(GET_COUPON_PAYMENT, {
     fetchPolicy: "no-cache",
   });
+  const [GetMemberPaymentDetail, { data: member_payments }] = useLazyQuery(GET_MEMBER_PAYMENT_DETAIL, {
+    fetchPolicy: "no-cache",
+  });
+
+  const [GetCouopnPaymentDetail, { data: coupon_payments }] = useLazyQuery(GET_COUPON_PAYMENT_DETAIL, {
+    fetchPolicy: "no-cache",
+  });
+
+  const [GetTrainningPaymentDetail, { data: trainning_payments }] = useLazyQuery(GET_TRAINNING_PAYMENT_DETAIL, {
+    fetchPolicy: "no-cache",
+  });
 
 
-  //const [GetDetails] = useLazyQuery(GET_DETAILS, { fetchPolicy: "no-cache" });
+
 
   function date_time_format(date_time: Date) {
     const date = new Date(date_time);
     return date.toLocaleDateString("fr-CA");
   }
-
-
-  const [detail, setDetail] = useState([]);
-
-  const GetDetailMember = async (promotion: string) => {
-    const result = await GetDetails({
-      variables: {
-        dateFrom: selectedDateFrom,
-        dateTo: selectedDateTo,
-        promotion: promotion,
-      },
-    });
-
-    if (!result.loading) {
-      setDetail(result.data.get_details)
-    }
-  };
 
   const CombineData = async (seller_id: number) => {
     setLoading(true);
@@ -221,6 +242,8 @@ function IncomeReport() {
     fetchPolicy: "no-cache",
   });
 
+  const [sale_detail, setSaleDetail] = useState([])
+
 
   const [loading, setLoading] = useState(false);
 
@@ -241,14 +264,12 @@ function IncomeReport() {
   }
   const [seller, setSeller] = useState([]);
 
-  const [show_item_detail, setShowItemDetail] = useState(false);
-
   useEffect(() => {
     //detect date_from and date_to changed to get new data
     const intervalId = setInterval(() => {
       GetSeller();
       // Fetch Seller every 1 seconds
-    }, 10000);
+    }, 5000);
     return () => clearInterval(intervalId);
   }, [selectedDateFrom, selectedDateTo]);
 
@@ -256,7 +277,6 @@ function IncomeReport() {
     setLoading(true);
     CombineData(0);
   }, []);
-
 
   return (
     <>
@@ -317,6 +337,35 @@ function IncomeReport() {
             </div>
           </div>
 
+          <div className="p-2 flex space-x-2">
+            <button
+              type="button"
+              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+              onClick={() => GetMemberPaymentDetail({
+                variables: {
+                  dateTo: selectedDateTo,
+                  dateFrom: selectedDateFrom
+                }
+              })}
+            >
+              សមាជិក
+            </button>
+
+            <button
+              type="button"
+              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+            >
+              គូប៉ុន
+            </button>
+
+            <button
+              type="button"
+              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+            >
+              ហ្វឹកហាត់
+            </button>
+          </div>
+
           <div className="p-2">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-300">
@@ -332,12 +381,7 @@ function IncomeReport() {
                   data.map((payment, index) => {
                     return (
                       <tr key={index} className="odd:bg-white even:bg-gray-100 text-left">
-                        <td className="px-2 py-2 text-left text-sm"
-                          onClick={() => {
-                            setShowItemDetail(true);
-                            GetDetailMember(payment.item);
-                          }}
-                        >{payment.item}</td>
+                        <td className="px-2 py-2 text-left text-sm">{payment.item}</td>
                         <td className="px-2 py-2 text-left text-sm">{payment.qty}</td>
                         <td className="px-2 py-2 text-left text-sm">${payment.price}</td>
                         <td className="px-2 py-2 text-left text-sm">${payment.total}</td>
@@ -358,16 +402,68 @@ function IncomeReport() {
           </div>
 
 
+          {/* Member Details Table */}
+          <>
+            {
+              member_payments ? (
+                <div className="p-2">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-300">
+                      <tr>
+                        <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">ឈ្មោះ</th>
+                        <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        member_payments.GetMemberPaymentDetail.map((payment, index) => {
+                          return (
+                            <tr key={index} className="odd:bg-white even:bg-gray-100 text-left">
+                              <td className="px-2 py-2 text-left text-sm">{payment.customer_name}</td>
+                              <td className="px-2 py-2 text-left text-sm">{payment.promotion}</td>
+                            </tr>
+                          )
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              ) : null
+            }
 
-          {/* <ItemDetailModal
-            show_item_detail={show_item_detail}
-            setOpen={setShowItemDetail}
-            detail={detail}
-          /> */}
+          </>
 
+          {/* Member Details Table */}
+          <>
+            {
+              member_payments ? (
+                <div className="p-2">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-300">
+                      <tr>
+                        <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">ឈ្មោះ</th>
+                        <th scope="col" className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        member_payments.GetMemberPaymentDetail.map((payment, index) => {
+                          return (
+                            <tr key={index} className="odd:bg-white even:bg-gray-100 text-left">
+                              <td className="px-2 py-2 text-left text-sm">{payment.customer_name}</td>
+                              <td className="px-2 py-2 text-left text-sm">{payment.promotion}</td>
+                            </tr>
+                          )
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              ) : null
+            }
 
-
-        </div>
+          </>
+        </div >
       ) :
         <LoadingPage message={"Loading"} />
       }
