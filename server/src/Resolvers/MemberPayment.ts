@@ -10,6 +10,8 @@ import {
     Resolver,
 } from "type-graphql";
 import { Users } from "../Entities/Users";
+import { Between } from "typeorm";
+import moment from "moment";
 
 @InterfaceType()
 export abstract class MemberPaymentResponse {
@@ -100,6 +102,22 @@ export class MemberPaymentResolver {
         @Arg("shift") shift: string,
         @Arg("month_qty") month_qty: number,
     ): Promise<MemberPaymentMutationResponse> {
+        const current_date = moment().format('YYYY-MM-DD');
+
+        const isDuplicate = await MemberPayment.findBy({
+            payment_date: Between(new Date(current_date + ' 00:00:00'), new Date(current_date + ' 23:00:00')),
+            customer_id: customer_id
+        })
+
+        if (isDuplicate.length > 0) {
+            //Return Failed
+            return {
+                payment_id: 0,
+                code: 400,
+                success: false,
+                message: "Duplicated",
+            };
+        }
 
         const result = await MemberPayment.create({
             user_id: user_id,

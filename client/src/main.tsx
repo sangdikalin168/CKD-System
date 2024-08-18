@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom/client";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
 import App from "./App.tsx";
 import "../src/index.css";
 import {
