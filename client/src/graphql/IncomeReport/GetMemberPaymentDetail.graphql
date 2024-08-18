@@ -1,0 +1,7 @@
+query GetMemberPaymentDetail($dateTo: String!, $dateFrom: String!) {
+  GetMemberPaymentDetail(dateTo: $dateTo, dateFrom: $dateFrom) {
+    price
+    promotion
+    customer_name
+  }
+}

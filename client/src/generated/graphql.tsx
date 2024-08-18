@@ -70,6 +70,13 @@ export type CouponPaymentResponse = {
   success: Scalars['Boolean'];
 };
 
+export type CouponType = {
+  __typename?: 'CouponType';
+  card_name: Scalars['String'];
+  price: Scalars['Float'];
+  qty: Scalars['Float'];
+};
+
 export type Customer = {
   __typename?: 'Customer';
   created_by: Scalars['Float'];
@@ -313,6 +320,14 @@ export type MemberPriceTableMutationResponse = IMemberPriceTableResponse & {
   success: Scalars['Boolean'];
 };
 
+export type MemberType = {
+  __typename?: 'MemberType';
+  customer_name: Scalars['String'];
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
+  qty: Scalars['Float'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   ApproveHoldRequest: HoldMutationResponse;
@@ -489,6 +504,7 @@ export type Query = {
   __typename?: 'Query';
   GetCouponCard: Array<CouponCard>;
   GetCouponPayment: Array<CouponPayment>;
+  GetCouponPayments: Array<CouponType>;
   GetCustomerDetail: Array<Customer>;
   GetCustomers: Array<Customer>;
   GetFruitPayment: Array<FruitPayment>;
@@ -496,8 +512,13 @@ export type Query = {
   GetHoldRequest: Array<HoldRequest>;
   GetHoldRequestByStatus: Array<HoldRequest>;
   GetMemberPayment: Array<MemberPayment>;
+  GetMemberPaymentDetail: Array<MemberType>;
+  GetMemberPayments: Array<MemberType>;
   GetMemberPriceTable: Array<MemberPriceTable>;
+  GetSeller: Array<Users>;
+  GetTicketPayment: Array<TicketType>;
   GetTrainningPayment: Array<TrainningPayment>;
+  GetTrainningPayments: Array<TrainningType>;
   GetTranningPrice: Array<TrainningPrice>;
   HoldRequests: Array<HoldJoin>;
   MemberPaymentDetail: MemberPaymentDetail;
@@ -514,6 +535,13 @@ export type QueryGetCouponCardArgs = {
 
 export type QueryGetCouponPaymentArgs = {
   customer_id: Scalars['Float'];
+};
+
+
+export type QueryGetCouponPaymentsArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+  userId: Scalars['Float'];
 };
 
 
@@ -542,8 +570,41 @@ export type QueryGetMemberPaymentArgs = {
 };
 
 
+export type QueryGetMemberPaymentDetailArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+};
+
+
+export type QueryGetMemberPaymentsArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+  userId: Scalars['Float'];
+};
+
+
+export type QueryGetSellerArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+};
+
+
+export type QueryGetTicketPaymentArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+  userId: Scalars['Float'];
+};
+
+
 export type QueryGetTrainningPaymentArgs = {
   customer_id: Scalars['Float'];
+};
+
+
+export type QueryGetTrainningPaymentsArgs = {
+  dateFrom: Scalars['String'];
+  dateTo: Scalars['String'];
+  userId: Scalars['Float'];
 };
 
 
@@ -589,6 +650,13 @@ export type TicketPaymentResponse = {
   success: Scalars['Boolean'];
 };
 
+export type TicketType = {
+  __typename?: 'TicketType';
+  payment_date: Scalars['String'];
+  price: Scalars['Float'];
+  qty: Scalars['Float'];
+};
+
 export type TrainningPayment = {
   __typename?: 'TrainningPayment';
   customer_id: Scalars['Float'];
@@ -622,6 +690,13 @@ export type TrainningPrice = {
   name: Scalars['String'];
   price: Scalars['Float'];
   type: Scalars['String'];
+};
+
+export type TrainningType = {
+  __typename?: 'TrainningType';
+  price: Scalars['Float'];
+  promotion: Scalars['String'];
+  qty: Scalars['Float'];
 };
 
 export type TranningPriceMutationResponse = TranningPriceResponse & {
@@ -878,6 +953,14 @@ export type HoldRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type HoldRequestsQuery = { __typename?: 'Query', HoldRequests: Array<{ __typename?: 'HoldJoin', request_id: number, request_by: number, request_date: string, customer_id: number, reason: string, from_date: string, to_date: string, old_end: string, new_end: string, checked_by: number, checker_comment: string, checked_date: string, checker_status: string, approved_by: number, approver_comment: string, approved_date: string, approver_status: string, display_name: string, customer_name: string, checker_name?: string | null, approved_name?: string | null, process: string, processed_name?: string | null, processed_by: number, phone: string }> };
+
+export type GetMemberPaymentDetailQueryVariables = Exact<{
+  dateTo: Scalars['String'];
+  dateFrom: Scalars['String'];
+}>;
+
+
+export type GetMemberPaymentDetailQuery = { __typename?: 'Query', GetMemberPaymentDetail: Array<{ __typename?: 'MemberType', price: number, promotion: string, customer_name: string }> };
 
 export type LoginMutationVariables = Exact<{
   loginInput: LoginInput;
@@ -1757,6 +1840,44 @@ export function useHoldRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type HoldRequestsQueryHookResult = ReturnType<typeof useHoldRequestsQuery>;
 export type HoldRequestsLazyQueryHookResult = ReturnType<typeof useHoldRequestsLazyQuery>;
 export type HoldRequestsQueryResult = Apollo.QueryResult<HoldRequestsQuery, HoldRequestsQueryVariables>;
+export const GetMemberPaymentDetailDocument = gql`
+    query GetMemberPaymentDetail($dateTo: String!, $dateFrom: String!) {
+  GetMemberPaymentDetail(dateTo: $dateTo, dateFrom: $dateFrom) {
+    price
+    promotion
+    customer_name
+  }
+}
+    `;
+
+/**
+ * __useGetMemberPaymentDetailQuery__
+ *
+ * To run a query within a React component, call `useGetMemberPaymentDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMemberPaymentDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMemberPaymentDetailQuery({
+ *   variables: {
+ *      dateTo: // value for 'dateTo'
+ *      dateFrom: // value for 'dateFrom'
+ *   },
+ * });
+ */
+export function useGetMemberPaymentDetailQuery(baseOptions: Apollo.QueryHookOptions<GetMemberPaymentDetailQuery, GetMemberPaymentDetailQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMemberPaymentDetailQuery, GetMemberPaymentDetailQueryVariables>(GetMemberPaymentDetailDocument, options);
+      }
+export function useGetMemberPaymentDetailLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMemberPaymentDetailQuery, GetMemberPaymentDetailQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMemberPaymentDetailQuery, GetMemberPaymentDetailQueryVariables>(GetMemberPaymentDetailDocument, options);
+        }
+export type GetMemberPaymentDetailQueryHookResult = ReturnType<typeof useGetMemberPaymentDetailQuery>;
+export type GetMemberPaymentDetailLazyQueryHookResult = ReturnType<typeof useGetMemberPaymentDetailLazyQuery>;
+export type GetMemberPaymentDetailQueryResult = Apollo.QueryResult<GetMemberPaymentDetailQuery, GetMemberPaymentDetailQueryVariables>;
 export const LoginDocument = gql`
     mutation Login($loginInput: LoginInput!) {
   login(loginInput: $loginInput) {
