@@ -41,8 +41,6 @@ if (!gotTheLock) {
   app.whenReady().then(createWindow)
 }
 
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 function createWindow() {
   win = new BrowserWindow({
@@ -72,8 +70,7 @@ function createWindow() {
     win = null
   })
 
-  win.loadURL("http://localhost:5173/")
-
+  win.loadURL("http://192.168.1.20:5173")
 }
 
 
