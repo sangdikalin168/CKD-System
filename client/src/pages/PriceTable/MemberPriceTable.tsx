@@ -159,10 +159,10 @@ export const MemberPriceTable = () => {
             return;
         }
 
-        const { id, description, ageGroup, customerType, shift, monthQty, price, entryQty } = selectedMemberPrice;
+        const { id, ageGroup, customerType, shift, monthQty, price, entryQty } = selectedMemberPrice;
 
         // Basic validation to ensure required fields are filled in
-        if (!description || !ageGroup || !customerType || !shift || !monthQty || !price || !entryQty) {
+        if (!ageGroup || !customerType || !shift || !monthQty || !price || !entryQty) {
             alert("Please fill in all the fields.");
             return;
         }
@@ -303,10 +303,10 @@ export const MemberPriceTable = () => {
     const handleCreateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { description, ageGroup, customerType, shift, monthQty, price, entryQty } = newPriceData;
+        const { ageGroup, customerType, shift, monthQty, price, entryQty } = newPriceData;
 
         // Validate required fields
-        if (!description || !ageGroup || !customerType || !shift || !monthQty || !price || !entryQty) {
+        if (!ageGroup || !customerType || !shift || !monthQty || !price || !entryQty) {
             alert("Please fill in all the fields.");
             return;
         }
