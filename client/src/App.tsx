@@ -12,6 +12,8 @@ import SideBar from "./components/Sidebar/Sidebar";
 import NavBar from "./components/Navbar/Navbar";
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import IncomeReport from "./pages/Report/IncomeReport";
+import { MemberPriceTable } from "./pages/PriceTable/MemberPriceTable";
+import { CustomerReport } from "./pages/Report/CustomerReport";
 
 function NoMatch() {
   return (
@@ -884,6 +886,10 @@ const router = createBrowserRouter([
         Component: Member,
       },
       {
+        path: "/member_price_table",
+        Component: MemberPriceTable,
+      },
+      {
         path: "/hold_request",
         Component: HoldRequest,
       },
@@ -894,6 +900,10 @@ const router = createBrowserRouter([
       {
         path: "/income_report",
         Component: IncomeReport,
+      },
+      {
+        path: "/customer_report",
+        Component: CustomerReport,
       },
     ],
   },

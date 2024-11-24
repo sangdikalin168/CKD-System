@@ -84,7 +84,6 @@ const GET_TRAINNING_PAYMENT_DETAIL = gql`
 }
 `;
 
-
 function IncomeReport() {
 
   const [data, setData] = React.useState(() => []);

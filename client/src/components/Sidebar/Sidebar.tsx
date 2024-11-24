@@ -21,7 +21,25 @@ export default function SideBar() {
       title: "សមាជិក",
       icon: <HiOutlineTicket className="mr-3 text-lg" />,
       path: "/member",
-      access: ["Sale"]
+      access: ["Sale", "Admin"]
+    },
+    {
+      title: "តារាងតម្លៃ",
+      icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+      access: ["Admin", "Sale"],
+      childrens: [
+        {
+          title: "តម្លៃសមាជិក",
+          path: "/member_price_table",
+          icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+
+        },
+        {
+          title: "តម្លៃគូប៉ុន",
+          path: "/coupon_price_table",
+          icon: <HiOutlineUserCircle className="mr-3 text-lg" />,
+        },
+      ],
     },
     {
       title: "សំណើ",

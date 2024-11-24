@@ -110,7 +110,6 @@ export const Member = () => {
   );
 
   const [customer_id, setCustomerID] = useState(0);
-  const [loading, setLoading] = useState();
   const [data_table, setData_table] = useState<Customer[]>(() => []);
   const {
     data,

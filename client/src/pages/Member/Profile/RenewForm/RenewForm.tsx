@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { CurrencyDollarIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import DataTable from "../../Component/DataTable";
 import {
   useCreateCustomerPaymentMutation,
@@ -12,6 +12,7 @@ import { TypeOptions, toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import { MemberInvoice } from "../../../../components/ComponentToPrint/MemberInvoice";
 import { DateTimePicker } from "../../../../components/DateTimePicker/DateTimePicker";
+import { gql, useQuery } from "@apollo/client";
 
 const notify = (
   message: string,
@@ -29,10 +30,10 @@ const notify = (
 
 type PriceTable = {
   id: number;
-  name: string;
-  age: string;
-  member_type: string;
-  month_qty: number;
+  description: string;
+  ageGroup: string;
+  customerType: string;
+  monthQty: number;
   price: number;
   shift: string;
 };
@@ -46,28 +47,44 @@ const date_format = (date_time: Date) => {
   return date.toLocaleDateString("fr-CA");
 };
 
+// GraphQL query to fetch all prices
+const GET_ALL_PRICES = gql`
+  query getAllMemberPriceTable {
+    getAllMemberPriceTable {
+      id
+      description
+      ageGroup
+      customerType
+      shift
+      monthQty
+      price
+      entryQty
+    }
+  }
+`;
+
 export const RenewForm = (props) => {
   const columnHelperPriceTable = createColumnHelper<PriceTable>();
   const columns_price_table = [
-    columnHelperPriceTable.accessor((row) => row.name, {
+    columnHelperPriceTable.accessor((row) => row.description, {
       id: "ឈ្មោះ Promotion",
       cell: (info) => info.getValue(),
       header: (info) => <span>{info.column.id}</span>,
       footer: (info) => info.column.id,
     }),
-    columnHelperPriceTable.accessor((row) => row.age, {
+    columnHelperPriceTable.accessor((row) => row.ageGroup, {
       id: "វ័យ",
       cell: (info) => info.getValue(),
       header: (info) => <span>{info.column.id}</span>,
       footer: (info) => info.column.id,
     }),
-    columnHelperPriceTable.accessor((row) => row.member_type, {
+    columnHelperPriceTable.accessor((row) => row.customerType, {
       id: "សមាជិក",
       cell: (info) => info.getValue(),
       header: (info) => <span>{info.column.id}</span>,
       footer: (info) => info.column.id,
     }),
-    columnHelperPriceTable.accessor((row) => row.month_qty, {
+    columnHelperPriceTable.accessor((row) => row.monthQty, {
       id: "ចំនួនខែ",
       cell: (info) => info.getValue(),
       header: (info) => <span>{info.column.id}</span>,
@@ -98,8 +115,8 @@ export const RenewForm = (props) => {
                   onClick={() => {
                     setIsShowConfirmModal(true);
                     const row = info.row.original;
-                    setMonthQty(row.month_qty);
-                    setPromotion(row.name);
+                    setMonthQty(row.monthQty);
+                    setPromotion(row.description);
                     setPrice(row.price);
                     setShift(row.shift);
                   }}
@@ -119,7 +136,7 @@ export const RenewForm = (props) => {
     }),
   ];
 
-  const { data: price_table, loading } = useGetMemberPriceTableQuery({
+  const { data: price_table, loading } = useQuery(GET_ALL_PRICES, {
     fetchPolicy: "no-cache",
   });
 
@@ -130,22 +147,35 @@ export const RenewForm = (props) => {
   const [month_qty, setMonthQty] = useState(1);
   const [shift, setShift] = useState("Full");
   const [price, setPrice] = useState(0);
-  const [age, setAge] = useState("ធំ");
+  const [age, setAge] = useState("Adult");
   const [promotion, setPromotion] = useState("");
 
 
-  const FilterPrice = () => {
-    const result = price_table?.GetMemberPriceTable.filter(
-      (p) => p.month_qty == month_qty && p.shift == shift && p.age == age
-    );
-    return result
-  };
+  const FilterPrice = useCallback(() => {
+    console.log(month_qty, shift, age);
+
+    if (!price_table?.getAllMemberPriceTable) {
+      console.log("No price table data available.");
+      return [];
+    }
+
+    return price_table.getAllMemberPriceTable.filter((p) => {
+      return (
+        (month_qty ? p.monthQty === month_qty : true) &&
+        (shift ? p.shift === shift : true) &&
+        (age ? p.ageGroup === age : true)
+      );
+    });
+  }, [price_table, month_qty, shift, age]); // Add shift and age as dependencies
 
   useEffect(() => {
-    if (price_table?.GetMemberPriceTable) {
-      setMemberPriceTable(FilterPrice())
+    if (price_table?.getAllMemberPriceTable) {
+      const filteredPrices = FilterPrice();
+      console.log(filteredPrices);
+
+      setMemberPriceTable(filteredPrices);
     }
-  }, [month_qty, shift, age, price_table])
+  }, [FilterPrice]);
 
   return (
     <>
@@ -197,14 +227,14 @@ export const RenewForm = (props) => {
                                   <button
                                     type="button"
                                     className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    onClick={() => { setAge("ធំ"); }}
+                                    onClick={() => { setAge("Adult"); }}
                                   >
                                     ធំ
                                   </button>
                                   <button
                                     type="button"
                                     className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    onClick={() => { setAge("តូច"); }}
+                                    onClick={() => { setAge("Kid"); }}
                                   >
                                     តូច
                                   </button>
