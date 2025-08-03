@@ -16,7 +16,7 @@ import { Context } from "./Context/Context";
 import path from "path";
 
 
-const MysqlDataSource = new DataSource({
+export const MysqlDataSource = new DataSource({
   type: "mysql",
   port: 3306,
   connectTimeout: 24 * 3600,
@@ -55,6 +55,8 @@ const main = async () => {
       //import multiple resolvers
       resolvers: [`${__dirname}/Resolvers/*.{ts,js}`],
     }),
+    cache: "bounded",
+    introspection: true,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageGraphQLPlayground,

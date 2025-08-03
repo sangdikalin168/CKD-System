@@ -1,6 +1,30 @@
-import { Between, MoreThan } from "typeorm";
+import { Between, MoreThan, DataSource } from "typeorm";
 import { Customer } from "../Entities/Customer";
 import { Arg, Field, Int, ObjectType, Query, Resolver } from "type-graphql";
+import { MemberScan } from "../Entities/MemberScan";
+
+//Define the ScanLog type
+@ObjectType()
+class ScanLog {
+    @Field()
+    scanDate!: string;
+}
+
+@ObjectType()
+class CustomerScanReport {
+    @Field()
+    member_id!: number;
+
+    @Field()
+    FromDate!: string;
+
+    @Field()
+    ToDate!: string;
+
+    @Field(() => [ScanLog])
+    ScanLog!: ScanLog[];
+}
+
 
 @ObjectType()
 class ActiveCustomerReport {
@@ -74,6 +98,51 @@ export class CustomerReportResolver {
         } catch (error) {
             console.error("Error fetching customers expiring on the target date:", error);
             throw new Error("Failed to fetch customers expiring on the provided date");
+        }
+    }
+
+    // Query for customers from member_scan
+    @Query(() => CustomerScanReport)
+    async customerScanReport(
+        @Arg("memberId") memberId: number,
+        @Arg("fromDate") fromDate: string,
+        @Arg("toDate") toDate: string
+    ): Promise<CustomerScanReport> {
+        try {
+            // Fetch all member scans between two dates "Customer Scan Log" for member_id
+            const scans = await MemberScan.find({
+                where: {
+                    member_id: memberId,
+                    date_time: Between(fromDate, toDate)
+                },
+            });
+
+            return {
+                member_id: memberId,
+                FromDate: fromDate,
+                ToDate: toDate,
+                ScanLog: scans.map(scan => {
+                    let scanDate: string;
+                    if (typeof scan.date_time === 'number') {
+                        scanDate = new Date(scan.date_time).toISOString();
+                    } else if (typeof scan.date_time === 'string') {
+                        // If it's a numeric string, treat as timestamp
+                        const asNum = Number(scan.date_time);
+                        scanDate = !isNaN(asNum) ? new Date(asNum).toISOString() : scan.date_time;
+                    } else if (Object.prototype.toString.call(scan.date_time) === '[object Date]') {
+                        scanDate = (scan.date_time as Date).toISOString();
+                    } else {
+                        scanDate = String(scan.date_time);
+                    }
+                    return {
+                        member_id: scan.member_id,
+                        scanDate
+                    };
+                })
+            };
+        } catch (error) {
+            console.error("Error fetching customer scan report:", error);
+            throw new Error("Failed to fetch customer scan report");
         }
     }
 }
