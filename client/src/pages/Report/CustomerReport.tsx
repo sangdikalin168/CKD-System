@@ -3,6 +3,7 @@
 // To use html2pdf.js for Unicode/Khmer PDF export:
 // npm install html2pdf.js
 import html2pdf from "html2pdf.js";
+import * as XLSX from 'xlsx';
 const CUSTOMER_SCAN_REPORT_QUERY = gql`
   query CustomerScanReport($toDate: String!, $fromDate: String!, $memberId: Float!) {
     customerScanReport(toDate: $toDate, fromDate: $fromDate, memberId: $memberId) {
@@ -55,8 +56,8 @@ const ACTIVE_CUSTOMERS_QUERY = gql`
 
 // GraphQL query to fetch customers whose memberships expire on a specific date
 const EXPIRING_CUSTOMERS_QUERY = gql`
-  query ExpiringCustomersOnDate($targetDate: String!) {
-    expiringCustomersOnDate(targetDate: $targetDate) {
+  query ExpiringCustomersOnDate($fromDate: String!, $toDate: String!) {
+    expiringCustomersOnDate(fromDate: $fromDate, toDate: $toDate) {
       total
       customers {
         customer_id
@@ -131,11 +132,10 @@ export const CustomerReport = () => {
   const { loading: loadingActive, error: errorActive, data: dataActive } = useQuery(ACTIVE_CUSTOMERS_QUERY);
   const [showDetails, setShowDetails] = useState(false);
 
-  const [targetDate, setTargetDate] = useState(""); // Store the selected date
-  // Query for expiring customers based on targetDate
+  // Query for expiring customers based on fromDate and toDate
   const { loading: loadingExpiring, error: errorExpiring, data: dataExpiring } = useQuery(EXPIRING_CUSTOMERS_QUERY, {
-    variables: { targetDate },
-    skip: !targetDate, // Skip query if no date is provided
+    variables: { fromDate, toDate },
+    skip: !fromDate || !toDate, // Skip query if no date is provided
   });
 
   // Handle loading and error states for both queries
@@ -147,6 +147,41 @@ export const CustomerReport = () => {
   const { total: totalActive, customers: customersActive } = dataActive?.activeCustomers || { total: 0, customers: [] };
   const { total: totalExpiring, customers: customersExpiring } = dataExpiring?.expiringCustomersOnDate || { total: 0, customers: [] };
 
+  const exportToExcel = (customers, fromDate, toDate) => {
+    // Prepare the data for Excel
+    const data = customers.map(customer => ({
+      'Customer ID': customer.customer_id,
+      'Name': customer.customer_name,
+      'Phone': customer.phone,
+      'Expiration Date': customer.end_membership_date,
+    }));
+
+    // Create a worksheet
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Define headers and set column widths
+    const headers = ['Customer ID', 'Name', 'Phone', 'Expiration Date'];
+    const columnWidths = [
+      { wch: 15 }, // Customer ID
+      { wch: 30 }, // Name
+      { wch: 20 }, // Phone
+      { wch: 20 }, // Expiration Date
+    ];
+    ws['!cols'] = columnWidths;
+
+    // Create a workbook and append the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Expiring Customers');
+
+    // Generate filename with sanitized date range
+    const sanitizedFromDate = fromDate.replace(/[^\w\d]/g, '_');
+    const sanitizedToDate = toDate.replace(/[^\w\d]/g, '_');
+    const filename = `expiring-customers-${sanitizedFromDate}-to-${sanitizedToDate}.xlsx`;
+
+    // Export to Excel
+    XLSX.writeFile(wb, filename);
+  };
+
   return (
     <>
       {/* Tab Buttons */}
@@ -155,13 +190,13 @@ export const CustomerReport = () => {
           className={`px-4 py-2 rounded-t-md font-semibold border-b-2 ${selectedTab === 'active' ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-500 bg-gray-100'}`}
           onClick={() => setSelectedTab('active')}
         >
-          Active Members
+          Active
         </button>
         <button
           className={`px-4 py-2 rounded-t-md font-semibold border-b-2 ${selectedTab === 'expiring' ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-500 bg-gray-100'}`}
           onClick={() => setSelectedTab('expiring')}
         >
-          Expiring Members
+          Expiring
         </button>
         <button
           className={`px-4 py-2 rounded-t-md font-semibold border-b-2 ${selectedTab === 'scan' ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-500 bg-gray-100'}`}
@@ -210,6 +245,7 @@ export const CustomerReport = () => {
                 </ul>
               )}
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-1">From Date</label>
               <input
@@ -391,33 +427,103 @@ export const CustomerReport = () => {
                   <div className="text-sm font-medium text-gray-400">Expiring Members</div>
                 </div>
               </div>
-              <div className="mb-4">
-                <label htmlFor="targetDate" className="block text-sm font-medium">Select Expiration Date</label>
-                <input
-                  type="date"
-                  id="targetDate"
-                  value={targetDate}
-                  onChange={(e) => setTargetDate(e.target.value)}
-                  className="mt-2 p-2 border border-gray-300 rounded"
-                />
+
+              <div className="mb-4 flex flex-col md:flex-row gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">From Date</label>
+                  <input
+                    type="date"
+                    className="w-full p-2 border border-gray-300 rounded"
+                    value={fromDate}
+                    onChange={e => {
+                      setFromDate(e.target.value);
+                      setSearchClicked(false);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">To Date</label>
+                  <input
+                    type="date"
+                    className="w-full p-2 border border-gray-300 rounded"
+                    value={toDate}
+                    onChange={e => {
+                      setToDate(e.target.value);
+                      setSearchClicked(false);
+                    }}
+                  />
+                </div>
+              </div>
+
+
+              <div className="flex gap-2">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  disabled={!selectedCustomer || !fromDate || !toDate}
+                  onClick={() => setSearchClicked(true)}
+                >
+                  Search
+                </button>
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  disabled={
+                    !dataScan ||
+                    !dataScan.customerScanReport ||
+                    !dataScan.customerScanReport.ScanLog.length
+                  }
+                  onClick={() => {
+                    if (!scanLogRef.current) {
+                      alert('No scan log to export.');
+                      return;
+                    }
+                    // Sanitize name for filename (remove special chars, spaces to _)
+                    const name = selectedCustomer?.customer_name
+                      ? selectedCustomer.customer_name.replace(/[^\w\d\u1780-\u17FF]+/g, '_')
+                      : 'customer';
+                    const id = selectedCustomer?.customer_id || '';
+                    const filename = `scan-log-${name}-${id}.pdf`;
+                    html2pdf()
+                      .set({
+                        margin: 10,
+                        filename,
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                      })
+                      .from(scanLogRef.current)
+                      .save();
+                  }}
+                >
+                  PDF
+                </button>
+
+                {/* Export to Excel button */}
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  disabled={customersExpiring.length === 0}
+                  onClick={() => exportToExcel(customersExpiring, fromDate, toDate)}
+                >
+                  Excel
+                </button>
+
               </div>
             </div>
           </div>
 
-          {targetDate && (
+
+          {toDate && (
             <>
               <div className="mb-4">
-                <div className="text-lg font-semibold">{totalExpiring} Customers Expiring on {targetDate}</div>
+                <div className="text-lg font-semibold">{totalExpiring} Customers Expiring from {fromDate} to {toDate}</div>
                 {customersExpiring.length > 0 ? (
                   <div className="table-container">
                     <table className="min-w-full table-auto border-collapse border border-gray-200">
                       <thead>
                         <tr>
-                          <th className="p-3 text-left border-b">Customer ID</th>
-                          <th className="p-3 text-left border-b">Customer Name</th>
+                          <th className="p-3 text-left border-b">ID</th>
+                          <th className="p-3 text-left border-b">Name</th>
                           <th className="p-3 text-left border-b">Phone</th>
-                          <th className="p-3 text-left border-b">Gender</th>
-                          <th className="p-3 text-left border-b">Membership Expiration Date</th>
+                          <th className="p-3 text-left border-b">Expire</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -426,8 +532,7 @@ export const CustomerReport = () => {
                             <td className="p-3 border-b">{customer.customer_id}</td>
                             <td className="p-3 border-b">{customer.customer_name}</td>
                             <td className="p-3 border-b">{customer.phone}</td>
-                            <td className="p-3 border-b">{customer.gender}</td>
-                            <td className="p-3 border-b">{customer.end_membership_date}</td>
+                            <td className="p-3 border-b whitespace-nowrap">{customer.end_membership_date}</td>
                           </tr>
                         ))}
                       </tbody>

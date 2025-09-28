@@ -78,14 +78,16 @@ export class CustomerReportResolver {
     // Query for customers expiring on a specific date
     @Query(() => ExpiringCustomerReport)
     async expiringCustomersOnDate(
-        @Arg("targetDate") targetDate: string
+        @Arg("fromDate") fromDate: string,
+        @Arg("toDate") toDate: string
     ): Promise<ExpiringCustomerReport> {
         try {
-            // Find customers whose `end_membership_date` matches the target date
+            // Find customers whose `end_membership_date` is between the target dates
             const customers = await Customer.find({
                 where: {
-                    end_membership_date: targetDate,
+                    end_membership_date: Between(fromDate, toDate),
                 },
+                order: { end_membership_date: "ASC" },
             });
 
             // Count total customers expiring on the provided date
