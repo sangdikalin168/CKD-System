@@ -2,6 +2,7 @@ import { Between, MoreThan, DataSource } from "typeorm";
 import { Customer } from "../Entities/Customer";
 import { Arg, Field, Int, ObjectType, Query, Resolver } from "type-graphql";
 import { MemberScan } from "../Entities/MemberScan";
+import { MemberPayment } from "../Entities/MemberPayment";
 
 //Define the ScanLog type
 @ObjectType()
@@ -42,6 +43,66 @@ class ExpiringCustomerReport {
 
     @Field(() => [Customer])
     customers!: Customer[];
+}
+
+@ObjectType()
+class CustomerMembershipDetail {
+    @Field()
+    customer_id!: number;
+
+    @Field()
+    customer_code!: string;
+
+    @Field()
+    customer_name!: string;
+
+    @Field()
+    phone!: string;
+
+    @Field()
+    gender!: string;
+
+    @Field()
+    end_membership_date!: string;
+
+    @Field()
+    month_qty!: number;
+
+    @Field()
+    promotion!: string;
+
+    @Field()
+    price!: number;
+
+    @Field()
+    payment_date!: Date;
+}
+
+@ObjectType()
+class MembershipDurationGroup {
+    @Field(() => Int)
+    month_duration!: number;
+
+    @Field(() => Int)
+    total_customers!: number;
+
+    @Field(() => Number)
+    total_revenue!: number;
+
+    @Field(() => [CustomerMembershipDetail])
+    customers!: CustomerMembershipDetail[];
+}
+
+@ObjectType()
+class CustomersByMembershipDurationReport {
+    @Field(() => [MembershipDurationGroup])
+    groups!: MembershipDurationGroup[];
+
+    @Field(() => Int)
+    total_all_customers!: number;
+
+    @Field(() => Number)
+    total_all_revenue!: number;
 }
 
 @Resolver()
@@ -145,6 +206,97 @@ export class CustomerReportResolver {
         } catch (error) {
             console.error("Error fetching customer scan report:", error);
             throw new Error("Failed to fetch customer scan report");
+        }
+    }
+
+    // Query for customers grouped by their LATEST membership duration (1, 3, 6, 12 months)
+    // This shows what type each active customer currently has based on their most recent purchase
+    @Query(() => CustomersByMembershipDurationReport)
+    async customersByMembershipDuration(
+        @Arg("fromDate") fromDate: string,
+        @Arg("toDate") toDate: string
+    ): Promise<CustomersByMembershipDurationReport> {
+        try {
+            // Get current date for active customer check
+            const currentDate = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD' format
+            
+            // Define the membership durations we want to track
+            const durations = [1, 3, 6, 12];
+            const groups: MembershipDurationGroup[] = [];
+            
+            let totalAllCustomers = 0;
+            let totalAllRevenue = 0;
+
+            for (const duration of durations) {
+                // Subquery to get the latest payment_id for each customer
+                const latestPaymentSubquery = MemberPayment
+                    .createQueryBuilder("mp_sub")
+                    .select("MAX(mp_sub.payment_id)", "max_payment_id")
+                    .where("mp_sub.customer_id = member_payment.customer_id")
+                    .getQuery();
+
+                // Main query: Get customers whose LATEST payment has this month_qty
+                const results = await MemberPayment
+                    .createQueryBuilder("member_payment")
+                    .innerJoin(
+                        Customer, 
+                        "customer", 
+                        "customer.customer_id = member_payment.customer_id"
+                    )
+                    .where(`member_payment.payment_id = (${latestPaymentSubquery})`)
+                    .andWhere("member_payment.month_qty = :duration", { duration })
+                    .andWhere("customer.end_membership_date > :currentDate", { currentDate })
+                    .select([
+                        "customer.customer_id as customer_id",
+                        "customer.customer_code as customer_code",
+                        "customer.customer_name as customer_name",
+                        "customer.phone as phone",
+                        "customer.gender as gender",
+                        "customer.end_membership_date as end_membership_date",
+                        "member_payment.month_qty as month_qty",
+                        "member_payment.promotion as promotion",
+                        "member_payment.price as price",
+                        "member_payment.payment_date as payment_date"
+                    ])
+                    .getRawMany();
+
+                // Calculate totals for this duration group
+                const totalCustomers = results.length;
+                const totalRevenue = results.reduce((sum, r) => sum + parseFloat(r.price || 0), 0);
+
+                totalAllCustomers += totalCustomers;
+                totalAllRevenue += totalRevenue;
+
+                // Map the results to CustomerMembershipDetail
+                const customers: CustomerMembershipDetail[] = results.map(row => ({
+                    customer_id: row.customer_id,
+                    customer_code: row.customer_code,
+                    customer_name: row.customer_name,
+                    phone: row.phone,
+                    gender: row.gender,
+                    end_membership_date: row.end_membership_date,
+                    month_qty: row.month_qty,
+                    promotion: row.promotion,
+                    price: parseFloat(row.price),
+                    payment_date: row.payment_date
+                }));
+
+                groups.push({
+                    month_duration: duration,
+                    total_customers: totalCustomers,
+                    total_revenue: totalRevenue,
+                    customers: customers
+                });
+            }
+
+            return {
+                groups,
+                total_all_customers: totalAllCustomers,
+                total_all_revenue: totalAllRevenue
+            };
+        } catch (error) {
+            console.error("Error fetching customers by membership duration:", error);
+            throw new Error("Failed to fetch customers by membership duration");
         }
     }
 }

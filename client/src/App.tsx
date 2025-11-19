@@ -14,6 +14,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import IncomeReport from "./pages/Report/IncomeReport";
 import { MemberPriceTable } from "./pages/PriceTable/MemberPriceTable";
 import { CustomerReport } from "./pages/Report/CustomerReport";
+import CustomerTypeReport from "./pages/Report/CustomerTypeReport";
 
 function NoMatch() {
   return (
@@ -904,6 +905,10 @@ const router = createBrowserRouter([
       {
         path: "/customer_report",
         Component: CustomerReport,
+      },
+      {
+        path: "/customer_type_report",
+        Component: CustomerTypeReport,
       },
     ],
   },

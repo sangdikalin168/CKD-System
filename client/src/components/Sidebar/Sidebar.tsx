@@ -74,6 +74,11 @@ export default function SideBar() {
           path: "/customer_report",
           icon: <FaUserCog className="mr-3 text-lg" />,
         },
+        {
+          title: "ប្រភេទសមាជិក",
+          path: "/customer_type_report",
+          icon: <FaUserCog className="mr-3 text-lg" />,
+        },
       ],
     },
     {
