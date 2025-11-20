@@ -1,6 +1,7 @@
 import { PencilSquareIcon, PlusCircleIcon, BackwardIcon } from "@heroicons/react/20/solid";
 import { Fragment, useState } from "react";
-import { Tab } from "@headlessui/react";
+import { Tab, Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   useGetCustomerDetailQuery,
   useGetFruitPaymentQuery,
@@ -20,6 +21,9 @@ import Notifications from "../../../../components/Notification";
 import HoldForm from "../Hold/HoldForm";
 import Transfer from "../Transfer/Transfer";
 import { BiTransfer } from "react-icons/bi";
+import WebcamCapture from "../../../../components/WebcamCapture/WebcamCapture";
+import { useMutation } from "@apollo/client";
+import { UPDATE_CUSTOMER_PHOTO } from "../../../../graphql/Customer/UpdateCustomerPhoto";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -82,6 +86,55 @@ const MemberProfile = ({ ID }: any) => {
   const [open_update, setOpenUpdate] = useState(false);
   const [open_hold, setOpenHold] = useState(false);
   const [open_transfer, setOpenTransfer] = useState(false);
+  const [open_webcam, setOpenWebcam] = useState(false);
+  const [open_preview, setOpenPreview] = useState(false);
+
+  const [updateCustomerPhoto] = useMutation(UPDATE_CUSTOMER_PHOTO);
+
+  const handlePhotoCapture = async (imageSrc: string) => {
+    try {
+      const result = await updateCustomerPhoto({
+        variables: {
+          customerId: ID,
+          imagePath: imageSrc
+        }
+      });
+
+      if (result.data?.UpdateCustomerPhoto?.success) {
+        Notifications("រូបថតបានរក្សាទុកជោគជ័យ", "success");
+        refetchMemberDetail();
+      } else {
+        Notifications("មានបញ្ហាក្នុងការរក្សាទុករូបថត", "error");
+      }
+    } catch (error) {
+      console.error("Error updating photo:", error);
+      Notifications("មានបញ្ហាក្នុងការរក្សាទុករូបថត", "error");
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        Notifications("សូមជ្រើសរើសឯកសាររូបភាពតែប៉ុណ្ណោះ", "error");
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        Notifications("ទំហំឯកសារធំពេក! សូមជ្រើសរើសរូបភាពតូចជាង 5MB", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        await handlePhotoCapture(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
 
   const ShowTransferForm = (date: string) => {
@@ -152,13 +205,53 @@ const MemberProfile = ({ ID }: any) => {
         <div className="border-b border-gray-900/10">
           <div className="mt-2 grid grid-cols-1 gap-x-4 sm:grid-cols-6">
             <div className="shadow-lg rounded-lg p-2">
-              <img
-                className="h-24 w-24 flex-none rounded-full bg-gray-50"
-                src={
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                }
-                alt=""
-              />
+              <div className="flex flex-col items-center">
+                <div 
+                  className="relative group cursor-pointer mb-2"
+                  onClick={() => setOpenPreview(true)}
+                >
+                  <img
+                    className="h-24 w-24 flex-none rounded-full bg-gray-50 transition-opacity group-hover:opacity-75"
+                    src={
+                      details?.image_path 
+                        ? `http://${window.location.hostname}:4000${details.image_path}`
+                        : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    }
+                    alt={details?.customer_name || "Profile"}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-black bg-opacity-50 rounded-full p-2">
+                      <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs text-white shadow-sm hover:bg-indigo-500 mb-2"
+                  onClick={() => setOpenWebcam(true)}
+                >
+                  <svg className="-ml-0.5 mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  ថតរូប
+                </button>
+                <label className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs text-white shadow-sm hover:bg-green-500 cursor-pointer">
+                  <svg className="-ml-0.5 mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  បញ្ចូលរូបភាព
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+              </div>
               <div className="min-w-0 flex-auto">
                 <div>
                   <p className="text-sm font-semibold leading-6 text-gray-900">
@@ -180,9 +273,9 @@ const MemberProfile = ({ ID }: any) => {
                   <p className="text-sm font-semibold leading-6 text-gray-900">
                     ថ្ងៃបង់ប្រាក់: {details?.end_membership_date}
                   </p>
-                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                  {/* <p className="text-sm font-semibold leading-6 text-gray-900">
                     តែជ្រក់: {details?.end_fruit_date}
-                  </p>
+                  </p> */}
                   <p className="text-sm font-semibold leading-6 text-gray-900">
                     វេន: {details?.shift}
                   </p>
@@ -411,6 +504,68 @@ const MemberProfile = ({ ID }: any) => {
       />
 
       <Transfer open={open_transfer} setOpen={setOpenTransfer} sender_data={details} />
+
+      <WebcamCapture
+        open={open_webcam}
+        setOpen={setOpenWebcam}
+        onCapture={handlePhotoCapture}
+        customerId={ID}
+      />
+
+      {/* Image Preview Modal */}
+      <Transition appear show={open_preview} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setOpenPreview(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-75" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="relative max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                  <button
+                    type="button"
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
+                    onClick={() => setOpenPreview(false)}
+                  >
+                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                  <div className="mt-4">
+                    <img
+                      className="w-full h-auto rounded-lg"
+                      src={
+                        details?.image_path 
+                          ? `http://${window.location.hostname}:4000${details.image_path}`
+                          : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      }
+                      alt={details?.customer_name || "Profile Preview"}
+                    />
+                    <p className="mt-4 text-center text-sm text-gray-600">
+                      {details?.customer_name}
+                    </p>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
 
     </>
   );

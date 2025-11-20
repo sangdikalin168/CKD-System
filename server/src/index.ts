@@ -41,6 +41,9 @@ const main = async () => {
 
   const app = express();
   app.use(express.static(path.resolve(__dirname, "../../client/dist")));
+  
+  // Serve uploaded files
+  app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 
   app.use(cookieParser());
   app.use(express.json());
