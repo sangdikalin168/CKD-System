@@ -64,15 +64,33 @@ function createWindow() {
     frame: true
   })
 
-  // Handle all permission requests
-  win.webContents.session.setPermissionRequestHandler((_webContents: any, permission: any, callback: any) => {
-    // Allow all media permissions (camera, microphone)
+  // Handle media permission requests with system dialog
+  win.webContents.session.setPermissionRequestHandler(async (_webContents: any, permission: any, callback: any, details: any) => {
+    if (permission === 'media') {
+      // Check if it's camera or microphone request
+      if (details.mediaTypes) {
+        console.log('Media permission requested for:', details.mediaTypes);
+        // Auto-approve for now (you can add dialog here if needed)
+        callback(true);
+        return;
+      }
+    }
+    
+    // Allow other necessary permissions
     const allowedPermissions = ['media', 'mediaKeySystem', 'geolocation', 'notifications', 'midi', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'];
     if (allowedPermissions.includes(permission)) {
       callback(true);
     } else {
       callback(false);
     }
+  });
+
+  // Set device permission handler
+  win.webContents.session.setDevicePermissionHandler((details: any) => {
+    if (details.deviceType === 'videoinput' || details.deviceType === 'audioinput') {
+      return true;
+    }
+    return false;
   });
 
   // Additionally handle media permissions
