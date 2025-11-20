@@ -20,6 +20,11 @@ import path from 'node:path'
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
+// Enable media device access
+app.commandLine.appendSwitch('enable-features', 'GuestViewCrossProcessFrames');
+app.commandLine.appendSwitch('enable-media-stream');
+app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 
@@ -59,14 +64,23 @@ function createWindow() {
     frame: true
   })
 
-  // Handle camera permission requests
+  // Handle all permission requests
   win.webContents.session.setPermissionRequestHandler((_webContents: any, permission: any, callback: any) => {
-    if (permission === 'media') {
-      // Approve camera/microphone access
+    // Allow all media permissions (camera, microphone)
+    const allowedPermissions = ['media', 'mediaKeySystem', 'geolocation', 'notifications', 'midi', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'];
+    if (allowedPermissions.includes(permission)) {
       callback(true);
     } else {
       callback(false);
     }
+  });
+
+  // Additionally handle media permissions
+  win.webContents.session.setPermissionCheckHandler((_webContents: any, permission: any) => {
+    if (permission === 'media') {
+      return true;
+    }
+    return false;
   });
 
   // Test active push message to Renderer-process.
@@ -90,9 +104,6 @@ function createWindow() {
 app.on('window-all-closed', () => {
   app.quit()
 })
-
-app.commandLine.appendSwitch('enable-features=GuestViewCrossProcessFrames');
-
 
 // app.whenReady().then(createWindow)
 
