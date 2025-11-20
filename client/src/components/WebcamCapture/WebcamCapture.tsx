@@ -14,11 +14,28 @@ export const WebcamCapture = ({ open, setOpen, onCapture }: WebcamCaptureProps) 
   const webcamRef = useRef<Webcam>(null);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [hasPermission, setHasPermission] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const videoConstraints = {
     width: 1280,
     height: 720,
     facingMode: facingMode
+  };
+
+  const handleUserMediaError = (error: string | DOMException) => {
+    console.error('Webcam error:', error);
+    setHasPermission(false);
+    if (typeof error === 'string') {
+      setError(error);
+    } else {
+      setError('មិនអាចចូលប្រើកាមេរ៉ាបានទេ។ សូមពិនិត្យមើលការអនុញ្ញាត។');
+    }
+  };
+
+  const handleUserMedia = () => {
+    setHasPermission(true);
+    setError(null);
   };
 
   const capture = useCallback(() => {
@@ -96,14 +113,27 @@ export const WebcamCapture = ({ open, setOpen, onCapture }: WebcamCaptureProps) 
                     <div className="mt-2">
                       <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                         {!imgSrc ? (
-                          <Webcam
-                            audio={false}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={videoConstraints}
-                            className="w-full h-auto"
-                            mirrored={facingMode === 'user'}
-                          />
+                          <>
+                            {!hasPermission && error ? (
+                              <div className="p-8 text-center">
+                                <p className="text-red-600 mb-4">{error}</p>
+                                <p className="text-sm text-gray-600">
+                                  សូមធ្វើការអនុញ្ញាតឱ្យកម្មវិធីចូលប្រើកាមេរ៉ា ហើយព្យាយាមម្តងទៀត។
+                                </p>
+                              </div>
+                            ) : (
+                              <Webcam
+                                audio={false}
+                                ref={webcamRef}
+                                screenshotFormat="image/jpeg"
+                                videoConstraints={videoConstraints}
+                                className="w-full h-auto"
+                                mirrored={facingMode === 'user'}
+                                onUserMedia={handleUserMedia}
+                                onUserMediaError={handleUserMediaError}
+                              />
+                            )}
+                          </>
                         ) : (
                           <img src={imgSrc} alt="captured" className="w-full h-auto" />
                         )}

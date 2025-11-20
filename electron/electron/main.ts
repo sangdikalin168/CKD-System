@@ -48,13 +48,26 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      webSecurity: false
+      webSecurity: false,
+      // Enable camera and microphone access
+      contextIsolation: false,
+      enableRemoteModule: true
     },
     width: 1366,
     height: 768,
     autoHideMenuBar: true,
     frame: true
   })
+
+  // Handle camera permission requests
+  win.webContents.session.setPermissionRequestHandler((_webContents: any, permission: any, callback: any) => {
+    if (permission === 'media') {
+      // Approve camera/microphone access
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
