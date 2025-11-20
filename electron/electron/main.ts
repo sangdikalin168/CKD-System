@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 
-const { app, ipcMain, BrowserWindow } = require('electron');
+const { app, ipcMain, BrowserWindow, systemPreferences } = require('electron');
 
 import path from 'node:path'
 
@@ -46,7 +46,29 @@ if (!gotTheLock) {
   // app.on('ready', () => {
   //   createWindow()
   // })
-  app.whenReady().then(createWindow)
+  app.whenReady().then(async () => {
+    // Request camera and microphone permissions
+    if (process.platform === 'darwin') {
+      // macOS
+      const cameraStatus = systemPreferences.getMediaAccessStatus('camera');
+      console.log('Camera access status:', cameraStatus);
+      
+      if (cameraStatus !== 'granted') {
+        const granted = await systemPreferences.askForMediaAccess('camera');
+        console.log('Camera permission granted:', granted);
+      }
+      
+      const micStatus = systemPreferences.getMediaAccessStatus('microphone');
+      if (micStatus !== 'granted') {
+        await systemPreferences.askForMediaAccess('microphone');
+      }
+    } else if (process.platform === 'win32') {
+      // Windows - check camera availability
+      console.log('Windows platform - camera permissions managed by Windows Settings');
+    }
+    
+    createWindow();
+  });
 }
 
 
@@ -92,13 +114,37 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
     
-    // Test camera access
+    // Test camera access and provide helpful error messages
     win?.webContents.executeJavaScript(`
-      navigator.mediaDevices.enumerateDevices()
-        .then(devices => {
-          console.log('Available devices:', devices.filter(d => d.kind === 'videoinput'));
-        })
-        .catch(err => console.error('Device enumeration error:', err));
+      (async () => {
+        try {
+          // First, enumerate devices
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const cameras = devices.filter(d => d.kind === 'videoinput');
+          console.log('Available cameras:', cameras.length, cameras);
+          
+          if (cameras.length === 0) {
+            console.error('No cameras found. Please check if a camera is connected.');
+          }
+          
+          // Try to get camera access
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 1280, height: 720 }, 
+            audio: false 
+          });
+          console.log('Camera access successful!', stream.getVideoTracks());
+          stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+        } catch (err) {
+          console.error('Camera access error:', err.name, err.message);
+          if (err.name === 'NotAllowedError') {
+            console.error('Permission denied. Please enable camera in Windows Settings > Privacy > Camera');
+          } else if (err.name === 'NotFoundError') {
+            console.error('No camera device found.');
+          } else if (err.name === 'NotReadableError') {
+            console.error('Camera is already in use by another application.');
+          }
+        }
+      })();
     `);
   })
 
