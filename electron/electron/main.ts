@@ -24,6 +24,9 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.D
 app.commandLine.appendSwitch('enable-features', 'GuestViewCrossProcessFrames');
 app.commandLine.appendSwitch('enable-media-stream');
 app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+app.commandLine.appendSwitch('ignore-certificate-errors');
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -53,10 +56,12 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      webSecurity: false,
-      // Enable camera and microphone access
       contextIsolation: false,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      // Enable all necessary features for camera
+      experimentalFeatures: true
     },
     width: 1366,
     height: 768,
@@ -64,49 +69,40 @@ function createWindow() {
     frame: true
   })
 
-  // Handle media permission requests with system dialog
-  win.webContents.session.setPermissionRequestHandler(async (_webContents: any, permission: any, callback: any, details: any) => {
-    if (permission === 'media') {
-      // Check if it's camera or microphone request
-      if (details.mediaTypes) {
-        console.log('Media permission requested for:', details.mediaTypes);
-        // Auto-approve for now (you can add dialog here if needed)
-        callback(true);
-        return;
-      }
-    }
-    
-    // Allow other necessary permissions
-    const allowedPermissions = ['media', 'mediaKeySystem', 'geolocation', 'notifications', 'midi', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'];
-    if (allowedPermissions.includes(permission)) {
-      callback(true);
-    } else {
-      callback(false);
-    }
+  // Handle ALL permission requests - grant everything
+  win.webContents.session.setPermissionRequestHandler((_webContents: any, permission: any, callback: any) => {
+    console.log('Permission requested:', permission);
+    // Grant all permissions
+    callback(true);
   });
 
-  // Set device permission handler
+  // Set device permission handler - allow all video/audio devices
   win.webContents.session.setDevicePermissionHandler((details: any) => {
-    if (details.deviceType === 'videoinput' || details.deviceType === 'audioinput') {
-      return true;
-    }
-    return false;
+    console.log('Device permission requested:', details.deviceType);
+    // Allow all device types
+    return true;
   });
 
-  // Additionally handle media permissions
-  win.webContents.session.setPermissionCheckHandler((_webContents: any, permission: any) => {
-    if (permission === 'media') {
-      return true;
-    }
-    return false;
+  // Set permission check handler - allow all
+  win.webContents.session.setPermissionCheckHandler(() => {
+    return true;
   });
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    
+    // Test camera access
+    win?.webContents.executeJavaScript(`
+      navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+          console.log('Available devices:', devices.filter(d => d.kind === 'videoinput'));
+        })
+        .catch(err => console.error('Device enumeration error:', err));
+    `);
   })
 
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.maximize();
 
