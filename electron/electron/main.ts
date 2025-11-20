@@ -77,8 +77,10 @@ function createWindow() {
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true
     },
     width: 1366,
     height: 768,
@@ -139,7 +141,8 @@ function createWindow() {
     win = null
   })
 
-  win.loadURL("http://192.168.1.20:5173")
+  // win.loadURL("http://192.168.1.20:5173")
+  win.loadURL("http://110.235.252.175:5174")
 }
 
 

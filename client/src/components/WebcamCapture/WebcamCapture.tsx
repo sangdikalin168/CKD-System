@@ -1,7 +1,6 @@
-import { Fragment, useRef, useState, useCallback } from 'react';
+import { Fragment, useRef, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import Webcam from 'react-webcam';
 
 interface WebcamCaptureProps {
   open: boolean;
@@ -11,59 +10,92 @@ interface WebcamCaptureProps {
 }
 
 export const WebcamCapture = ({ open, setOpen, onCapture }: WebcamCaptureProps) => {
-  const webcamRef = useRef<Webcam>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const videoConstraints = {
-    width: 1280,
-    height: 720,
-    facingMode: facingMode
-  };
+  useEffect(() => {
+    if (open && !imgSrc) {
+      startCamera();
+    }
+    
+    return () => {
+      stopCamera();
+    };
+  }, [open]);
 
-  const handleUserMediaError = (error: string | DOMException) => {
-    console.error('Webcam error:', error);
-    setHasPermission(false);
-    if (typeof error === 'string') {
-      setError(error);
-    } else {
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720 },
+        audio: false
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
+      }
+      
+      setStream(mediaStream);
+      setHasPermission(true);
+      setError(null);
+    } catch (err: any) {
+      console.error('Camera error:', err);
+      setHasPermission(false);
       setError('មិនអាចចូលប្រើកាមេរ៉ាបានទេ។ សូមពិនិត្យមើលការអនុញ្ញាត។');
     }
   };
 
-  const handleUserMedia = () => {
-    setHasPermission(true);
-    setError(null);
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
   };
 
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (imageSrc) {
-      setImgSrc(imageSrc);
+  const capture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Mirror the image horizontally
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0);
+        
+        const imageSrc = canvas.toDataURL('image/jpeg');
+        setImgSrc(imageSrc);
+        stopCamera();
+      }
     }
-  }, [webcamRef]);
+  };
 
   const retake = () => {
     setImgSrc(null);
+    startCamera();
   };
 
   const handleSave = () => {
     if (imgSrc) {
       onCapture(imgSrc);
       setImgSrc(null);
+      stopCamera();
       setOpen(false);
     }
   };
 
   const handleClose = () => {
     setImgSrc(null);
+    stopCamera();
     setOpen(false);
-  };
-
-  const switchCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
   };
 
   return (
@@ -122,21 +154,19 @@ export const WebcamCapture = ({ open, setOpen, onCapture }: WebcamCaptureProps) 
                                 </p>
                               </div>
                             ) : (
-                              <Webcam
-                                audio={false}
-                                ref={webcamRef}
-                                screenshotFormat="image/jpeg"
-                                videoConstraints={videoConstraints}
+                              <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
                                 className="w-full h-auto"
-                                mirrored={facingMode === 'user'}
-                                onUserMedia={handleUserMedia}
-                                onUserMediaError={handleUserMediaError}
+                                style={{ transform: 'scaleX(-1)' }}
                               />
                             )}
                           </>
                         ) : (
                           <img src={imgSrc} alt="captured" className="w-full h-auto" />
                         )}
+                        <canvas ref={canvasRef} style={{ display: 'none' }} />
                       </div>
 
                       <div className="mt-4 flex justify-center gap-3">
@@ -149,13 +179,6 @@ export const WebcamCapture = ({ open, setOpen, onCapture }: WebcamCaptureProps) 
                             >
                               <CameraIcon className="h-5 w-5 mr-2" />
                               ថតរូប
-                            </button>
-                            <button
-                              type="button"
-                              onClick={switchCamera}
-                              className="inline-flex items-center rounded-md bg-gray-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
-                            >
-                              បត់កាមេរ៉ា
                             </button>
                           </>
                         ) : (
