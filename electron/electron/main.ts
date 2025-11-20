@@ -78,12 +78,7 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-      webSecurity: false,
-      allowRunningInsecureContent: true,
-      // Enable all necessary features for camera
-      experimentalFeatures: true
+      contextIsolation: false
     },
     width: 1366,
     height: 768,
@@ -91,23 +86,10 @@ function createWindow() {
     frame: true
   })
 
-  // Handle ALL permission requests - grant everything
+  // Handle permission requests - approve media access
   win.webContents.session.setPermissionRequestHandler((_webContents: any, permission: any, callback: any) => {
     console.log('Permission requested:', permission);
-    // Grant all permissions
     callback(true);
-  });
-
-  // Set device permission handler - allow all video/audio devices
-  win.webContents.session.setDevicePermissionHandler((details: any) => {
-    console.log('Device permission requested:', details.deviceType);
-    // Allow all device types
-    return true;
-  });
-
-  // Set permission check handler - allow all
-  win.webContents.session.setPermissionCheckHandler(() => {
-    return true;
   });
 
   // Test active push message to Renderer-process.
