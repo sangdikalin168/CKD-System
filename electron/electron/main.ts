@@ -74,10 +74,15 @@ if (!gotTheLock) {
 
 
 function createWindow() {
+  // Fix preload path for both development and production
+  const preloadPath = app.isPackaged
+    ? path.join(__dirname, 'preload.js')
+    : path.join(__dirname, '../dist-electron/preload.js');
+
   win = new BrowserWindow({
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: preloadPath,
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false,
@@ -175,33 +180,50 @@ const printOption2 = {
 };
 
 //handle print
-ipcMain.handle('printComponent', (_event: any, url: any) => {
+ipcMain.handle('printComponent', async (_event: any, url: any) => {
   const win = new BrowserWindow({ show: false });
   win.loadURL(url);
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.print(printOptions, (success: any, failureReason: any) => {
-      console.log('Print Initiated in Main...');
-      if (!success) console.log(failureReason);
-      win.close();
+  
+  return new Promise((resolve) => {
+    win.webContents.on('did-finish-load', () => {
+      try {
+        win.webContents.print(printOptions);
+        console.log('Print Initiated in Main...');
+        setTimeout(() => {
+          win.close();
+          resolve('shown print dialog');
+        }, 1000);
+      } catch (error) {
+        console.error('Print error:', error);
+        win.close();
+        resolve('print failed');
+      }
     });
   });
-  return 'shown print dialog';
 });
 
 
 //handle print
-ipcMain.handle('printComponent1', (_event: any, url: any) => {
+ipcMain.handle('printComponent1', async (_event: any, url: any) => {
   const win = new BrowserWindow({ show: false });
   win.loadURL(url);
 
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.print(printOption2, (success: any, failureReason: any) => {
-      console.log('Print Initiated in Main...');
-      if (!success) console.log(failureReason);
-      win.close();
+  return new Promise((resolve) => {
+    win.webContents.on('did-finish-load', () => {
+      try {
+        win.webContents.print(printOption2);
+        console.log('Print Initiated in Main...');
+        setTimeout(() => {
+          win.close();
+          resolve('shown print dialog');
+        }, 1000);
+      } catch (error) {
+        console.error('Print error:', error);
+        win.close();
+        resolve('print failed');
+      }
     });
   });
-  return 'shown print dialog';
 });
 
 
