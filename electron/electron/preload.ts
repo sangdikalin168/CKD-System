@@ -150,9 +150,10 @@ window.onmessage = ev => {
 
 setTimeout(removeLoading, 50000)
 
-const { contextBridge, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('electronAPI', {
+// Since contextIsolation is false, expose APIs directly to window
+(window as any).electronAPI = {
   printComponent1: async (url: any, callback: any) => {
     const response = await ipcRenderer.invoke('printComponent1', url);
     callback(response);
@@ -165,5 +166,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const response = await ipcRenderer.invoke('previewComponent', url);
     callback(response);
   },
-});
+};
 
