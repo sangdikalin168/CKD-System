@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "start": "vite --port 5174",
-    "build": "electron-builder"
+    "build:client": "cd ../client && npm run build",
+    "build:electron": "vite build",
+    "build": "npm run build:client && npm run build:electron && electron-builder"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^4.2.0"

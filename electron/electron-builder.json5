@@ -8,7 +8,18 @@
   directories: {
     output: "release/${version}",
   },
-  files: ["dist-electron", "dist"],
+  files: [
+    "dist-electron",
+    "dist",
+    "../client/dist/**/*"
+  ],
+  extraResources: [
+    {
+      from: "../client/dist",
+      to: "dist",
+      filter: ["**/*"]
+    }
+  ],
   mac: {
     artifactName: "${System}_${version}.${ext}",
     target: ["dmg"],

@@ -129,8 +129,12 @@ function createWindow() {
     `);
   })
 
-  // Load from localhost to enable mediaDevices API
-  win.loadURL("http://localhost:5173")
+  // Load the app - use localhost in dev, file in production
+  if (app.isPackaged) {
+    win.loadFile(path.join(process.env.DIST, 'index.html'))
+  } else {
+    win.loadURL("http://localhost:5173")
+  }
   
   // win.webContents.openDevTools();
 
