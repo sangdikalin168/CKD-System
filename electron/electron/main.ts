@@ -27,6 +27,7 @@ app.commandLine.appendSwitch('enable-usermedia-screen-capturing');
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('ignore-certificate-errors');
+app.commandLine.appendSwitch('use-fake-ui-for-media-stream');
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -77,10 +78,11 @@ function createWindow() {
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: true,
+      contextIsolation: false,
       webSecurity: false,
-      allowRunningInsecureContent: true
+      allowRunningInsecureContent: true,
+      enableRemoteModule: true
     },
     width: 1366,
     height: 768,
@@ -94,44 +96,37 @@ function createWindow() {
     callback(true);
   });
 
-  // Test active push message to Renderer-process.
+  // Inject navigator.mediaDevices polyfill for HTTP
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
     
-    // Test camera access and provide helpful error messages
+    // Enable fake device for getUserMedia - this makes Electron expose the real camera
     win?.webContents.executeJavaScript(`
-      (async () => {
-        try {
-          // First, enumerate devices
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const cameras = devices.filter(d => d.kind === 'videoinput');
-          console.log('Available cameras:', cameras.length, cameras);
-          
-          if (cameras.length === 0) {
-            console.error('No cameras found. Please check if a camera is connected.');
-          }
-          
-          // Try to get camera access
-          const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: 1280, height: 720 }, 
-            audio: false 
+      console.log('Checking navigator.mediaDevices:', navigator.mediaDevices);
+      
+      // Test if getUserMedia is available
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log('getUserMedia is available natively');
+        
+        // Test camera access
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(stream => {
+            console.log('Camera access successful!', stream.getVideoTracks());
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(err => {
+            console.error('Camera access error:', err);
           });
-          console.log('Camera access successful!', stream.getVideoTracks());
-          stream.getTracks().forEach(track => track.stop()); // Stop the test stream
-        } catch (err) {
-          console.error('Camera access error:', err.name, err.message);
-          if (err.name === 'NotAllowedError') {
-            console.error('Permission denied. Please enable camera in Windows Settings > Privacy > Camera');
-          } else if (err.name === 'NotFoundError') {
-            console.error('No camera device found.');
-          } else if (err.name === 'NotReadableError') {
-            console.error('Camera is already in use by another application.');
-          }
-        }
-      })();
+      } else {
+        console.error('navigator.mediaDevices.getUserMedia is not available');
+        console.log('Available navigator properties:', Object.keys(navigator));
+      }
     `);
   })
 
+  // Load from localhost to enable mediaDevices API
+  win.loadURL("http://192.168.1.20:5173")
+  
   win.webContents.openDevTools();
 
   win.maximize();
@@ -140,9 +135,6 @@ function createWindow() {
   win.on('closed', () => {
     win = null
   })
-
-  // win.loadURL("http://192.168.1.20:5173")
-  win.loadURL("http://110.235.252.175:5174")
 }
 
 
