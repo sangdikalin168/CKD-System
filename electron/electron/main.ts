@@ -125,7 +125,7 @@ function createWindow() {
   })
 
   // Load from localhost to enable mediaDevices API
-  win.loadURL("http://192.168.1.20:5173")
+  win.loadURL("http://localhost:5173")
   
   win.webContents.openDevTools();
 
