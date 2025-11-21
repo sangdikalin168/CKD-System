@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+release/
+build/
+
+# Environment files
+*.env
+.env.local
+.env.production
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron build files
+*.exe
+*.dmg
+*.app
+*.zip
+*.blockmap
+
+# Database
+*.sqlite
+*.db
+
+# Uploads (except .gitkeep)
+server/uploads/**/*
+!server/uploads/.gitkeep
+!server/uploads/members/.gitkeep
