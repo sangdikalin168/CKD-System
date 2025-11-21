@@ -9,11 +9,11 @@ export const MemberInvoice = React.forwardRef((props, ref) => {
             <div className="text-center pt-3">
                 <p className="text-lg font-semibold text-black">មិង ហួរក្លឹបហាត់ប្រាណ & អាងហែលទឹក</p>
                 <p className="text-lg font-semibold text-black">(សាខាចំការដូង)</p>
-                <p className="text-lg font-semibold text-black">វិក័យប័ត្រ</p>
+                <p className="text-lg font-semibold text-black">បង្កាន់ដៃបង់ប្រាក់</p>
             </div>
 
             <div className="text-lg font-semibold text-black">
-                វិក័យប័ត្រលេខ: <strong >{props.invoice_id}</strong>
+                លេខ: <strong >{props.invoice_id}</strong>
             </div>
             <div className="flex text-xs">
                 <p className="text-lg font-semibold text-black mr-4">ថ្ងៃបង់ប្រាក់: {props.payment_date}</p>
