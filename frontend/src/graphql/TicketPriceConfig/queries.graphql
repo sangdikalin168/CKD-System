@@ -1,0 +1,31 @@
+query GetTicketPriceConfigs {
+  GetTicketPriceConfigs {
+    config_id
+    price
+    label
+    facility_id
+    facility {
+      facility_id
+      name
+      code
+    }
+  }
+}
+
+mutation UpsertTicketPriceConfig($price: Float!, $facility_id: Float!, $label: String) {
+  UpsertTicketPriceConfig(price: $price, facility_id: $facility_id, label: $label) {
+    config_id
+    price
+    label
+    facility_id
+    facility {
+      facility_id
+      name
+      code
+    }
+  }
+}
+
+mutation DeleteTicketPriceConfig($config_id: Float!) {
+  DeleteTicketPriceConfig(config_id: $config_id)
+}

@@ -1,0 +1,40 @@
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Field, ID, ObjectType } from "type-graphql";
+
+@Entity()
+@ObjectType()
+export class Users extends BaseEntity {
+  @Field((_type) => ID)
+  @PrimaryGeneratedColumn()
+  user_id!: number;
+
+  @Field()
+  @Column()
+  display_name!: string;
+
+  @Field()
+  @Column({ unique: true })
+  phone!: string;
+
+  @Field()
+  @Column({ unique: true })
+  username!: string;
+
+  @Column()
+  password!: string;
+
+  @Field()
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  created_at!: string;
+
+  @Field()
+  @Column()
+  role!: string;
+
+  @Field()
+  @Column({ default: "https://randomuser.me/api/portraits/men/91.jpg" })
+  image!: string;
+
+  @Column("int", { default: 0 })
+  tokenVersion!: number;
+}

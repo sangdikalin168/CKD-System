@@ -1,0 +1,18 @@
+mutation CreateTicketPayment(
+  $ticketCode: String!
+  $price: Float!
+  $userId: Float!
+  $facilityId: Float
+) {
+  CreateTicketPayment(
+    ticket_code: $ticketCode
+    price: $price
+    user_id: $userId
+    facility_id: $facilityId
+  ) {
+    payment_id
+    code
+    success
+    message
+  }
+}

@@ -1,0 +1,7 @@
+query GetFacilities {
+  facilities {
+    facility_id
+    code
+    name
+  }
+}

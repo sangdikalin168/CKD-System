@@ -1,0 +1,13 @@
+query GetMemberPriceTable {
+  getAllMemberPriceTable {
+    id
+    description
+    ageGroup
+    customerType
+    serviceType
+    shift
+    monthQty
+    price
+    entryQty
+  }
+}
